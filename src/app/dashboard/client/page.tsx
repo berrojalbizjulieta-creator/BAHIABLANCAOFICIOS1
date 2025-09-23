@@ -6,12 +6,17 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Upload, User, Search } from 'lucide-react';
+import { Upload, User, Search, Edit, Save, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 
 export default function ClientProfilePage() {
   const [name, setName] = useState('Nombre Cliente');
+  const [tempName, setTempName] = useState(name);
   const [photoUrl, setPhotoUrl] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   const handleAvatarClick = () => {
     if (fileInputRef.current) {
@@ -28,6 +33,24 @@ export default function ClientProfilePage() {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleEdit = () => {
+    setTempName(name);
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+  };
+
+  const handleSave = () => {
+    setName(tempName);
+    setIsEditing(false);
+    toast({
+      title: '¡Perfil actualizado!',
+      description: 'Tu nombre ha sido cambiado con éxito.',
+    });
   };
 
   return (
@@ -62,7 +85,32 @@ export default function ClientProfilePage() {
                 accept="image/*"
               />
             </div>
-            <h2 className="text-3xl font-bold font-headline">{name}</h2>
+            <div className="flex items-center gap-2 w-full justify-center">
+              {isEditing ? (
+                <Input
+                  value={tempName}
+                  onChange={(e) => setTempName(e.target.value)}
+                  className="text-3xl font-bold font-headline h-auto text-center"
+                />
+              ) : (
+                <h2 className="text-3xl font-bold font-headline">{name}</h2>
+              )}
+            </div>
+
+            {isEditing ? (
+              <div className="flex gap-2 mt-2">
+                <Button onClick={handleSave} size="sm">
+                  <Save className="mr-2 h-4 w-4" /> Guardar
+                </Button>
+                <Button onClick={handleCancel} variant="outline" size="sm">
+                  <X className="mr-2 h-4 w-4" /> Cancelar
+                </Button>
+              </div>
+            ) : (
+              <Button onClick={handleEdit} variant="ghost" size="sm" className="mt-2">
+                <Edit className="mr-2 h-4 w-4" /> Editar Nombre
+              </Button>
+            )}
           </CardContent>
         </Card>
         
