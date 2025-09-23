@@ -17,31 +17,38 @@ import { RecentSales } from '@/components/admin/recent-sales';
 import { Overview } from '@/components/admin/overview';
 import { DollarSign, Users, Briefcase, UserPlus } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import ProfessionalsTable from '@/components/admin/professionals-table';
+import VerificationRequests from '@/components/admin/verification-requests';
 
 export default function AdminPage() {
   const { loading, isAdmin } = useAdminAuth();
 
-   if (loading) {
+  if (loading) {
     return <div className="flex h-screen items-center justify-center">Cargando panel de administración...</div>;
   }
 
   if (!isAdmin) {
-    return <div className="flex h-screen items-center justify-center">Acceso denegado.</div>;
+    // This will be handled by the hook's redirect, but as a fallback:
+    return <div className="flex h-screen items-center justify-center">Acceso denegado. Serás redirigido.</div>;
   }
+
 
   return (
     <div className="flex-col md:flex">
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Dashboard de Administración</h2>
         </div>
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList>
             <TabsTrigger value="overview">Resumen</TabsTrigger>
+            <TabsTrigger value="professionals">Profesionales</TabsTrigger>
+            <TabsTrigger value="verifications">Verificaciones</TabsTrigger>
             <TabsTrigger value="analytics" disabled>
               Analytics (Próximamente)
             </TabsTrigger>
           </TabsList>
+          
           <TabsContent value="overview" className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <Card>
@@ -123,6 +130,15 @@ export default function AdminPage() {
               </Card>
             </div>
           </TabsContent>
+
+          <TabsContent value="professionals" className="space-y-4">
+             <ProfessionalsTable />
+          </TabsContent>
+          
+          <TabsContent value="verifications" className="space-y-4">
+              <VerificationRequests />
+          </TabsContent>
+
         </Tabs>
       </div>
     </div>
