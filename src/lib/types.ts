@@ -21,6 +21,7 @@ export interface Professional {
   name: string;
   description?: string;
   phone?: string;
+  email: string;
   photoUrl: string;
   photoHint: string;
   specialties: string[];
@@ -32,6 +33,9 @@ export interface Professional {
   priceInfo?: string;
   isSubscriptionActive?: boolean;
   subscriptionTier?: 'standard' | 'premium';
+  registrationDate: Date;
+  lastPaymentDate?: Date;
+  isActive: boolean;
 }
 
 export interface Client {
@@ -39,6 +43,8 @@ export interface Client {
   name: string;
   email: string;
   photoUrl: string;
+  registrationDate: Date;
+  isActive: boolean;
 }
 
 export interface Category {

@@ -1,0 +1,56 @@
+{
+  "users": {
+    "USER_UID_1": {
+      "name": "Carlos Rodriguez",
+      "email": "carlos.rodriguez@oficios.com",
+      "phone": "2914123456",
+      "photoUrl": "https://.../prof-1.jpg",
+      "role": "professional",
+      "registrationDate": "2023-08-15T12:00:00.000Z",
+      "isActive": true
+    },
+    "USER_UID_2": {
+      "name": "Ana Gomez",
+      "email": "ana.gomez@cliente.com",
+      "photoUrl": "https://.../client-1.jpg",
+      "role": "client",
+      "registrationDate": "2023-10-10T10:30:00.000Z",
+      "isActive": true
+    },
+    "ADMIN_UID": {
+      "name": "Admin Bahia",
+      "email": "admin@bahiablancaoficios.com",
+      "role": "admin",
+      "registrationDate": "2023-01-01T00:00:00.000Z",
+      "isActive": true
+    }
+  },
+  "professionalsDetails": {
+    "USER_UID_1": {
+      "description": "Plomero con más de 10 años de experiencia...",
+      "specialties": ["Reparación de Fugas", "Instalación de Grifería"],
+      "avgRating": 4.8,
+      "categoryId": 11,
+      "isVerified": false,
+      "priceInfo": "Hora de trabajo desde $2500 ARS. Presupuestos sin cargo.",
+      "subscription": {
+        "tier": "standard",
+        "isSubscriptionActive": false,
+        "lastPaymentDate": "2023-08-15T12:00:00.000Z",
+        "nextPaymentDate": "2023-09-15T12:00:00.000Z"
+      },
+      "workPhotos": [
+        { "id": "work-3", "imageUrl": "https://.../work-3.jpg", "description": "Instalación de lavabo" }
+      ],
+      "testimonials": [
+        { 
+          "id": 1, 
+          "clientName": "Ana Gomez", 
+          "clientUid": "USER_UID_2",
+          "rating": 5, 
+          "text": "Excelente servicio. Rápido y muy profesional." 
+        }
+      ]
+    }
+  }
+}

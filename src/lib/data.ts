@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import type { Category, Professional, Banner, Client } from '@/lib/types';
 import { placeholderImages } from './placeholder-images';
+import { subMonths, subDays } from 'date-fns';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -418,6 +419,7 @@ export const PROFESSIONALS: Professional[] = [
   {
     id: 1,
     name: 'Carlos Rodriguez',
+    email: 'carlos.rodriguez@oficios.com',
     phone: '2914123456',
     photoUrl: getImage('prof-1').imageUrl,
     photoHint: getImage('prof-1').imageHint,
@@ -425,8 +427,11 @@ export const PROFESSIONALS: Professional[] = [
     avgRating: 4.8,
     categoryId: 11,
     priceInfo: 'Hora de trabajo desde $2500 ARS. Presupuestos sin cargo.',
-    isSubscriptionActive: false, // Subscription expired
+    isSubscriptionActive: false,
     subscriptionTier: 'standard',
+    registrationDate: subMonths(new Date(), 2),
+    lastPaymentDate: subMonths(new Date(), 2),
+    isActive: true,
     testimonials: [
       {
         id: 1,
@@ -452,6 +457,7 @@ export const PROFESSIONALS: Professional[] = [
   {
     id: 2,
     name: 'Lucía Fernandez',
+    email: 'lucia.fernandez@oficios.com',
     phone: '2914123457',
     photoUrl: getImage('prof-2').imageUrl,
     photoHint: getImage('prof-2').imageHint,
@@ -461,6 +467,9 @@ export const PROFESSIONALS: Professional[] = [
     priceInfo: 'Consultar por instalación. Revisiones desde $2000 ARS.',
     isSubscriptionActive: true,
     subscriptionTier: 'premium',
+    registrationDate: subDays(new Date(), 15),
+    lastPaymentDate: subDays(new Date(), 10),
+    isActive: true,
     testimonials: [
       {
         id: 3,
@@ -486,6 +495,8 @@ export const PROFESSIONALS: Professional[] = [
   {
     id: 3,
     name: 'Miguel Torres',
+    email: 'miguel.torres@oficios.com',
+    phone: '2914123458',
     photoUrl: getImage('prof-3').imageUrl,
     photoHint: getImage('prof-3').imageHint,
     specialties: ['Pintura de Interiores', 'Empapelado'],
@@ -494,6 +505,9 @@ export const PROFESSIONALS: Professional[] = [
     priceInfo: 'Presupuestos a medida según m2. Incluye materiales.',
     isSubscriptionActive: true,
     subscriptionTier: 'standard',
+    registrationDate: subMonths(new Date(), 6),
+    lastPaymentDate: subDays(new Date(), 5),
+    isActive: true,
     testimonials: [
       {
         id: 5,
@@ -511,6 +525,7 @@ export const PROFESSIONALS: Professional[] = [
   {
     id: 4,
     name: 'Jorge Herrera',
+    email: 'jorge.herrera@oficios.com',
     phone: '2914123459',
     photoUrl: getImage('prof-4').imageUrl,
     photoHint: getImage('prof-4').imageHint,
@@ -519,6 +534,9 @@ export const PROFESSIONALS: Professional[] = [
     categoryId: 15,
     isSubscriptionActive: true,
     subscriptionTier: 'premium',
+    registrationDate: subMonths(new Date(), 1),
+    lastPaymentDate: subDays(new Date(), 20),
+    isActive: false,
     testimonials: [
       {
         id: 6,
@@ -532,120 +550,6 @@ export const PROFESSIONALS: Professional[] = [
     workPhotos: [
         getImage('work-4'),
     ]
-  },
-   {
-    id: 5,
-    name: 'Marta Diaz',
-    photoUrl: getImage('prof-6').imageUrl,
-    photoHint: getImage('prof-6').imageHint,
-    specialties: ['Cambio de Cerraduras', 'Aperturas de emergencia'],
-    avgRating: 4.7,
-    categoryId: 34,
-    isSubscriptionActive: true,
-    subscriptionTier: 'standard',
-    testimonials: [
-      {
-        id: 7,
-        clientName: 'Roberto "Tito" Ramirez',
-        clientPhotoUrl: getImage('client-3').imageUrl,
-        clientPhotoHint: getImage('client-3').imageHint,
-        rating: 5,
-        text: 'Me salvó a las 3 AM cuando perdí las llaves. ¡Una genia!',
-      },
-    ],
-    workPhotos: [],
-  },
-   {
-    id: 6,
-    name: 'Raúl Benitez',
-    photoUrl: getImage('prof-5').imageUrl,
-    photoHint: getImage('prof-5').imageHint,
-    specialties: ['Instalación de Split', 'Mantenimiento'],
-    avgRating: 4.6,
-    categoryId: 23,
-    isSubscriptionActive: false,
-    subscriptionTier: 'standard',
-    testimonials: [],
-    workPhotos: [],
-  },
-  {
-    id: 7,
-    name: 'Alberto Gómez',
-    phone: '2914123450',
-    photoUrl: getImage('prof-1').imageUrl,
-    photoHint: getImage('prof-1').imageHint,
-    specialties: ['Paredes y Cimientos', 'Reformas'],
-    avgRating: 4.9,
-    categoryId: 13,
-    priceInfo: 'Construcción desde $5000/m2. Consulte por reformas.',
-    isSubscriptionActive: true,
-    subscriptionTier: 'premium',
-    testimonials: [
-      {
-        id: 8,
-        clientName: 'Ricardo Diaz',
-        clientPhotoUrl: getImage('client-3').imageUrl,
-        clientPhotoHint: getImage('client-3').imageHint,
-        rating: 5,
-        text: 'Un trabajo de primera. Muy responsable y detallista.',
-      },
-    ],
-    workPhotos: [],
-  },
-  {
-    id: 8,
-    name: 'Susana Giménez',
-    photoUrl: getImage('prof-2').imageUrl,
-    photoHint: getImage('prof-2').imageHint,
-    specialties: ['Losa y Viguetas', 'Encadenados'],
-    avgRating: 4.7,
-    categoryId: 13,
-    priceInfo: 'Presupuestos a medida.',
-    isSubscriptionActive: true,
-    subscriptionTier: 'standard',
-    testimonials: [
-      {
-        id: 9,
-        clientName: 'Mirtha Legrand',
-        clientPhotoUrl: getImage('client-2').imageUrl,
-        clientPhotoHint: getImage('client-2').imageHint,
-        rating: 5,
-        text: 'Cumplió en tiempo y forma. Muy recomendable.',
-      },
-       {
-        id: 10,
-        clientName: 'Marcelo Tinelli',
-        clientPhotoUrl: getImage('client-4').imageUrl,
-        clientPhotoHint: getImage('client-4').imageHint,
-        rating: 4,
-        text: 'Buen trabajo en general.',
-      },
-    ],
-    workPhotos: [],
-  },
-  {
-    id: 9,
-    name: 'Esteban Quito',
-    phone: '2914123451',
-    photoUrl: getImage('prof-3').imageUrl,
-    photoHint: getImage('prof-3').imageHint,
-    specialties: ['Colocación de Ladrillos', 'Revoque'],
-    avgRating: 4.2,
-    categoryId: 13,
-    priceInfo: 'Revoque fino y grueso. Consulte precios.',
-    isSubscriptionActive: true,
-    subscriptionTier: 'standard',
-    testimonials: [
-      {
-        id: 11,
-        clientName: 'Elsa Pato',
-        clientPhotoUrl: getImage('client-1').imageUrl,
-        clientPhotoHint: getImage('client-1').imageHint,
-        rating: 4,
-        text: 'Quedó bien el revoque.',
-      },
-    ],
-    workPhotos: [],
   },
 ];
 
@@ -683,9 +587,27 @@ export const BANNERS: Banner[] = [
 export const CLIENTS: Client[] = [
     {
         id: 1,
-        name: 'Cliente de Prueba',
-        email: 'cliente@test.com',
+        name: 'Ana Gomez',
+        email: 'ana.gomez@cliente.com',
         photoUrl: getImage('client-1').imageUrl,
+        registrationDate: subDays(new Date(), 5),
+        isActive: true,
+    },
+    {
+        id: 2,
+        name: 'Juan Pérez',
+        email: 'juan.perez@cliente.com',
+        photoUrl: getImage('client-3').imageUrl,
+        registrationDate: subMonths(new Date(), 3),
+        isActive: true,
+    },
+    {
+        id: 3,
+        name: 'María López',
+        email: 'maria.lopez@cliente.com',
+        photoUrl: getImage('client-2').imageUrl,
+        registrationDate: subDays(new Date(), 90),
+        isActive: false,
     }
 ]
 

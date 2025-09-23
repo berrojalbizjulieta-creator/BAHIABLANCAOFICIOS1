@@ -84,6 +84,8 @@ export default function SignupPage() {
             name: data.fullName,
             email: data.email,
             photoUrl: '', // Default photo
+            registrationDate: new Date(),
+            isActive: true,
         };
         CLIENTS.push(newClient);
         console.log("New Client added:", newClient);
@@ -95,14 +97,18 @@ export default function SignupPage() {
         const newProfessional: Professional = {
             id: PROFESSIONALS.length + 1,
             name: professionalData.fullName,
+            email: professionalData.email,
+            phone: '',
             photoUrl: '',
             photoHint: '',
             specialties: [],
             avgRating: 0,
             categoryId: Number(professionalData.category),
             testimonials: [],
-            subscriptionTier: 'standard', // Default plan
+            subscriptionTier: 'standard',
             isSubscriptionActive: false,
+            registrationDate: new Date(),
+            isActive: true,
         };
         PROFESSIONALS.push(newProfessional);
         console.log("New Professional added:", newProfessional);
