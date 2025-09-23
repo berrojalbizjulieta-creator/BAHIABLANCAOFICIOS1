@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -51,7 +51,11 @@ type ClientFormValues = z.infer<typeof clientSchema>;
 type ProfessionalFormValues = z.infer<typeof professionalSchema>;
 
 function ClientForm() {
-  const form = useFormContext<ClientFormValues>();
+  const form = useForm<ClientFormValues>({
+    resolver: zodResolver(clientSchema),
+    defaultValues: { fullName: '', email: '', password: '' },
+  });
+  
   return (
     <div className="space-y-4">
       <FormField
@@ -98,7 +102,11 @@ function ClientForm() {
 }
 
 function ProfessionalForm() {
-  const form = useFormContext<ProfessionalFormValues>();
+  const form = useForm<ProfessionalFormValues>({
+    resolver: zodResolver(professionalSchema),
+    defaultValues: { fullName: '', email: '', password: '', category: '' },
+  });
+  
   return (
     <div className="space-y-4">
       <FormField
@@ -189,7 +197,6 @@ export default function SignupPage() {
     setIsLoading(true);
     console.log('Submitting data for', accountType, data);
     
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     toast({
@@ -203,7 +210,7 @@ export default function SignupPage() {
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-10rem)] py-12">
-      <FormProvider {...activeForm}>
+      <Form {...activeForm}>
         <form onSubmit={activeForm.handleSubmit(onSubmit)} className="w-full max-w-md">
           <Card>
             <CardHeader className="text-center">
@@ -216,17 +223,126 @@ export default function SignupPage() {
               <Tabs
                 defaultValue="client"
                 className="w-full"
-                onValueChange={setAccountType}
+                onValueChange={(newType) => {
+                  setAccountType(newType)
+                  // Reset forms when changing tabs
+                  clientForm.reset();
+                  professionalForm.reset();
+                }}
               >
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="client">Soy Cliente</TabsTrigger>
                   <TabsTrigger value="professional">Soy Profesional</TabsTrigger>
                 </TabsList>
                 <TabsContent value="client" className="mt-6">
-                  <ClientForm />
+                  <div className="space-y-4">
+                    <FormField
+                      control={clientForm.control}
+                      name="fullName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nombre completo</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Juan Pérez" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={clientForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input type="email" placeholder="tu@email.com" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={clientForm.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Contraseña</FormLabel>
+                          <FormControl>
+                            <Input type="password" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </TabsContent>
                 <TabsContent value="professional" className="mt-6">
-                  <ProfessionalForm />
+                   <div className="space-y-4">
+                      <FormField
+                        control={professionalForm.control}
+                        name="fullName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Nombre completo</FormLabel>
+                            <FormControl>
+                              <Input placeholder="María Gomez" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={professionalForm.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Email</FormLabel>
+                            <FormControl>
+                              <Input type="email" placeholder="tu@email.com" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={professionalForm.control}
+                        name="category"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Oficio principal</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Selecciona tu oficio" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {CATEGORIES.map((category) => (
+                                  <SelectItem key={category.id} value={String(category.id)}>
+                                    {category.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={professionalForm.control}
+                        name="password"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Contraseña</FormLabel>
+                            <FormControl>
+                              <Input type="password" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                 </TabsContent>
               </Tabs>
             </CardContent>
@@ -243,7 +359,7 @@ export default function SignupPage() {
             </CardFooter>
           </Card>
         </form>
-      </FormProvider>
+      </Form>
     </div>
   );
 }
