@@ -245,18 +245,26 @@ export default function ProfilePage() {
               <CardContent className="p-6">
                 <div className="flex flex-col sm:flex-row items-start gap-6">
                   <div className="relative group">
-                    <Avatar 
-                        className={`w-36 h-36 border-4 border-background shadow-md ${isEditing ? 'cursor-pointer' : ''}`}
+                    <div 
+                        className={`relative w-36 h-36 border-4 border-background shadow-md rounded-full ${isEditing ? 'cursor-pointer' : ''}`}
                         onClick={handleAvatarClick}
                     >
-                        <AvatarImage
-                        src={professional.photoUrl}
-                        alt={professional.name}
-                        />
-                        <AvatarFallback>
-                        {professional.name ? professional.name.charAt(0) : '?'}
-                        </AvatarFallback>
-                    </Avatar>
+                        {professional.photoUrl ? (
+                            <Image
+                                src={professional.photoUrl}
+                                alt={professional.name}
+                                width={144}
+                                height={144}
+                                className="rounded-full object-cover"
+                            />
+                        ) : (
+                            <div className="w-full h-full rounded-full bg-muted flex items-center justify-center">
+                                <span className="text-4xl text-muted-foreground">
+                                    {professional.name ? professional.name.charAt(0) : '?'}
+                                </span>
+                            </div>
+                        )}
+                    </div>
                      {isEditing && (
                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity" onClick={handleAvatarClick}>
                             <Upload className="h-8 w-8 text-white"/>
