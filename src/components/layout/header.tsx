@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, Wrench } from 'lucide-react';
 
 const navLinks = [
+  { href: '/', label: 'Inicio' },
   { href: '#services', label: 'Servicios' },
   { href: '/dashboard', label: 'Mi Panel' },
   { href: '#about', label: 'Sobre Nosotros' },
