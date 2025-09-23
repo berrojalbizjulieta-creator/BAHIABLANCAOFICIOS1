@@ -15,27 +15,62 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { esAdmin } from '@/lib/auth';
 
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    
-    toast({
-      title: '¡Bienvenido de vuelta!',
-      description: 'Has iniciado sesión correctamente.',
-    });
-    
-    // Redirect to dashboard
-    router.push('/dashboard');
-    setIsLoading(false);
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      toast({
+        title: '¡Bienvenido de vuelta!',
+        description: 'Has iniciado sesión correctamente.',
+      });
+
+      // Redirect based on role
+      if (esAdmin(user.email ?? undefined)) {
+        router.push('/admin');
+      } else {
+        router.push('/dashboard');
+      }
+
+    } catch (error: any) {
+      console.error(error);
+      let errorMessage = 'Ocurrió un error al iniciar sesión.';
+      switch (error.code) {
+        case 'auth/user-not-found':
+          errorMessage = 'No se encontró una cuenta con este email.';
+          break;
+        case 'auth/wrong-password':
+          errorMessage = 'La contraseña es incorrecta.';
+          break;
+        case 'auth/invalid-email':
+            errorMessage = 'El formato de email no es válido.';
+            break;
+        default:
+          errorMessage = 'Error desconocido. Por favor, intenta de nuevo.';
+          break;
+      }
+      toast({
+        title: 'Error de inicio de sesión',
+        description: errorMessage,
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -56,11 +91,19 @@ export default function LoginPage() {
                 type="email"
                 placeholder="tu@email.com"
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Contraseña</Label>
-              <Input id="password" type="password" required />
+              <Input 
+                id="password" 
+                type="password" 
+                required 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">

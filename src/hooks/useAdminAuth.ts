@@ -3,49 +3,36 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { esAdmin } from '@/lib/auth';
 
-// MOCK: En una app real, esto vendría de Firebase Auth
-const MOCK_USER = {
-  isLoggedIn: true,
-  role: 'admin', // Cambiar a 'user' o 'professional' para probar el acceso denegado
-};
-
-// En una aplicación real con Firebase, usarías algo como:
-// import { getAuth, onIdTokenChanged } from "firebase/auth";
-//
-// const auth = getAuth();
-// onIdTokenChanged(auth, async (user) => {
-//   if (user) {
-//     const idTokenResult = await user.getIdTokenResult();
-//     const userRole = idTokenResult.claims.role;
-//     // ...lógica para guardar el rol
-//   }
-// });
 
 export function useAdminAuth() {
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdminUser, setIsAdminUser] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      // Simulamos una llamada a un servicio de autenticación
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      const { isLoggedIn, role } = MOCK_USER;
-
-      if (isLoggedIn && role === 'admin') {
-        setIsAdmin(true);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in.
+        if (esAdmin(user.email ?? undefined)) {
+          setIsAdminUser(true);
+        } else {
+          // User is not an admin, redirect.
+          router.replace('/');
+        }
       } else {
-        setIsAdmin(false);
-        // Si no es admin, lo redirigimos a la página de inicio.
-        router.replace('/');
+        // User is signed out, redirect to login.
+        router.replace('/login');
       }
       setLoading(false);
-    };
+    });
 
-    checkAuth();
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
   }, [router]);
 
-  return { isAdmin, loading };
+  return { isAdmin: isAdminUser, loading };
 }

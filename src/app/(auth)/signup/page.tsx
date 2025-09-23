@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CATEGORIES, PROFESSIONALS, CLIENTS } from '@/lib/data';
+import { CATEGORIES } from '@/lib/data';
 import Link from 'next/link';
 import {
   Form,
@@ -34,6 +34,8 @@ import {
 } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 import type { Client, Professional } from '@/lib/types';
 
 
@@ -73,56 +75,42 @@ export default function SignupPage() {
 
   const onSubmit: SubmitHandler<ClientFormValues | ProfessionalFormValues> = async (data) => {
     setIsLoading(true);
-    console.log('Submitting data for', accountType, data);
     
-    // Simulate saving to our mock database
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+      const user = userCredential.user;
+      console.log('Firebase user created:', user);
 
-    if (accountType === 'client') {
-        const newClient: Client = {
-            id: CLIENTS.length + 1,
-            name: data.fullName,
-            email: data.email,
-            photoUrl: '', // Default photo
-            registrationDate: new Date(),
-            isActive: true,
-        };
-        CLIENTS.push(newClient);
-        console.log("New Client added:", newClient);
-        console.log("All Clients:", CLIENTS);
-        // Redirect client to home page after signup
-        router.push('/');
+      // Here you would typically also save user data to Firestore
+      // For now, we'll just show a success message
 
-    } else {
-        const professionalData = data as ProfessionalFormValues;
-        const newProfessional: Professional = {
-            id: PROFESSIONALS.length + 1,
-            name: professionalData.fullName,
-            email: professionalData.email,
-            phone: '',
-            photoUrl: '',
-            photoHint: '',
-            specialties: [],
-            avgRating: 0,
-            categoryId: Number(professionalData.category),
-            testimonials: [],
-            subscriptionTier: 'standard',
-            isSubscriptionActive: false,
-            registrationDate: new Date(),
-            isActive: true,
-        };
-        PROFESSIONALS.push(newProfessional);
-        console.log("New Professional added:", newProfessional);
-        console.log("All Professionals:", PROFESSIONALS);
-        router.push('/dashboard/profile');
-    }
-    
-    toast({
+      toast({
         title: "¡Cuenta Creada!",
         description: `Tu cuenta de ${accountType === 'client' ? 'cliente' : 'profesional'} ha sido creada exitosamente.`,
-    })
+      });
 
-    setIsLoading(false);
+      // Redirect user after signup
+      if (accountType === 'client') {
+        router.push('/');
+      } else {
+        router.push('/dashboard/profile');
+      }
+
+    } catch (error: any) {
+      console.error("Error creating user:", error);
+      let errorMessage = "Ocurrió un error al crear la cuenta.";
+      if (error.code === 'auth/email-already-in-use') {
+        errorMessage = 'Este email ya está registrado. Intenta iniciar sesión.';
+      }
+      toast({
+        title: "Error de Registro",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+    
     activeForm.reset();
   };
 
