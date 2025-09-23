@@ -74,8 +74,13 @@ function StarRatingDisplay({
   );
 }
 
+interface ReviewFormProps {
+  onReviewSubmit: (newReview: Testimonial) => void;
+  clientName?: string;
+  clientPhotoUrl?: string;
+}
 
-function ReviewForm() {
+function ReviewForm({ onReviewSubmit, clientName = "Cliente Anónimo", clientPhotoUrl = "" }: ReviewFormProps) {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [reviewText, setReviewText] = useState('');
@@ -92,7 +97,16 @@ function ReviewForm() {
       return;
     }
 
-    console.log({ rating, reviewText });
+    const newReview: Testimonial = {
+      id: Date.now(),
+      clientName: clientName,
+      clientPhotoUrl: clientPhotoUrl,
+      clientPhotoHint: "client photo",
+      rating: rating,
+      text: reviewText,
+    };
+    
+    onReviewSubmit(newReview);
 
     toast({
       title: '¡Reseña Enviada!',
@@ -156,7 +170,29 @@ export default function PublicProfilePage() {
   const params = useParams();
   const { user, loading, isProfessional } = useAdminAuth();
   const professionalId = params.id;
-  const professional = PROFESSIONALS.find(p => p.id === Number(professionalId));
+  
+  // Find the initial professional data
+  const initialProfessional = PROFESSIONALS.find(p => p.id === Number(professionalId));
+
+  // Use state to manage professional data, so it can be updated
+  const [professional, setProfessional] = useState<Professional | undefined>(initialProfessional);
+
+  const handleNewReview = (newReview: Testimonial) => {
+    if (professional) {
+      const updatedTestimonials = [newReview, ...professional.testimonials];
+      
+      // Calculate new average rating
+      const totalRating = updatedTestimonials.reduce((sum, t) => sum + t.rating, 0);
+      const newAvgRating = totalRating / updatedTestimonials.length;
+
+      setProfessional({
+        ...professional,
+        testimonials: updatedTestimonials,
+        avgRating: newAvgRating,
+      });
+    }
+  };
+
 
   if (!professional) {
     return <div className="container py-12 text-center">Profesional no encontrado.</div>;
@@ -290,7 +326,7 @@ export default function PublicProfilePage() {
                 </Card>
 
               {/* Reviews */}
-              {professional.testimonials.length > 0 && (
+              
                  <Card className="shadow-lg">
                   <CardHeader>
                     <CardTitle>
@@ -298,45 +334,54 @@ export default function PublicProfilePage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    {professional.testimonials.map((t) => (
-                      <div key={t.id} className="flex items-start gap-4">
-                        <Avatar>
-                          <AvatarImage
-                            src={t.clientPhotoUrl}
-                            alt={t.clientName}
-                          />
-                          <AvatarFallback>
-                            {t.clientName.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h5 className="font-semibold">{t.clientName}</h5>
-                          </div>
-                          <div className="flex mt-1">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`w-4 h-4 ${
-                                    i < t.rating
-                                      ? 'text-yellow-400 fill-yellow-400'
-                                      : 'text-gray-300'
-                                  }`}
-                                />
-                              ))}
+                    {professional.testimonials.length > 0 ? (
+                        professional.testimonials.map((t) => (
+                        <div key={t.id} className="flex items-start gap-4">
+                            <Avatar>
+                            <AvatarImage
+                                src={t.clientPhotoUrl}
+                                alt={t.clientName}
+                            />
+                            <AvatarFallback>
+                                {t.clientName.charAt(0)}
+                            </AvatarFallback>
+                            </Avatar>
+                            <div>
+                            <div className="flex items-center gap-2">
+                                <h5 className="font-semibold">{t.clientName}</h5>
                             </div>
-                          <p className="text-sm text-muted-foreground italic mt-2">
-                            &quot;{t.text}&quot;
-                          </p>
+                            <div className="flex mt-1">
+                                {[...Array(5)].map((_, i) => (
+                                    <Star
+                                    key={i}
+                                    className={`w-4 h-4 ${
+                                        i < t.rating
+                                        ? 'text-yellow-400 fill-yellow-400'
+                                        : 'text-gray-300'
+                                    }`}
+                                    />
+                                ))}
+                                </div>
+                            <p className="text-sm text-muted-foreground italic mt-2">
+                                &quot;{t.text}&quot;
+                            </p>
+                            </div>
                         </div>
-                      </div>
-                    ))}
+                        ))
+                    ) : (
+                        <p className="text-muted-foreground">Aún no hay reseñas. ¡Sé el primero en dejar una!</p>
+                    )}
                   </CardContent>
                 </Card>
-              )}
              
               {/* Review Form for clients */}
-              {!loading && user && !isProfessional && <ReviewForm />}
+              {!loading && user && !isProfessional && (
+                <ReviewForm 
+                    onReviewSubmit={handleNewReview} 
+                    clientName={user.displayName || user.email || 'Cliente'}
+                    clientPhotoUrl={user.photoURL || ''}
+                />
+              )}
             </div>
 
             {/* Right Sidebar */}
@@ -399,5 +444,3 @@ export default function PublicProfilePage() {
     </>
   );
 }
-
-    
