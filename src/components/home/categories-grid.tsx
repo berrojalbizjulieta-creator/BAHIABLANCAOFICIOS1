@@ -44,8 +44,6 @@ export default function CategoriesGrid() {
              <Link
               key={category.id}
               href={`/servicios/${encodeURIComponent(category.name.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-'))}`}
-              target="_blank"
-              rel="noopener noreferrer"
               className="cursor-pointer group"
             >
               <Card

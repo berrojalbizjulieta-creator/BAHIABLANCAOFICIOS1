@@ -57,8 +57,6 @@ export default function ServicesPage() {
             href={`/servicios/${encodeURIComponent(
               category.name.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-')
             )}`}
-            target="_blank"
-            rel="noopener noreferrer"
             className="cursor-pointer group"
           >
             <Card className="hover:shadow-lg transition-all">
