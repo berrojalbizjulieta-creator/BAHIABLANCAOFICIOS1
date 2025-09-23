@@ -7,6 +7,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from '@/components/ui/card';
 import { PROFESSIONALS } from '@/lib/data';
 import {
@@ -20,9 +21,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import TestimonialSlider from '@/components/professionals/testimonial-slider';
-import PaymentDialog from '@/components/professionals/payment-dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
 
-function StarRating({
+
+function StarRatingDisplay({
   rating,
   totalReviews,
 }: {
@@ -49,6 +52,85 @@ function StarRating({
       </span>
     </div>
   );
+}
+
+function ReviewForm() {
+    const [rating, setRating] = useState(0);
+    const [hover, setHover] = useState(0);
+    const [reviewText, setReviewText] = useState('');
+    const { toast } = useToast();
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (rating === 0 || !reviewText) {
+             toast({
+                title: 'Error',
+                description: 'Por favor, selecciona una calificación y escribe una reseña.',
+                variant: 'destructive'
+            })
+            return;
+        }
+        
+        // Simulate API call
+        console.log({ rating, reviewText });
+
+        toast({
+            title: '¡Reseña Enviada!',
+            description: 'Gracias por compartir tu opinión.',
+        });
+
+        // Reset form
+        setRating(0);
+        setHover(0);
+        setReviewText('');
+    }
+
+    return (
+        <Card className="shadow-lg mt-8">
+            <CardHeader>
+                <CardTitle>Deja tu Reseña</CardTitle>
+            </CardHeader>
+            <form onSubmit={handleSubmit}>
+                <CardContent className="space-y-4">
+                    <div>
+                        <p className="font-medium mb-2">Tu calificación:</p>
+                         <div className="flex items-center">
+                            {[...Array(5)].map((_, index) => {
+                                const starValue = index + 1;
+                                return (
+                                    <button
+                                        type="button"
+                                        key={starValue}
+                                        className="bg-transparent border-none cursor-pointer"
+                                        onClick={() => setRating(starValue)}
+                                        onMouseEnter={() => setHover(starValue)}
+                                        onMouseLeave={() => setHover(rating)}
+                                    >
+                                        <Star
+                                            className={`w-7 h-7 transition-colors ${
+                                            starValue <= (hover || rating)
+                                                ? 'text-yellow-400 fill-yellow-400'
+                                                : 'text-gray-300'
+                                            }`}
+                                        />
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                     <Textarea
+                        placeholder="Escribe tu opinión sobre el trabajo de este profesional..."
+                        value={reviewText}
+                        onChange={(e) => setReviewText(e.target.value)}
+                        rows={4}
+                    />
+                </CardContent>
+                <CardFooter>
+                    <Button type="submit">Publicar Reseña</Button>
+                </CardFooter>
+            </form>
+        </Card>
+    );
 }
 
 
@@ -98,7 +180,7 @@ export default function ProfessionalProfilePage() {
 
                             <div className="mt-1">
                             {professional.testimonials.length > 0 ? (
-                                <StarRating
+                                <StarRatingDisplay
                                 rating={professional.avgRating}
                                 totalReviews={professional.testimonials.length}
                                 />
@@ -124,6 +206,10 @@ export default function ProfessionalProfilePage() {
                         </div>
                     </CardContent>
                     </Card>
+                    
+                    {/* This would be conditionally rendered for logged-in clients */}
+                    <ReviewForm />
+
                 </div>
                 <div className="space-y-8">
                      <Card>
