@@ -31,7 +31,7 @@ import {Separator} from '@/components/ui/separator';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Textarea} from '@/components/ui/textarea';
-import {PROFESSIONALS} from '@/lib/data';
+import type { Professional } from '@/lib/types';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {useToast} from '@/hooks/use-toast';
 import {Switch} from '@/components/ui/switch';
@@ -65,12 +65,21 @@ function StarRating({
   );
 }
 
-const initialProfessionalData = PROFESSIONALS.find(p => p.id === 2);
+const initialProfessionalData: Professional = {
+    id: 0,
+    name: "Nombre del Profesional",
+    photoUrl: "",
+    photoHint: "",
+    specialties: [],
+    avgRating: 0,
+    categoryId: 0,
+    testimonials: [],
+}
 
 export default function ProfilePage() {
-  const [isEditing, setIsEditing] = useState(false);
-  const [professional, setProfessional] = useState(initialProfessionalData);
-  const [paymentMethods, setPaymentMethods] = useState('Este profesional acepta pagos en Efectivo, Cheque, Tarjeta de Crédito y Transferencia.');
+  const [isEditing, setIsEditing] = useState(true);
+  const [professional, setProfessional] = useState<Professional | null>(initialProfessionalData);
+  const [paymentMethods, setPaymentMethods] = useState('');
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -133,7 +142,7 @@ export default function ProfilePage() {
                         alt={professional.name}
                         />
                         <AvatarFallback>
-                        {professional.name.charAt(0)}
+                        {professional.name ? professional.name.charAt(0) : '?'}
                         </AvatarFallback>
                     </Avatar>
                      {isEditing && (
@@ -162,14 +171,20 @@ export default function ProfilePage() {
                       </h1>
                     )}
                     <div className="mt-1">
-                      <StarRating
-                        rating={professional.avgRating}
-                        totalReviews={professional.testimonials.length}
-                      />
+                      {professional.testimonials.length > 0 ? (
+                        <StarRating
+                          rating={professional.avgRating}
+                          totalReviews={professional.testimonials.length}
+                        />
+                      ) : (
+                        <p className="text-sm text-muted-foreground">Aún no hay reseñas.</p>
+                      )}
                     </div>
-                    <Badge className="mt-2 bg-blue-100 text-blue-800 hover:bg-blue-200">
-                      <Trophy className="w-4 h-4 mr-1" /> Top Pro
-                    </Badge>
+                    {professional.avgRating > 4.5 && (
+                        <Badge className="mt-2 bg-blue-100 text-blue-800 hover:bg-blue-200">
+                          <Trophy className="w-4 h-4 mr-1" /> Top Pro
+                        </Badge>
+                    )}
                   </div>
                    <div className="flex gap-2">
                     {isEditing ? (
@@ -206,12 +221,13 @@ export default function ProfilePage() {
                   <CardContent className="space-y-6">
                     {isEditing ? (
                       <Textarea 
-                        value="Mi objetivo es la calidad y asegurarme de que mis clientes estén contentos. Hago un esfuerzo extra para asegurarme de que todo esté completo y hecho de la manera correcta." 
+                        value="" 
+                        placeholder="Describe tu trabajo, tu experiencia y lo que te diferencia del resto..."
                         className="min-h-[100px]"
                       />
                     ) : (
                       <p className="text-muted-foreground">
-                        Mi objetivo es la calidad y asegurarme de que mis clientes estén contentos. Hago un esfuerzo extra para asegurarme de que todo esté completo y hecho de la manera correcta.
+                        Aún no has añadido una descripción.
                       </p>
                     )}
                     <Separator />
@@ -222,14 +238,14 @@ export default function ProfilePage() {
                         </h4>
                         <ul className="space-y-3 text-sm">
                            <li className="flex items-center gap-3"><Trophy className="w-4 h-4 text-primary" /> <span>Top Pro actual</span></li>
-                           <li className="flex items-center gap-3"><Briefcase className="w-4 h-4 text-primary" /> <span>Contratado 21 veces</span></li>
+                           <li className="flex items-center gap-3"><Briefcase className="w-4 h-4 text-primary" /> <span>Contratado 0 veces</span></li>
                            <li className="flex items-center gap-3"><MapPin className="w-4 h-4 text-primary" /> <span>Sirve a Bahía Blanca</span></li>
-                           <li className="flex items-center gap-3"><CheckCircle className="w-4 h-4 text-primary" /> <span>Antecedentes verificados</span></li>
+                           <li className="flex items-center gap-3"><CheckCircle className="w-4 h-4 text-primary" /> <span>Antecedentes no verificados</span></li>
                            <li className="flex items-center gap-3"><Users className="w-4 h-4 text-primary" /> 
-                            {isEditing ? <div className="flex items-center gap-2"><Input type="number" defaultValue="2" className="w-16 h-8"/> <span>empleados</span></div> : <span>2 empleados</span>}
+                            {isEditing ? <div className="flex items-center gap-2"><Input type="number" placeholder="0" className="w-16 h-8"/> <span>empleados</span></div> : <span>0 empleados</span>}
                            </li>
                            <li className="flex items-center gap-3"><Clock className="w-4 h-4 text-primary" /> 
-                            {isEditing ? <div className="flex items-center gap-2"><Input type="number" defaultValue="7" className="w-16 h-8"/> <span>años en el negocio</span></div> : <span>7 años en el negocio</span>}
+                            {isEditing ? <div className="flex items-center gap-2"><Input type="number" placeholder="0" className="w-16 h-8"/> <span>años en el negocio</span></div> : <span>0 años en el negocio</span>}
                            </li>
                         </ul>
                       </div>
@@ -240,21 +256,21 @@ export default function ProfilePage() {
                                 {['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'].map(day => (
                                     <div key={day} className="flex items-center justify-between gap-2">
                                         <span className="w-8">{day}:</span>
-                                        <Input type="time" defaultValue="08:00" className="h-8 w-24"/>
+                                        <Input type="time" defaultValue="09:00" className="h-8 w-24"/>
                                         <span>-</span>
-                                        <Input type="time" defaultValue="20:00" className="h-8 w-24"/>
-                                        <Switch defaultChecked={day !== 'Sab'}/>
+                                        <Input type="time" defaultValue="18:00" className="h-8 w-24"/>
+                                        <Switch defaultChecked={day !== 'Sab' && day !== 'Dom'}/>
                                     </div>
                                 ))}
                             </div>
                         ) : (
                              <ul className="space-y-2 text-sm text-muted-foreground">
-                               <li className="flex justify-between"><span>Dom:</span> <span>8:00 AM - 8:00 PM</span></li>
-                               <li className="flex justify-between"><span>Lun:</span> <span>8:00 AM - 8:00 PM</span></li>
-                               <li className="flex justify-between"><span>Mar:</span> <span>8:00 AM - 8:00 PM</span></li>
-                               <li className="flex justify-between"><span>Mie:</span> <span>8:00 AM - 8:00 PM</span></li>
-                               <li className="flex justify-between"><span>Jue:</span> <span>8:00 AM - 8:00 PM</span></li>
-                               <li className="flex justify-between"><span>Vie:</span> <span>8:00 AM - 8:00 PM</span></li>
+                               <li className="flex justify-between"><span>Dom:</span> <span>Cerrado</span></li>
+                               <li className="flex justify-between"><span>Lun:</span> <span>9:00 AM - 6:00 PM</span></li>
+                               <li className="flex justify-between"><span>Mar:</span> <span>9:00 AM - 6:00 PM</span></li>
+                               <li className="flex justify-between"><span>Mie:</span> <span>9:00 AM - 6:00 PM</span></li>
+                               <li className="flex justify-between"><span>Jue:</span> <span>9:00 AM - 6:00 PM</span></li>
+                               <li className="flex justify-between"><span>Vie:</span> <span>9:00 AM - 6:00 PM</span></li>
                                <li className="flex justify-between"><span>Sab:</span> <span>Cerrado</span></li>
                             </ul>
                         )}
@@ -272,39 +288,44 @@ export default function ProfilePage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {professional.testimonials.map((t) => (
-                      <div key={t.id} className="flex items-start gap-4">
-                        <Avatar>
-                          <AvatarImage
-                            src={t.clientPhotoUrl}
-                            alt={t.clientName}
-                          />
-                          <AvatarFallback>
-                            {t.clientName.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h5 className="font-semibold">{t.clientName}</h5>
-                            <div className="flex">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`w-4 h-4 ${
-                                    i < t.rating
-                                      ? 'text-yellow-400 fill-yellow-400'
-                                      : 'text-gray-300'
-                                  }`}
-                                />
-                              ))}
+                    {professional.testimonials.length > 0 ? (
+                        professional.testimonials.map((t) => (
+                          <div key={t.id} className="flex items-start gap-4">
+                            <Avatar>
+                              <AvatarImage
+                                src={t.clientPhotoUrl}
+                                alt={t.clientName}
+                              />
+                              <AvatarFallback>
+                                {t.clientName.charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <h5 className="font-semibold">{t.clientName}</h5>
+                                <div className="flex">
+                                  {[...Array(5)].map((_, i) => (
+                                    <Star
+                                      key={i}
+                                      className={`w-4 h-4 ${
+                                        i < t.rating
+                                          ? 'text-yellow-400 fill-yellow-400'
+                                          : 'text-gray-300'
+                                      }`}
+                                    />
+                                  ))}
+                                </div>
+                              </div>
+                              <p className="text-sm text-muted-foreground italic mt-1">
+                                &quot;{t.text}&quot;
+                              </p>
                             </div>
                           </div>
-                          <p className="text-sm text-muted-foreground italic mt-1">
-                            &quot;{t.text}&quot;
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                        ))
+                    ) : (
+                      <p className="text-muted-foreground">Todavía no hay reseñas para mostrar.</p>
+                    )
+                    }
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -323,11 +344,11 @@ export default function ProfilePage() {
                     value={paymentMethods}
                     onChange={(e) => setPaymentMethods(e.target.value)}
                     className="min-h-[100px]"
-                    placeholder="Describe los métodos de pago que aceptas..."
+                    placeholder="Efectivo, Mercado Pago, Tarjeta de Crédito, etc."
                   />
                 ) : (
                   <p className="text-sm text-muted-foreground">
-                    {paymentMethods}
+                    {paymentMethods || 'Aún no se han especificado métodos de pago.'}
                   </p>
                 )}
               </CardContent>
