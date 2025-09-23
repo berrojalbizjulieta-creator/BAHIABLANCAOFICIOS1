@@ -23,6 +23,7 @@ export interface Professional {
   isVerified?: boolean;
   priceInfo?: string;
   isSubscriptionActive?: boolean;
+  subscriptionTier?: 'standard' | 'premium';
 }
 
 export interface Category {

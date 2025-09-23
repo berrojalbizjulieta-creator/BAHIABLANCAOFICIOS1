@@ -22,6 +22,7 @@ import {
   DollarSign,
   PartyPopper,
   Phone,
+  Sparkles as PremiumIcon,
 } from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {
@@ -104,6 +105,7 @@ const initialProfessionalData: Professional = {
     categoryId: 0,
     testimonials: [],
     isVerified: false,
+    subscriptionTier: 'standard',
 }
 
 const workPhotos = placeholderImages.filter(p => p.id.startsWith('work-'));
@@ -159,12 +161,15 @@ export default function ProfilePage() {
     setIsPaymentDialogOpen(true);
   }
 
-  const handlePaymentSuccess = () => {
+  const handlePaymentSuccess = (plan: 'standard' | 'premium') => {
     // This would be called from the payment dialog on successful payment
     setLastPaymentDate(new Date());
+    if (professional) {
+      setProfessional({...professional, subscriptionTier: plan});
+    }
     toast({
         title: "¡Publicación Exitosa!",
-        description: "Tu perfil ahora está visible para nuevos clientes.",
+        description: `Tu perfil ahora está visible para nuevos clientes con el plan ${plan === 'premium' ? 'Premium' : 'Estándar'}.`,
     });
     setIsEditing(false);
   }
@@ -237,6 +242,12 @@ export default function ProfilePage() {
                         </h1>
                         )}
                         {professional.isVerified ? <ShieldCheck className="w-7 h-7 text-blue-500" /> : <Shield className="w-7 h-7 text-muted-foreground" />}
+                        {professional.subscriptionTier === 'premium' && isSubscriptionActive && (
+                            <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">
+                                <PremiumIcon className="w-4 h-4 mr-1 text-purple-600" />
+                                Premium
+                            </Badge>
+                        )}
                     </div>
                      <div className="mt-2 text-sm">
                       {isEditing ? (
