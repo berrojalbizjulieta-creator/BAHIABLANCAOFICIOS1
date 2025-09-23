@@ -20,7 +20,7 @@ export default function PromoSlider() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-left mb-10">
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">
-            Explora otros servicios
+            SERVICIOS ESENCIALES DE TU HOGAR
           </h2>
           <p className="mt-3 max-w-2xl text-muted-foreground md:text-lg">
             Descubre todo lo que nuestros profesionales pueden hacer por ti y tu hogar.
