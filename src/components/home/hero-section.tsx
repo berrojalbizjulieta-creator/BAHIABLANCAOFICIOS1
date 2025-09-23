@@ -51,15 +51,15 @@ export default function HeroSection() {
 
   return (
     <section className="relative w-full py-20 md:py-32 lg:py-40 overflow-hidden">
-      <Carousel 
+      <Carousel
         opts={{ loop: true }}
         plugins={[plugin.current]}
-        className="absolute inset-0 w-full h-full"
+        className="absolute inset-0 w-full h-full embla-fade"
         onMouseEnter={plugin.current.stop}
         onMouseLeave={plugin.current.reset}
       >
-        <CarouselContent className="h-full" data-embla-carousel-fade="true">
-          {heroImages.map((image) => (
+        <CarouselContent className="h-full">
+          {heroImages.map((image, index) => (
             <CarouselItem key={image.id} className="h-full">
               <Image
                 src={image.imageUrl}
@@ -67,7 +67,7 @@ export default function HeroSection() {
                 fill
                 className="object-cover"
                 data-ai-hint={image.imageHint}
-                priority={heroImages.indexOf(image) === 0}
+                priority={index === 0}
               />
             </CarouselItem>
           ))}
