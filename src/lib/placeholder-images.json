@@ -1,10 +1,10 @@
 {
   "placeholderImages": [
     {
-      "id": "hero-background-1",
-      "description": "El Teatro Municipal de Bahía Blanca.",
-      "imageUrl": "https://images.unsplash.com/photo-1623172426392-03d645f21226?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "imageHint": "teatro bahia"
+      "id": "hero-background-parque-de-mayo",
+      "description": "Pórtico del Parque de Mayo en Bahía Blanca.",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/2/20/P%C3%B3rtico_del_Parque_de_Mayo%2C_Bah%C3%ADa_Blanca.JPG",
+      "imageHint": "parque bahia blanca"
     },
     {
       "id": "promo-banner-1",
@@ -99,7 +99,7 @@
     {
       "id": "client-4",
       "description": "Happy user.",
-      "imageUrl": "https://images.unsplash.com/photo-1693039537350-3bba6975add7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwZXJzb24lMjBmYWNlfGVufDB8fHx8MTc1ODU4NDcwOXww&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1693039537350-3bba6975add7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwZXJzb24lMjBmYWNlfGVufDB8fHx8MTc1ODU4NDcwOXww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "person face"
     },
     {

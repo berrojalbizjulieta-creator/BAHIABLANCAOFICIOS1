@@ -3,22 +3,15 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
-import { Badge } from '../ui/badge';
 import Image from 'next/image';
 import { placeholderImages } from '@/lib/placeholder-images';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from '@/components/ui/carousel';
-import Autoplay from 'embla-carousel-autoplay';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { suggestTradesFromPrompt } from '@/ai/flows/suggest-trades-from-prompt';
 import { Card, CardContent } from '../ui/card';
 
-const heroImages = placeholderImages.filter(img =>
-  img.id.startsWith('hero-background-')
+const heroImage = placeholderImages.find(
+  (img) => img.id === 'hero-background-parque-de-mayo'
 );
 
 export default function HeroSection() {
@@ -30,13 +23,9 @@ export default function HeroSection() {
   const router = useRouter();
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
-  const plugin = useRef(
-    Autoplay({ delay: 5000, stopOnInteraction: false, stopOnMouseEnter: true })
-  );
-
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
-   useEffect(() => {
+  useEffect(() => {
     if (prompt.length < 3) {
       setSuggestions([]);
       setShowSuggestions(false);
@@ -69,9 +58,12 @@ export default function HeroSection() {
     };
   }, [prompt]);
 
-    useEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target as Node)
+      ) {
         setShowSuggestions(false);
       }
     };
@@ -97,28 +89,16 @@ export default function HeroSection() {
 
   return (
     <section className="relative w-full py-20 md:py-32 lg:py-40 overflow-hidden">
-      <Carousel
-        opts={{ loop: true }}
-        plugins={[plugin.current]}
-        className="absolute inset-0 w-full h-full embla-fade"
-        onMouseEnter={plugin.current.stop}
-        onMouseLeave={plugin.current.reset}
-      >
-        <CarouselContent className="h-full">
-          {heroImages.map((image, index) => (
-            <CarouselItem key={image.id} className="h-full">
-              <Image
-                src={image.imageUrl}
-                alt={image.description}
-                fill
-                className="object-cover"
-                data-ai-hint={image.imageHint}
-                priority={index === 0}
-              />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
+      {heroImage && (
+        <Image
+          src={heroImage.imageUrl}
+          alt={heroImage.description}
+          fill
+          className="object-cover"
+          data-ai-hint={heroImage.imageHint}
+          priority
+        />
+      )}
       <div className="absolute inset-0 bg-black/60"></div>
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="mx-auto max-w-3xl text-center">
@@ -129,7 +109,10 @@ export default function HeroSection() {
             Desde plomeros hasta electricistas, conecta con los mejores oficios
             de Bahía Blanca.
           </p>
-          <div className="relative w-full max-w-xl mx-auto" ref={searchContainerRef}>
+          <div
+            className="relative w-full max-w-xl mx-auto"
+            ref={searchContainerRef}
+          >
             <form
               onSubmit={handleSearch}
               className="mt-8 flex w-full items-center space-x-2 rounded-full bg-white/90 p-2 shadow-lg"
@@ -198,11 +181,13 @@ export default function HeroSection() {
                       ))}
                     </ul>
                   )}
-                  {!isSuggestionsLoading && suggestions.length === 0 && prompt.length > 2 && (
-                     <div className="px-4 py-2 text-sm text-muted-foreground">
-                      No se encontraron sugerencias.
-                    </div>
-                  )}
+                  {!isSuggestionsLoading &&
+                    suggestions.length === 0 &&
+                    prompt.length > 2 && (
+                      <div className="px-4 py-2 text-sm text-muted-foreground">
+                        No se encontraron sugerencias.
+                      </div>
+                    )}
                 </CardContent>
               </Card>
             )}
