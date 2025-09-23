@@ -90,7 +90,8 @@ export default function SignupPage() {
         CLIENTS.push(newClient);
         console.log("New Client added:", newClient);
         console.log("All Clients:", CLIENTS);
-        router.push('/dashboard/client');
+        // Redirect client to home page after signup
+        router.push('/');
 
     } else {
         const professionalData = data as ProfessionalFormValues;

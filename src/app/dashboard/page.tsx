@@ -14,7 +14,8 @@ export default function DashboardPage() {
     if (MOCK_USER_TYPE === 'professional') {
         router.replace('/dashboard/profile');
     } else {
-        router.replace('/dashboard/client');
+        // Para cualquier otro usuario (ej. cliente), redirigir a la página de inicio
+        router.replace('/');
     }
   }, [router]);
 
