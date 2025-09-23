@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Star } from 'lucide-react';
+import { Separator } from '../ui/separator';
 
 interface SearchResult {
   id: number;
@@ -20,6 +21,7 @@ interface SearchResult {
 export default function HeroSection() {
   const [searchValue, setSearchValue] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   
@@ -46,12 +48,18 @@ export default function HeroSection() {
 
     try {
       const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-      const data = await res.json();
+      const data: SearchResult[] = await res.json();
       setResults(data);
+      
+      // Extract unique categories for suggestions
+      const uniqueRubros = Array.from(new Set(data.map(p => p.rubro)));
+      setSuggestions(uniqueRubros.slice(0, 5)); // show max 5 suggestions
+
       setIsDropdownOpen(true);
     } catch (e: any) {
       console.error('Error fetching suggestions:', e);
       setResults([]);
+      setSuggestions([]);
       setIsDropdownOpen(true);
     } finally {
       setIsLoading(false);
@@ -64,13 +72,15 @@ export default function HeroSection() {
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
+    if (value.trim().length < 2) {
+      setResults([]);
+      setSuggestions([]);
+      setIsDropdownOpen(false);
+      return;
+    }
+
     debounceRef.current = setTimeout(() => {
-      if (value.trim().length < 2) {
-        setResults([]);
-        setIsDropdownOpen(false);
-      } else {
         fetchSuggestions(value);
-      }
     }, 300);
   };
   
@@ -79,10 +89,16 @@ export default function HeroSection() {
     if (!searchValue) return;
     setIsDropdownOpen(false);
     
-    // Check if the search term matches a category and redirect if so
+    // Redirect to the category page based on the search term
     const categorySlug = encodeURIComponent(searchValue.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-'));
     router.push(`/servicios/${categorySlug}`);
   };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setSearchValue(suggestion);
+    setSuggestions([]); // Clear suggestions
+    fetchSuggestions(suggestion); // Re-fetch results for the selected suggestion
+  }
 
   return (
     <section className="relative w-full h-[500px] flex items-center justify-center text-white" style={{ backgroundImage: "url('https://i.pinimg.com/1200x/2e/aa/5c/2eaa5ca96662e74cb7e59c297d9f6dd0.jpg')" , backgroundSize: 'cover', backgroundPosition: 'center' }}>
@@ -104,7 +120,9 @@ export default function HeroSection() {
             placeholder="Ej: 'plomero', 'electricista' o 'arreglar una canilla'"
             className="flex-1 text-black"
             autoComplete="off"
-            onClick={() => setIsDropdownOpen(results.length > 0)}
+            onFocus={() => {
+              if (searchValue.length > 1) setIsDropdownOpen(true);
+            }}
           />
           <Button
             type="submit"
@@ -121,13 +139,26 @@ export default function HeroSection() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
-                className="absolute top-full mt-2 w-full max-w-2xl mx-auto border bg-background text-foreground rounded-md shadow-lg max-h-80 overflow-auto z-20 text-left"
+                className="absolute top-full mt-2 w-full max-w-2xl mx-auto border bg-background text-foreground rounded-md shadow-lg max-h-96 overflow-auto z-20 text-left"
               >
                 {isLoading && <li className="px-4 py-3 text-muted-foreground">Buscando...</li>}
-                {!isLoading && results.length === 0 && searchValue.length > 1 && (
-                    <li className="px-4 py-3 text-muted-foreground">No se encontraron resultados para "{searchValue}".</li>
+                
+                {!isLoading && suggestions.length > 0 && (
+                   <>
+                    {suggestions.map((suggestion) => (
+                      <li 
+                        key={suggestion} 
+                        className="px-4 py-2 cursor-pointer hover:bg-muted font-medium"
+                        onClick={() => handleSuggestionClick(suggestion)}
+                      >
+                        {suggestion}
+                      </li>
+                    ))}
+                    {results.length > 0 && <Separator />}
+                  </>
                 )}
-                {!isLoading && results.map((r) => (
+
+                {!isLoading && results.length > 0 && results.map((r) => (
                     <li key={r.id}>
                         <Link href={`/profesional/${r.id}`} className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-muted" onClick={() => setIsDropdownOpen(false)}>
                             <Avatar>
@@ -145,6 +176,10 @@ export default function HeroSection() {
                         </Link>
                     </li>
                 ))}
+
+                {!isLoading && results.length === 0 && suggestions.length === 0 && searchValue.length > 1 && (
+                    <li className="px-4 py-3 text-muted-foreground">No se encontraron resultados para "{searchValue}".</li>
+                )}
               </motion.ul>
             )}
           </AnimatePresence>

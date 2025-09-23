@@ -19,6 +19,10 @@ export async function GET(request: Request) {
     }
   );
 
+  if (results.length === 0) {
+    return NextResponse.json([]);
+  }
+
   return NextResponse.json(results.map(p => {
     const category = CATEGORIES.find(c => c.id === p.categoryId);
     return {
