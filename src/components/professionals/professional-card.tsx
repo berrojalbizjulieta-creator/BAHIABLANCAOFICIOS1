@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { Star } from 'lucide-react';
+import { Star, MessageSquare } from 'lucide-react';
 
 import type { Professional } from '@/lib/types';
 import {
@@ -11,13 +11,13 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import TestimonialSlider from './testimonial-slider';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 interface ProfessionalCardProps {
   professional: Professional;
 }
 
-function StarRating({ rating }: { rating: number }) {
+function StarRating({ rating, count }: { rating: number, count: number }) {
   return (
     <div className="flex items-center gap-1">
       {[...Array(5)].map((_, i) => (
@@ -30,7 +30,7 @@ function StarRating({ rating }: { rating: number }) {
           }`}
         />
       ))}
-      <span className="text-sm text-muted-foreground ml-1">{rating.toFixed(1)}</span>
+      <span className="text-sm text-muted-foreground ml-1">{rating.toFixed(1)} ({count})</span>
     </div>
   );
 }
@@ -38,24 +38,27 @@ function StarRating({ rating }: { rating: number }) {
 export default function ProfessionalCard({
   professional,
 }: ProfessionalCardProps) {
+  const firstTestimonial = professional.testimonials[0];
+
   return (
     <Card className="flex flex-col md:flex-row items-start w-full overflow-hidden transition-shadow hover:shadow-md">
       <div className="flex-shrink-0 p-6 flex flex-col items-center text-center md:w-1/4">
-        <Image
-          src={professional.photoUrl}
-          alt={professional.name}
-          width={80}
-          height={80}
-          className="rounded-full object-cover border-4 border-background shadow-sm"
-          data-ai-hint={professional.photoHint}
-        />
+        <Avatar className="w-20 h-20 border-4 border-background shadow-sm">
+             <AvatarImage
+                src={professional.photoUrl}
+                alt={professional.name}
+                data-ai-hint={professional.photoHint}
+                />
+            <AvatarFallback>{professional.name.charAt(0)}</AvatarFallback>
+        </Avatar>
+       
         <CardHeader className="p-0 pt-3">
           <CardTitle className="text-lg font-headline">
             {professional.name}
           </CardTitle>
         </CardHeader>
         <div className="mt-1">
-          <StarRating rating={professional.avgRating} />
+          <StarRating rating={professional.avgRating} count={professional.testimonials.length} />
         </div>
       </div>
       <div className="p-6 pt-0 md:pt-6 border-t md:border-t-0 md:border-l w-full md:w-3/4">
@@ -68,15 +71,23 @@ export default function ProfessionalCard({
               </Badge>
             ))}
           </div>
-          {professional.testimonials.length > 0 && (
-            <div>
-              <h4 className="font-semibold text-sm mb-2">Testimonios:</h4>
-              <TestimonialSlider testimonials={professional.testimonials} />
+          {firstTestimonial && (
+            <div className="relative mt-4">
+               <div className="flex items-start gap-3 text-sm text-muted-foreground italic">
+                <MessageSquare className="w-5 h-5 flex-shrink-0" />
+                <p>
+                    &quot;{firstTestimonial.text}&quot;
+                    <span className="font-semibold not-italic"> - {firstTestimonial.clientName}</span>
+                </p>
+               </div>
             </div>
           )}
         </CardContent>
-        <CardFooter className="p-0 pt-4">
+        <CardFooter className="p-0 pt-4 flex justify-between items-center">
           <Button>Contactar</Button>
+           {professional.testimonials.length > 1 && (
+                <Button variant="link" size="sm">Ver más</Button>
+           )}
         </CardFooter>
       </div>
     </Card>

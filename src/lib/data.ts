@@ -535,6 +535,71 @@ export const PROFESSIONALS: Professional[] = [
     categoryId: 23,
     testimonials: [],
   },
+  {
+    id: 7,
+    name: 'Alberto Gómez',
+    photoUrl: getImage('prof-1').imageUrl,
+    photoHint: getImage('prof-1').imageHint,
+    specialties: ['Paredes y Cimientos', 'Reformas'],
+    avgRating: 4.9,
+    categoryId: 13,
+    testimonials: [
+      {
+        id: 8,
+        clientName: 'Ricardo Diaz',
+        clientPhotoUrl: getImage('client-3').imageUrl,
+        clientPhotoHint: getImage('client-3').imageHint,
+        rating: 5,
+        text: 'Un trabajo de primera. Muy responsable y detallista.',
+      },
+    ],
+  },
+  {
+    id: 8,
+    name: 'Susana Giménez',
+    photoUrl: getImage('prof-2').imageUrl,
+    photoHint: getImage('prof-2').imageHint,
+    specialties: ['Losa y Viguetas', 'Encadenados'],
+    avgRating: 4.7,
+    categoryId: 13,
+    testimonials: [
+      {
+        id: 9,
+        clientName: 'Mirtha Legrand',
+        clientPhotoUrl: getImage('client-2').imageUrl,
+        clientPhotoHint: getImage('client-2').imageHint,
+        rating: 5,
+        text: 'Cumplió en tiempo y forma. Muy recomendable.',
+      },
+       {
+        id: 10,
+        clientName: 'Marcelo Tinelli',
+        clientPhotoUrl: getImage('client-4').imageUrl,
+        clientPhotoHint: getImage('client-4').imageHint,
+        rating: 4,
+        text: 'Buen trabajo en general.',
+      },
+    ],
+  },
+  {
+    id: 9,
+    name: 'Esteban Quito',
+    photoUrl: getImage('prof-3').imageUrl,
+    photoHint: getImage('prof-3').imageHint,
+    specialties: ['Colocación de Ladrillos', 'Revoque'],
+    avgRating: 4.2,
+    categoryId: 13,
+    testimonials: [
+      {
+        id: 11,
+        clientName: 'Elsa Pato',
+        clientPhotoUrl: getImage('client-1').imageUrl,
+        clientPhotoHint: getImage('client-1').imageHint,
+        rating: 4,
+        text: 'Quedó bien el revoque.',
+      },
+    ],
+  },
 ];
 
 export const BANNERS: Banner[] = [

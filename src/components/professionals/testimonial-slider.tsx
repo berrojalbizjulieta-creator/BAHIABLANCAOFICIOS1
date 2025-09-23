@@ -24,7 +24,7 @@ export default function TestimonialSlider({
         align: 'start',
         loop: testimonials.length > 1,
       }}
-      className="w-full"
+      className="w-full max-w-sm"
     >
       <CarouselContent className="-ml-2">
         {testimonials.map((testimonial) => (
