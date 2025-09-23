@@ -43,21 +43,30 @@ export default function HeroSection() {
   }, []);
 
 
-  const fetchSuggestions = async (query: string) => {
+  const fetchData = async (query: string) => {
     setIsLoading(true);
 
     try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-      const data: SearchResult[] = await res.json();
-      setResults(data);
+      // Fetch both professionals and AI suggestions in parallel
+      const [profResults, suggResults] = await Promise.all([
+        fetch(`/api/search?q=${encodeURIComponent(query)}`),
+        fetch(`/api/sugerencia?q=${encodeURIComponent(query)}`)
+      ]);
+
+      const professionals: SearchResult[] = await profResults.json();
+      setResults(professionals);
       
-      // Extract unique categories for suggestions
-      const uniqueRubros = Array.from(new Set(data.map(p => p.rubro)));
-      setSuggestions(uniqueRubros.slice(0, 5)); // show max 5 suggestions
+      const aiSuggestions: { suggestedTrades: string[] } = await suggResults.json();
+
+      // Combine AI suggestions with unique categories from professional results
+      const professionalCategories = Array.from(new Set(professionals.map(p => p.rubro)));
+      const combinedSuggestions = Array.from(new Set([...(aiSuggestions.suggestedTrades || []), ...professionalCategories]));
+
+      setSuggestions(combinedSuggestions.slice(0, 5)); // show max 5 suggestions
 
       setIsDropdownOpen(true);
     } catch (e: any) {
-      console.error('Error fetching suggestions:', e);
+      console.error('Error fetching data:', e);
       setResults([]);
       setSuggestions([]);
       setIsDropdownOpen(true);
@@ -72,7 +81,7 @@ export default function HeroSection() {
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
-    if (value.trim().length < 2) {
+    if (value.trim().length < 3) {
       setResults([]);
       setSuggestions([]);
       setIsDropdownOpen(false);
@@ -80,7 +89,7 @@ export default function HeroSection() {
     }
 
     debounceRef.current = setTimeout(() => {
-        fetchSuggestions(value);
+        fetchData(value);
     }, 300);
   };
   
@@ -89,9 +98,7 @@ export default function HeroSection() {
     if (!searchValue) return;
     setIsDropdownOpen(false);
     
-    // Redirect to the category page based on the search term
-    const categorySlug = encodeURIComponent(searchValue.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-'));
-    router.push(`/servicios?search=${searchValue}`);
+    router.push(`/servicios?search=${encodeURIComponent(searchValue)}`);
   };
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -122,7 +129,7 @@ export default function HeroSection() {
             className="flex-1 text-black"
             autoComplete="off"
             onFocus={() => {
-              if (searchValue.length > 1) setIsDropdownOpen(true);
+              if (searchValue.length > 2) setIsDropdownOpen(true);
             }}
           />
           <Button
@@ -146,6 +153,7 @@ export default function HeroSection() {
                 
                 {!isLoading && suggestions.length > 0 && (
                    <>
+                    <li className="px-4 pt-3 pb-1 text-xs font-semibold text-muted-foreground uppercase">Sugerencias</li>
                     {suggestions.map((suggestion) => (
                       <li 
                         key={suggestion} 
@@ -159,7 +167,10 @@ export default function HeroSection() {
                   </>
                 )}
 
-                {!isLoading && results.length > 0 && results.map((r) => (
+                {!isLoading && results.length > 0 && (
+                  <>
+                  <li className="px-4 pt-3 pb-1 text-xs font-semibold text-muted-foreground uppercase">Profesionales</li>
+                  {results.map((r) => (
                     <li key={r.id}>
                         <Link href={`/profesional/${r.id}`} className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-muted" onClick={() => setIsDropdownOpen(false)}>
                             <Avatar>
@@ -176,9 +187,11 @@ export default function HeroSection() {
                             </div>
                         </Link>
                     </li>
-                ))}
+                  ))}
+                 </>
+                )}
 
-                {!isLoading && results.length === 0 && searchValue.length > 1 && (
+                {!isLoading && results.length === 0 && suggestions.length === 0 && searchValue.length > 2 && (
                     <li className="px-4 py-3 text-muted-foreground">No se encontraron resultados para "{searchValue}".</li>
                 )}
               </motion.ul>
