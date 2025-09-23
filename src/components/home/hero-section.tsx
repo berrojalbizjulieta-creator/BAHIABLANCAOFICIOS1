@@ -7,8 +7,6 @@ import Image from 'next/image';
 import { placeholderImages } from '@/lib/placeholder-images';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { runFlow } from '@genkit-ai/next/client';
-import { suggestTradesFromPrompt } from '@/ai/flows/suggest-trades-from-prompt';
 import { Card, CardContent } from '../ui/card';
 
 const heroImage = placeholderImages.find(
@@ -24,8 +22,6 @@ export default function HeroSection() {
   const router = useRouter();
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
-  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
-
   useEffect(() => {
     if (prompt.length < 3) {
       setSuggestions([]);
@@ -38,14 +34,19 @@ export default function HeroSection() {
     setShowSuggestions(true);
     setError('');
 
-    if (debounceTimeout.current) {
-      clearTimeout(debounceTimeout.current);
-    }
-
-    debounceTimeout.current = setTimeout(async () => {
+    const timeoutId = setTimeout(async () => {
       try {
-        const response = await runFlow(suggestTradesFromPrompt, { prompt });
-        setSuggestions(response.suggestedTrades || []);
+        const res = await fetch(`/api/sugerencia?q=${prompt}`);
+        if (!res.ok) {
+            throw new Error(`Server responded with ${res.status}`);
+        }
+        const data = await res.json();
+
+        if (data.error) {
+            throw new Error(data.error);
+        }
+
+        setSuggestions(data.suggestedTrades || []);
       } catch (e) {
         console.error('Error fetching suggestions:', e);
         setError('No se pudieron obtener sugerencias. Intenta de nuevo.');
@@ -55,12 +56,9 @@ export default function HeroSection() {
       }
     }, 500);
 
-    return () => {
-      if (debounceTimeout.current) {
-        clearTimeout(debounceTimeout.current);
-      }
-    };
+    return () => clearTimeout(timeoutId);
   }, [prompt]);
+
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
