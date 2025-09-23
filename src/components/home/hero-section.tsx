@@ -30,6 +30,8 @@ export default function HeroSection() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+
 
   const plugin = useRef(
     Autoplay({ delay: 5000, stopOnInteraction: false, stopOnMouseEnter: true })
@@ -38,37 +40,53 @@ export default function HeroSection() {
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (prompt.length > 2) {
-      setIsSuggestionsLoading(true);
-      if (debounceTimeout.current) {
-        clearTimeout(debounceTimeout.current);
-      }
-      debounceTimeout.current = setTimeout(async () => {
-        try {
-          const response = await suggestTradesFromPrompt({ prompt });
-          setSuggestions(response.suggestedTrades);
-        } catch (error) {
-          console.error('Error fetching suggestions:', error);
-          toast({
-            title: 'Error',
-            description: 'No se pudieron cargar las sugerencias.',
-            variant: 'destructive',
-          });
-        } finally {
-          setIsSuggestionsLoading(false);
+    const fetchSuggestions = async () => {
+      if (prompt.length > 2) {
+        setIsSuggestionsLoading(true);
+        if (debounceTimeout.current) {
+          clearTimeout(debounceTimeout.current);
         }
-      }, 500); // 500ms debounce
-    } else {
-      setSuggestions([]);
-      setIsSuggestionsLoading(false);
-    }
-
+        debounceTimeout.current = setTimeout(async () => {
+          try {
+            const response = await suggestTradesFromPrompt({ prompt });
+            setSuggestions(response.suggestedTrades);
+          } catch (error) {
+            console.error('Error fetching suggestions:', error);
+            setSuggestions([]);
+             toast({
+              title: 'Error',
+              description: 'No se pudieron cargar las sugerencias.',
+              variant: 'destructive',
+            });
+          } finally {
+            setIsSuggestionsLoading(false);
+          }
+        }, 500); // 500ms debounce
+      } else {
+        setSuggestions([]);
+      }
+    };
+    fetchSuggestions();
+    
     return () => {
       if (debounceTimeout.current) {
         clearTimeout(debounceTimeout.current);
       }
     };
   }, [prompt, toast]);
+
+    useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,7 +135,7 @@ export default function HeroSection() {
             Desde plomeros hasta electricistas, conecta con los mejores oficios
             de Bahía Blanca.
           </p>
-          <div className="relative w-full max-w-xl mx-auto">
+          <div className="relative w-full max-w-xl mx-auto" ref={searchContainerRef}>
             <form
               onSubmit={handleSearch}
               className="mt-8 flex w-full items-center space-x-2 rounded-full bg-white/90 backdrop-blur-sm p-2 shadow-lg"
@@ -127,7 +145,6 @@ export default function HeroSection() {
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 onFocus={() => setShowSuggestions(true)}
-                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 placeholder="¿Qué servicio estás buscando? Ej: 'arreglar una canilla'"
                 className="flex-1 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-base text-gray-800 placeholder:text-gray-500"
               />
@@ -164,7 +181,7 @@ export default function HeroSection() {
                 <span className="sr-only">Buscar</span>
               </Button>
             </form>
-            {showSuggestions && (prompt.length > 2) && (
+            {showSuggestions && prompt.length > 2 && (
               <Card className="absolute top-full mt-2 w-full text-left shadow-lg z-20">
                 <CardContent className="p-2">
                   {isSuggestionsLoading && (
@@ -186,7 +203,7 @@ export default function HeroSection() {
                       ))}
                     </ul>
                   )}
-                  {!isSuggestionsLoading && suggestions.length === 0 && prompt.length > 2 && (
+                  {!isSuggestionsLoading && suggestions.length === 0 && (
                      <div className="px-4 py-2 text-sm text-muted-foreground">
                       No se encontraron sugerencias.
                     </div>
