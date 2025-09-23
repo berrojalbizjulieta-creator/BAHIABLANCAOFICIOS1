@@ -19,6 +19,7 @@ export interface Professional {
   categoryId: number;
   testimonials: Testimonial[];
   isVerified?: boolean;
+  priceInfo?: string;
 }
 
 export interface Category {

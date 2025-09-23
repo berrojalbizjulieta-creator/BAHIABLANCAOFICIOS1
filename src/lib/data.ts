@@ -422,6 +422,7 @@ export const PROFESSIONALS: Professional[] = [
     specialties: ['Reparación de Fugas', 'Instalación de Grifería'],
     avgRating: 4.8,
     categoryId: 11,
+    priceInfo: 'Hora de trabajo desde $2500 ARS. Presupuestos sin cargo.',
     testimonials: [
       {
         id: 1,
@@ -449,6 +450,7 @@ export const PROFESSIONALS: Professional[] = [
     specialties: ['Instalaciones Eléctricas', 'Tableros'],
     avgRating: 5.0,
     categoryId: 14,
+    priceInfo: 'Consultar por instalación. Revisiones desde $2000 ARS.',
     testimonials: [
       {
         id: 3,
@@ -476,6 +478,7 @@ export const PROFESSIONALS: Professional[] = [
     specialties: ['Pintura de Interiores', 'Empapelado'],
     avgRating: 4.5,
     categoryId: 17,
+    priceInfo: 'Presupuestos a medida según m2. Incluye materiales.',
     testimonials: [
       {
         id: 5,
@@ -543,6 +546,7 @@ export const PROFESSIONALS: Professional[] = [
     specialties: ['Paredes y Cimientos', 'Reformas'],
     avgRating: 4.9,
     categoryId: 13,
+    priceInfo: 'Construcción desde $5000/m2. Consulte por reformas.',
     testimonials: [
       {
         id: 8,
@@ -562,6 +566,7 @@ export const PROFESSIONALS: Professional[] = [
     specialties: ['Losa y Viguetas', 'Encadenados'],
     avgRating: 4.7,
     categoryId: 13,
+    priceInfo: 'Presupuestos a medida.',
     testimonials: [
       {
         id: 9,
@@ -589,6 +594,7 @@ export const PROFESSIONALS: Professional[] = [
     specialties: ['Colocación de Ladrillos', 'Revoque'],
     avgRating: 4.2,
     categoryId: 13,
+    priceInfo: 'Revoque fino y grueso. Consulte precios.',
     testimonials: [
       {
         id: 11,

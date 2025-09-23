@@ -1,6 +1,6 @@
 import Image from 'next/image';
-import { Star, MessageSquare } from 'lucide-react';
-
+import Link from 'next/link';
+import { Star, MessageSquare, DollarSign } from 'lucide-react';
 import type { Professional } from '@/lib/types';
 import {
   Card,
@@ -12,6 +12,11 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 interface ProfessionalCardProps {
   professional: Professional;
@@ -84,9 +89,25 @@ export default function ProfessionalCard({
           )}
         </CardContent>
         <CardFooter className="p-0 pt-4 flex justify-between items-center">
-          <Button>Contactar</Button>
-           {professional.testimonials.length > 1 && (
-                <Button variant="link" size="sm">Ver más</Button>
+            <div className="flex items-center gap-4">
+                 <Button>Contactar</Button>
+                 {professional.priceInfo && (
+                 <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant="outline" size="sm">
+                            <DollarSign className="mr-2 h-4 w-4" /> Ver Precios
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-60 text-sm">
+                        <p>{professional.priceInfo}</p>
+                    </PopoverContent>
+                </Popover>
+                 )}
+            </div>
+           {professional.testimonials.length > 0 && (
+                <Button variant="link" size="sm" asChild>
+                    <Link href={`/servicios/profil/${professional.id}`} target="_blank">Ver más</Link>
+                </Button>
            )}
         </CardFooter>
       </div>
