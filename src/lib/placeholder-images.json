@@ -7,30 +7,6 @@
       "imageHint": "parque bahia blanca"
     },
     {
-      "id": "essential-services",
-      "description": "Close-up of the siding on the corner of a house.",
-      "imageUrl": "https://images.unsplash.com/photo-1600585152225-3579fe9d9406?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "imageHint": "house exterior"
-    },
-    {
-      "id": "outdoor-upkeep",
-      "description": "A well-maintained front yard of a house with a large tree.",
-      "imageUrl": "https://images.unsplash.com/photo-1588392382834-a891154bca4d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "imageHint": "front yard"
-    },
-    {
-      "id": "healthy-at-home",
-      "description": "A child playing in a clean and tidy living room.",
-      "imageUrl": "https://images.unsplash.com/photo-1540518614846-7eded433c457?q=80&w=2057&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "imageHint": "clean living room"
-    },
-    {
-      "id": "mp-qr-code",
-      "description": "A sample QR code for Mercado Pago.",
-      "imageUrl": "/mp-qr.png",
-      "imageHint": "qr code"
-    },
-    {
       "id": "app-promo-mockup",
       "description": "A mockup of a phone showing a services app interface, with a slight angle.",
       "imageUrl": "/phone-mockup.png",
@@ -41,6 +17,12 @@
       "description": "A clean white tile wall background.",
       "imageUrl": "https://images.unsplash.com/photo-1581788788934-9e32ce7b439c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "imageHint": "white tiles"
+    },
+    {
+      "id": "mp-qr-code",
+      "description": "A sample QR code for Mercado Pago.",
+      "imageUrl": "/mp-qr.png",
+      "imageHint": "qr code"
     },
     {
       "id": "prof-1",
@@ -65,18 +47,6 @@
       "description": "Portrait of a male carpenter.",
       "imageUrl": "https://images.unsplash.com/photo-1607031542107-f6f46b5d54e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODI4MTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "man portrait"
-    },
-    {
-      "id": "prof-5",
-      "description": "Portrait of a technician for air conditioning.",
-      "imageUrl": "https://images.unsplash.com/photo-1732613004598-58da44438fe1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0ZWNobmljaWFuJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzU4NTk4MDUzfDA&ixlibrb-4.1.0&q=80&w=1080",
-      "imageHint": "technician portrait"
-    },
-    {
-      "id": "prof-6",
-      "description": "Portrait of a female locksmith.",
-      "imageUrl": "https://images.unsplash.com/photo-1593351799227-75df2026356b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc1ODU1NDA2MXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "woman portrait"
     },
     {
       "id": "client-1",

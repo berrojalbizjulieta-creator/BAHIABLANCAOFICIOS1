@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
@@ -7,8 +7,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '../ui/card';
+import { suggestTradesFromPrompt } from '@/ai/flows/suggest-trades-from-prompt';
+import { placeholderImages } from '@/lib/placeholder-images';
 
-let debounceTimeout: NodeJS.Timeout;
 
 export default function HeroSection() {
   const [prompt, setPrompt] = useState('');
@@ -16,15 +17,16 @@ export default function HeroSection() {
   const [isSuggestionsLoading, setIsSuggestionsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
-
-  const heroImage = "https://upload.wikimedia.org/wikipedia/commons/2/20/P%C3%B3rtico_del_Parque_de_Mayo%2C_Bah%C3%ADa_Blanca.JPG"; // ruta en /public/images
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
+  
+  const heroImage = placeholderImages.find(p => p.id === 'hero-background-parque-de-mayo');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPrompt = e.target.value;
     setPrompt(newPrompt);
 
-    if (debounceTimeout) {
-      clearTimeout(debounceTimeout);
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
     }
 
     if (newPrompt.length < 3) {
@@ -36,14 +38,10 @@ export default function HeroSection() {
     setIsSuggestionsLoading(true);
     setError('');
 
-    debounceTimeout = setTimeout(async () => {
+    debounceTimeout.current = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/sugerencia?q=${newPrompt}`);
-        if (!res.ok) {
-          throw new Error(`Server responded with ${res.status}`);
-        }
-        const data = await res.json();
-        setSuggestions(data.suggestions || []);
+        const response = await suggestTradesFromPrompt({ prompt: newPrompt });
+        setSuggestions(response.suggestedTrades || []);
       } catch (e: any) {
         console.error('Error fetching suggestions:', e);
         setError('No se pudieron obtener sugerencias. Intenta de nuevo.');
@@ -70,11 +68,12 @@ export default function HeroSection() {
     <section className="relative w-full py-20 md:py-32 lg:py-40 overflow-hidden">
       {heroImage && (
         <Image
-          src={heroImage}
-          alt="Parque de Mayo"
+          src={heroImage.imageUrl}
+          alt={heroImage.description}
           fill
           style={{ objectFit: 'cover' }}
           priority
+          data-ai-hint={heroImage.imageHint}
         />
       )}
       <div className="absolute inset-0 bg-black/60"></div>

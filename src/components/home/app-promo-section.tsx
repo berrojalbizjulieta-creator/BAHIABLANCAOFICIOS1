@@ -2,21 +2,22 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { placeholderImages } from '@/lib/placeholder-images';
 
 export default function AppPromoSection() {
 
-  const fondoBaldosas = "https://images.unsplash.com/photo-1581788788934-9e32ce7b439c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-  const celularImg = "/phone-mockup.png";
+  const fondoBaldosas = placeholderImages.find(p => p.id === 'white-tile-background');
+  const celularImg = placeholderImages.find(p => p.id === 'app-promo-mockup');
 
   return (
     <section className="relative py-20 md:py-24 bg-muted/30 overflow-hidden">
-      <Image
-          src={fondoBaldosas}
-          alt="Fondo de baldosas blancas"
+      {fondoBaldosas && <Image
+          src={fondoBaldosas.imageUrl}
+          alt={fondoBaldosas.description}
           fill
           style={{ objectFit: "cover" }}
-          data-ai-hint="white tiles"
-        />
+          data-ai-hint={fondoBaldosas.imageHint}
+        />}
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="max-w-md text-left">
@@ -36,14 +37,14 @@ export default function AppPromoSection() {
                 </div>
             </div>
              <div className="flex justify-center md:justify-end">
-                <Image 
-                    src={celularImg}
-                    alt="Celular con app"
+                {celularImg && <Image 
+                    src={celularImg.imageUrl}
+                    alt={celularImg.description}
                     width={300}
                     height={600}
                     className="object-contain"
-                    data-ai-hint="phone app"
-                />
+                    data-ai-hint={celularImg.imageHint}
+                />}
             </div>
         </div>
       </div>
