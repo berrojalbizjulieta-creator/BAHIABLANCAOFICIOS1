@@ -75,19 +75,19 @@
     {
       "id": "client-1",
       "description": "Happy client.",
-      "imageUrl": "https://images.unsplash.com/photo-1522529599102-193c0d76b5b6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxwZXJzb24lMjBzbWlsaW5nfGVufDB8fHx8MTc1ODU4MzY2Nnww&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1522529599102-193c0d76b5b6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxwZXJzb24lMjBzbWlsaW5nfGVufDB8fHx8MTc1ODU4MzY2Nnww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "person smiling"
     },
     {
       "id": "client-2",
       "description": "Satisfied customer.",
-      "imageUrl": "https://images.unsplash.com/photo-1711645169736-53327e726205?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx3b21hbiUyMHNtaWxpbmd8ZW58MHx8fHwxNzU4NTUwODkzfDA&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1711645169736-53327e726205?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx3b21hbiUyMHNtaWxpbmd8ZW58MHx8fHwxNzU4NTUwODkzfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "woman smiling"
     },
     {
       "id": "client-3",
       "description": "Pleased client portrait.",
-      "imageUrl": "https://images.unsplash.com/photo-1639747280804-dd2d6b3d88ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYW4lMjBzbWlsaW5nfGVufDB8fHx8MTc1ODU4NDAyMHww&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1639747280804-dd2d6b3d88ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYW4lMjBzbWlsaW5nfGVufDB8fHx8MTc1ODU4NDAyMHww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "man smiling"
     },
     {
@@ -99,31 +99,31 @@
     {
       "id": "work-1",
       "description": "A newly renovated modern kitchen.",
-      "imageUrl": "https://images.unsplash.com/photo-1609280069678-ab9ef26a0b05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxyZW5vdmF0ZWQlMjBraXRjaGVufGVufDB8fHx8MTc1ODYwMTYyMXww&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1609280069678-ab9ef26a0b05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxyZW5vdmF0ZWQlMjBraXRjaGVufGVufDB8fHx8MTc1ODYwMTYyMXww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "renovated kitchen"
     },
     {
       "id": "work-2",
       "description": "A freshly painted living room wall.",
-      "imageUrl": "https://images.unsplash.com/photo-1517111109658-0780925e6178?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwYWludGVkJTIwd2FsbHxlbnwwfHx8fDE3NTg2MDE2MjF8MA&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1517111109658-0780925e6178?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwYWludGVkJTIwd2FsbHxlbnwwfHx8fDE3NTg2MDE2MjF8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "painted wall"
     },
     {
       "id": "work-3",
       "description": "A plumber installing a new sink.",
-      "imageUrl": "https://images.unsplash.com/photo-1751486403890-793880b12adb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwbHVtYmVyJTIwaW5zdGFsbGF0aW9ufGVufDB8fHx8MTc1ODYwMTYyMXww&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1751486403890-793880b12adb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwbHVtYmVyJTIwaW5zdGFsbGF0aW9ufGVufDB8fHx8MTc1ODYwMTYyMXww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "plumber installation"
     },
     {
       "id": "work-4",
       "description": "Custom wooden shelves built into a wall.",
-      "imageUrl": "https://images.unsplash.com/photo-1624993116516-21c8416a0052?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjdXN0b20lMjBzaGVsdmVzfGVufDB8fHx8MTc1ODYwMTYyMXww&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1624993116516-21c8416a0052?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjdXN0b20lMjBzaGVsdmVzfGVufDB8fHx8MTc1ODYwMTYyMXww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "custom shelves"
     },
     {
       "id": "work-5",
       "description": "An electrician wiring a new light fixture.",
-      "imageUrl": "https://images.unsplash.com/photo-1597502310092-31cdaa35b46d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxlbGVjdHJpY2lhbiUyMHdpcmluZ3xlbnwwfHx8fDE3NTg1OTEyNTF8MA&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1597502310092-31cdaa35b46d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxlbGVjdHJpY2lhbiUyMHdpcmluZ3xlbnwwfHx8fDE3NTg1OTEyNTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "electrician wiring"
     },
     {
