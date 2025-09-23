@@ -117,7 +117,7 @@ export default function ClientProfilePage() {
         <div className="mt-8">
             <p className="text-muted-foreground mb-4">¿Listo para solucionar ese problema en casa?</p>
             <Button asChild size="lg" className="h-14 text-lg w-full shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <Link href="/servicios">
+                <Link href="/">
                     <Search className="mr-3 h-6 w-6" />
                     Encontrar un Profesional Ahora
                 </Link>
