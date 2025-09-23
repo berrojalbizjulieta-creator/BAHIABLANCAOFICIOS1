@@ -17,7 +17,7 @@ import { placeholderImages } from '@/lib/placeholder-images';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Separator } from '../ui/separator';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '../ui/card';
 import { Check, Sparkles, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
