@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   Shield,
   PlusCircle,
+  DollarSign,
 } from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {
@@ -101,6 +102,7 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(true);
   const [professional, setProfessional] = useState<Professional | null>(initialProfessionalData);
   const [paymentMethods, setPaymentMethods] = useState('');
+  const [price, setPrice] = useState({ type: 'Por Hora', amount: '', details: '' });
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -118,7 +120,7 @@ export default function ProfilePage() {
 
   const handleSave = () => {
     // Here you would typically save the data to your backend
-    console.log("Saving data:", professional, paymentMethods);
+    console.log("Saving data:", professional, paymentMethods, price);
     toast({
         title: "Perfil Actualizado",
         description: "Tus cambios han sido guardados con éxito."
@@ -442,11 +444,62 @@ export default function ProfilePage() {
                 )}
               </CardContent>
             </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Precios</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {isEditing ? (
+                  <div className="space-y-4">
+                     <Tabs 
+                        value={price.type} 
+                        onValueChange={(value) => setPrice(prev => ({ ...prev, type: value }))} 
+                        className="w-full"
+                    >
+                      <TabsList className="grid w-full grid-cols-3">
+                        <TabsTrigger value="Por Hora">Por Hora</TabsTrigger>
+                        <TabsTrigger value="Por Trabajo">Por Trabajo</TabsTrigger>
+                        <TabsTrigger value="Por Mes">Por Mes</TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                    <div className="relative">
+                       <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                       <Input 
+                            type="number"
+                            placeholder="Monto"
+                            className="pl-8"
+                            value={price.amount}
+                            onChange={(e) => setPrice(prev => ({ ...prev, amount: e.target.value }))}
+                        />
+                    </div>
+                     <Textarea
+                        value={price.details}
+                        onChange={(e) => setPrice(prev => ({ ...prev, details: e.target.value }))}
+                        placeholder="Añade detalles sobre tus precios, por ejemplo: 'El precio por hora no incluye materiales.' o 'Presupuestos sin cargo.'"
+                        className="min-h-[80px]"
+                     />
+                  </div>
+                ) : (
+                  <div className="space-y-2 text-sm">
+                    {price.amount ? (
+                        <>
+                            <p className="font-semibold text-lg flex items-center">
+                                ${price.amount}
+                                <span className="text-sm font-normal text-muted-foreground ml-2">({price.type})</span>
+                            </p>
+                            <p className="text-muted-foreground">{price.details || 'Contactar para más detalles.'}</p>
+                        </>
+                    ) : (
+                        <p className="text-muted-foreground">Aún no se ha especificado un precio.</p>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-    
