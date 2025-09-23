@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import Image from 'next/image';
 import {
   Star,
@@ -15,6 +15,7 @@ import {
   Edit,
   Save,
   X,
+  Upload,
 } from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {
@@ -64,58 +65,14 @@ function StarRating({
   );
 }
 
-function ContactForm() {
-  const {toast} = useToast();
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast({
-      title: 'Mensaje enviado',
-      description: 'Tu solicitud de presupuesto ha sido enviada con éxito.',
-    });
-  };
-  return (
-    <Card className="shadow-lg">
-      <CardHeader>
-        <CardTitle>$60/hour</CardTitle>
-        <CardDescription>
-          Tarifa base.{' '}
-          <Button variant="link" className="p-0 h-auto">
-            Ver detalles
-          </Button>
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="date">Fecha</Label>
-            <Input id="date" type="date" />
-          </div>
-          <div>
-            <Label htmlFor="message">Describe tu proyecto</Label>
-            <Textarea
-              id="message"
-              placeholder="Necesito instalar una nueva canilla en mi cocina..."
-            />
-          </div>
-          <Button type="submit" className="w-full">
-            Solicitar Presupuesto
-          </Button>
-          <p className="text-xs text-muted-foreground text-center">
-            <MessageSquare className="inline-block h-3 w-3 mr-1" />
-            Responde en aproximadamente 10 minutos.
-          </p>
-        </form>
-      </CardContent>
-    </Card>
-  );
-}
-
 const initialProfessionalData = PROFESSIONALS.find(p => p.id === 2);
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [professional, setProfessional] = useState(initialProfessionalData);
+  const [paymentMethods, setPaymentMethods] = useState('Este profesional acepta pagos en Efectivo, Cheque, Tarjeta de Crédito y Transferencia.');
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!professional) {
     return <div>Profesional no encontrado.</div>;
@@ -131,12 +88,29 @@ export default function ProfilePage() {
 
   const handleSave = () => {
     // Here you would typically save the data to your backend
-    console.log("Saving data:", professional);
+    console.log("Saving data:", professional, paymentMethods);
     toast({
         title: "Perfil Actualizado",
         description: "Tus cambios han sido guardados con éxito."
     })
     setIsEditing(false);
+  }
+
+  const handleAvatarClick = () => {
+      if(isEditing && fileInputRef.current) {
+          fileInputRef.current.click();
+      }
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file && professional) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+              setProfessional({...professional, photoUrl: reader.result as string});
+          }
+          reader.readAsDataURL(file);
+      }
   }
 
 
@@ -149,15 +123,32 @@ export default function ProfilePage() {
             <Card className="overflow-hidden shadow-lg">
               <CardContent className="p-6">
                 <div className="flex flex-col sm:flex-row items-start gap-6">
-                  <Avatar className="w-24 h-24 border-4 border-background shadow-md">
-                    <AvatarImage
-                      src={professional.photoUrl}
-                      alt={professional.name}
+                  <div className="relative group">
+                    <Avatar 
+                        className={`w-24 h-24 border-4 border-background shadow-md ${isEditing ? 'cursor-pointer' : ''}`}
+                        onClick={handleAvatarClick}
+                    >
+                        <AvatarImage
+                        src={professional.photoUrl}
+                        alt={professional.name}
+                        />
+                        <AvatarFallback>
+                        {professional.name.charAt(0)}
+                        </AvatarFallback>
+                    </Avatar>
+                     {isEditing && (
+                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity" onClick={handleAvatarClick}>
+                            <Upload className="h-8 w-8 text-white"/>
+                        </div>
+                    )}
+                    <input 
+                        type="file" 
+                        ref={fileInputRef} 
+                        onChange={handleFileChange}
+                        className="hidden" 
+                        accept="image/*"
                     />
-                    <AvatarFallback>
-                      {professional.name.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
+                  </div>
                   <div className="flex-1">
                     <h1 className="text-3xl font-bold font-headline">
                       {professional.name}
@@ -314,16 +305,23 @@ export default function ProfilePage() {
 
           {/* Right Sidebar */}
           <div className="space-y-8">
-            <ContactForm />
             <Card>
               <CardHeader>
                 <CardTitle>Métodos de Pago</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Este profesional acepta pagos en Efectivo, Cheque, Tarjeta de
-                  Crédito y Transferencia.
-                </p>
+                {isEditing ? (
+                  <Textarea
+                    value={paymentMethods}
+                    onChange={(e) => setPaymentMethods(e.target.value)}
+                    className="min-h-[100px]"
+                    placeholder="Describe los métodos de pago que aceptas..."
+                  />
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    {paymentMethods}
+                  </p>
+                )}
               </CardContent>
             </Card>
           </div>
