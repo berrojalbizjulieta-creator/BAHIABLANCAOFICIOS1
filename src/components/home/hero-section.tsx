@@ -62,7 +62,7 @@ export default function HeroSection() {
 
       <div className="relative z-10 container mx-auto text-center px-4">
         <h1 className="text-4xl font-bold font-headline mb-4">
-          Encontrá el especialista que te salva el día
+          Bahía Blanca, acá esta la persona que necesitas hoy!
         </h1>
         <p className="mb-6 text-lg">
           Busca, elegí y resolvé lo que necesitas sin vueltas
