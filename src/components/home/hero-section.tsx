@@ -61,10 +61,10 @@ export default function HeroSection() {
 
       <div className="relative z-10 container mx-auto text-center px-4">
         <h1 className="text-4xl font-bold font-headline mb-4">
-          Encontrá profesionales cerca tuyo
+          Encontrá el especialista que te salva el día
         </h1>
         <p className="mb-6 text-lg">
-          Usá nuestro buscador para encontrar el servicio que necesitás.
+          Busca, elegí y resolvé lo que necesitas sin vueltas
         </p>
 
         <form onSubmit={handleSearch} className="flex justify-center gap-2 max-w-xl mx-auto">
