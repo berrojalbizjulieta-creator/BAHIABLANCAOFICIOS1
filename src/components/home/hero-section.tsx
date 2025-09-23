@@ -1,11 +1,21 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { suggestTradesFromPrompt } from '@/ai/flows/suggest-trades-from-prompt';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
+import Image from 'next/image';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from '@/components/ui/carousel';
+import Autoplay from "embla-carousel-autoplay";
+
+const heroImages = PlaceHolderImages.filter(img => img.id.startsWith('promo-banner-'));
 
 export default function HeroSection() {
   const [prompt, setPrompt] = useState('');
@@ -36,27 +46,51 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative w-full py-20 md:py-32 lg:py-40 bg-cover bg-center bg-no-repeat">
-       <div className="absolute inset-0 bg-background/80 backdrop-blur-sm"></div>
+    <section className="relative w-full py-20 md:py-32 lg:py-40 overflow-hidden">
+      <Carousel 
+        opts={{ loop: true }}
+        plugins={[
+          Autoplay({
+            delay: 5000,
+          }),
+        ]}
+        className="absolute inset-0 w-full h-full"
+      >
+        <CarouselContent className="h-full" data-embla-carousel-fade="true">
+          {heroImages.map((image) => (
+            <CarouselItem key={image.id} className="h-full">
+              <Image
+                src={image.imageUrl}
+                alt={image.description}
+                fill
+                className="object-cover"
+                data-ai-hint={image.imageHint}
+                priority
+              />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
+      <div className="absolute inset-0 bg-black/60"></div>
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="text-4xl font-bold tracking-tighter text-foreground sm:text-5xl md:text-6xl font-headline">
+          <h1 className="text-4xl font-bold tracking-tighter text-white sm:text-5xl md:text-6xl font-headline">
             Encuentra al profesional que necesitas
           </h1>
-          <p className="mt-4 text-lg text-muted-foreground md:text-xl">
+          <p className="mt-4 text-lg text-gray-200 md:text-xl">
             Desde plomeros hasta electricistas, conecta con los mejores oficios
             de Bahía Blanca.
           </p>
           <form
             onSubmit={handleSearch}
-            className="mt-8 flex w-full max-w-xl mx-auto items-center space-x-2 rounded-full bg-card p-2 shadow-lg"
+            className="mt-8 flex w-full max-w-xl mx-auto items-center space-x-2 rounded-full bg-white/90 backdrop-blur-sm p-2 shadow-lg"
           >
             <Input
               type="text"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder="¿Qué servicio estás buscando? Ej: 'arreglar una canilla'"
-              className="flex-1 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-base"
+              className="flex-1 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-base text-gray-800 placeholder:text-gray-500"
             />
             <Button
               type="submit"
@@ -76,11 +110,11 @@ export default function HeroSection() {
             </Button>
           </form>
           <div className="mt-6 flex flex-wrap justify-center gap-2">
-            <span className="text-sm text-muted-foreground font-medium mr-2">
+            <span className="text-sm text-white/80 font-medium mr-2">
               Sugerencias:
             </span>
             {suggestions.map((trade) => (
-              <Badge key={trade} variant="secondary" className="cursor-pointer hover:bg-accent transition-colors">
+              <Badge key={trade} variant="secondary" className="cursor-pointer bg-white/20 text-white hover:bg-white/30 transition-colors">
                 {trade}
               </Badge>
             ))}
