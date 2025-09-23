@@ -1,36 +1,21 @@
 'use client';
 
-import { useState } from 'react';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import { CATEGORIES } from '@/lib/data';
-import type { Category } from '@/lib/types';
 import Link from 'next/link';
 
-const TOP_CATEGORIES = [
-  'Plomería',
-  'Fletes y Transportes Pequeños',
-  'Electricidad',
-  'Pintura',
-  'Albañilería',
-  'Aire Acondicionado y Calefacción'
-];
-
 export default function CategoriesGrid() {
-
-  const topCategories = CATEGORIES.filter(c => TOP_CATEGORIES.includes(c.name));
-
   return (
     <section id="services" className="py-12 md:py-20">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">
-            Los servicios más solicitados
+            Todos Nuestros Servicios
           </h2>
           <p className="mt-3 max-w-2xl mx-auto text-muted-foreground md:text-lg">
             Encuentra al profesional ideal para cada tipo de trabajo.
@@ -38,7 +23,7 @@ export default function CategoriesGrid() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
-          {topCategories.map((category) => (
+          {CATEGORIES.map((category) => (
              <Link
               key={category.id}
               href={`/servicios/${encodeURIComponent(category.name.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-'))}`}
@@ -63,11 +48,6 @@ export default function CategoriesGrid() {
               </Card>
             </Link>
           ))}
-        </div>
-         <div className="mt-6 text-right">
-            <Link href="/servicios" className="text-sm font-medium text-primary hover:underline">
-                Ver todos
-            </Link>
         </div>
       </div>
     </section>
