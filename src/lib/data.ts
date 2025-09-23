@@ -21,6 +21,13 @@ import {
   ShieldCheck,
   Briefcase,
   Brush,
+  KeyRound,
+  Dog,
+  Camera,
+  BookOpen,
+  Dumbbell,
+  GlassWater,
+  Fan,
 } from 'lucide-react';
 import type { Category, Professional, Banner, Client } from '@/lib/types';
 import { placeholderImages } from './placeholder-images';
@@ -42,39 +49,39 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: 2,
-    name: 'Jardinería y Paisajismo',
+    name: 'Jardinería',
     icon: Flower,
-    description: 'Cuidado y diseño de espacios verdes, desde jardines hasta parques.',
+    description: 'Cortar pasto, plantar, cuidar el jardín.',
   },
   {
     id: 3,
-    name: 'Limpieza y Mantenimiento',
+    name: 'Limpieza de casas',
     icon: Sparkles,
-    description: 'Servicios de limpieza profunda para hogares, oficinas y más.',
+    description: 'Limpieza profunda, pulido de pisos.',
   },
   {
     id: 4,
-    name: 'Transporte y Logística',
+    name: 'Mudanzas y fletes',
     icon: Truck,
-    description: 'Soluciones de mudanza, fletes y transporte de mercaderías.',
+    description: 'Llevar muebles y cajas de acá para allá.',
   },
   {
     id: 5,
-    name: 'Reparaciones y Servicios Técnicos',
+    name: 'Reparaciones varias',
     icon: Wrench,
-    description: 'Técnicos especializados en la reparación de todo tipo de equipos.',
+    description: 'Chapuzas, arreglos de todo tipo.',
   },
   {
     id: 6,
-    name: 'Eventos y Entretenimiento',
+    name: 'Eventos y fiestas',
     icon: PartyPopper,
-    description: 'Todo lo que necesitas para que tu evento sea un éxito.',
+    description: 'DJs, shows, catering para cumpleaños.',
   },
   {
     id: 7,
-    name: 'Educación y Clases',
-    icon: GraduationCap,
-    description: 'Profesores y tutores para todas las edades y niveles.',
+    name: 'Clases particulares',
+    icon: BookOpen,
+    description: 'Música, idiomas, apoyo escolar.',
   },
   {
     id: 8,
@@ -84,9 +91,9 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: 9,
-    name: 'Arte, Diseño y Comunicación',
-    icon: Palette,
-    description: 'Creativos para diseño gráfico, web, fotografía y más.',
+    name: 'Fotografía y video',
+    icon: Camera,
+    description: 'Fotos para eventos, productos o redes.',
   },
   {
     id: 10,
@@ -96,45 +103,45 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: 11,
-    name: 'Plomería',
+    name: 'Plomería y caños',
     icon: Wrench,
-    description: 'Soluciones para tuberías, grifos y filtraciones.',
+    description: 'Arreglar canillas, caños y desagües.',
   },
   {
     id: 12,
     name: 'Gasista',
     icon: Wind,
-    description: 'Instalación y reparación de redes de gas.',
+    description: 'Instalación y arreglo de gas, calderas, cocinas.',
   },
   {
     id: 13,
-    name: 'Albañilería',
+    name: 'Albañilería y remodelaciones',
     icon: Hammer,
-    description: 'Construcción y reformas.',
+    description: 'Obras, arreglos, refacciones.',
   },
   {
     id: 14,
-    name: 'Electricidad',
+    name: 'Electricista',
     icon: Plug,
-    description: 'Instalaciones y reparaciones eléctricas.',
+    description: 'Enchufes, cables, arreglos eléctricos.',
   },
   {
     id: 15,
     name: 'Carpintería',
     icon: Hammer,
-    description: 'Muebles, reparaciones en madera y metal.',
+    description: 'Muebles a medida, puertas, madera.',
   },
   {
     id: 16,
-    name: 'Herrería',
-    icon: Hammer,
-    description: 'Trabajos en hierro y soldaduras.',
+    name: 'Herrería y seguridad',
+    icon: ShieldCheck,
+    description: 'Rejas, portones, trabajos en hierro.',
   },
   {
     id: 17,
-    name: 'Pintura',
+    name: 'Pintores',
     icon: Paintbrush,
-    description: 'Servicios de pintura para interiores y exteriores.',
+    description: 'Pintura de paredes, revoques y techos.',
   },
   {
     id: 18,
@@ -168,9 +175,9 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: 23,
-    name: 'Aire Acondicionado y Calefacción',
-    icon: Wind,
-    description: 'Instalación y mantenimiento de equipos.',
+    name: 'Climatización y calefacción',
+    icon: Fan,
+    description: 'Aires acondicionados, estufas y radiadores.',
   },
   {
     id: 24,
@@ -258,9 +265,9 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: 38,
-    name: 'Reparación de Computadoras y Celulares',
+    name: 'Tecnología y computación',
     icon: Computer,
-    description: 'Soporte técnico para tus dispositivos.',
+    description: 'Arreglo de compus, celulares y redes.',
   },
   {
     id: 39,
@@ -360,9 +367,9 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: 55,
-    name: 'Cuidado de Personas y Mascotas',
-    icon: HeartHandshake,
-    description: 'Cuidadores para niños, adultos mayores y mascotas.',
+    name: 'Mascotas y cuidado de animales',
+    icon: Dog,
+    description: 'Paseo de perros, cuidado de gatos.',
   },
   {
     id: 56,
@@ -378,9 +385,9 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: 58,
-    name: 'Entrenamiento y Coaching',
-    icon: HeartHandshake,
-    description: 'Yoga, Pilates y entrenamiento personal.',
+    name: 'Entrenadores y deportes',
+    icon: Dumbbell,
+    description: 'Yoga, personal trainer, pilates.',
   },
   {
     id: 59,
@@ -411,6 +418,18 @@ export const CATEGORIES: Category[] = [
     name: 'Artesanía y Manualidades',
     icon: Palette,
     description: 'Productos únicos hechos a mano.',
+  },
+   {
+    id: 64,
+    name: 'Cerrajería',
+    icon: KeyRound,
+    description: 'Apertura de puertas, cerraduras, llaves.',
+  },
+  {
+    id: 65,
+    name: 'Vidriería y cristales',
+    icon: GlassWater,
+    description: 'Reemplazo de vidrios, espejos y ventanas.',
   },
 ];
 
@@ -619,5 +638,7 @@ export const CLIENTS: Client[] = [
         isActive: false,
     }
 ]
+
+    
 
     
