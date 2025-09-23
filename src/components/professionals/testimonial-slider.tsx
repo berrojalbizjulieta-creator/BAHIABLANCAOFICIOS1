@@ -1,5 +1,6 @@
-import Image from 'next/image';
-import { Star } from 'lucide-react';
+
+'use client';
+
 import type { Testimonial } from '@/lib/types';
 import {
   Carousel,
@@ -9,7 +10,7 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { Card, CardContent } from '../ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import Autoplay from "embla-carousel-autoplay";
 
 interface TestimonialSliderProps {
   testimonials: Testimonial[];
@@ -24,56 +25,35 @@ export default function TestimonialSlider({
         align: 'start',
         loop: testimonials.length > 1,
       }}
-      className="w-full max-w-sm"
+      plugins={[
+        Autoplay({
+          delay: 5000,
+        }),
+      ]}
+      className="w-full max-w-2xl mx-auto mt-10"
     >
       <CarouselContent className="-ml-2">
         {testimonials.map((testimonial) => (
           <CarouselItem key={testimonial.id} className="pl-2">
-            <Card className="bg-muted/50 border-none shadow-none">
-              <CardContent className="p-4">
-                <div className="flex items-start gap-4">
-                  <Avatar>
-                    <AvatarImage
-                      src={testimonial.clientPhotoUrl}
-                      alt={testimonial.clientName}
-                      data-ai-hint={testimonial.clientPhotoHint}
-                    />
-                    <AvatarFallback>
-                      {testimonial.clientName.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <p className="font-semibold text-sm">
-                        {testimonial.clientName}
-                      </p>
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`w-3.5 h-3.5 ${
-                              i < testimonial.rating
-                                ? 'text-yellow-400 fill-yellow-400'
-                                : 'text-gray-300'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1 italic">
-                      &quot;{testimonial.text}&quot;
+            <Card className="bg-transparent border-none shadow-none">
+              <CardContent className="p-4 text-center">
+                 <blockquote className="border-l-4 border-primary pl-4 italic text-muted-foreground max-w-xl mx-auto">
+                    <p className="text-lg">
+                       “{testimonial.text}”
                     </p>
-                  </div>
-                </div>
+                    <cite className="mt-4 block font-semibold not-italic text-foreground">
+                        - {testimonial.clientName}
+                    </cite>
+                </blockquote>
               </CardContent>
             </Card>
           </CarouselItem>
         ))}
       </CarouselContent>
-      {testimonials.length > 1 && (
+        {testimonials.length > 1 && (
         <>
-          <CarouselPrevious className="absolute -left-3 top-1/2 -translate-y-1/2" />
-          <CarouselNext className="absolute -right-3 top-1/2 -translate-y-1/2" />
+          <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2" />
+          <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2" />
         </>
       )}
     </Carousel>

@@ -80,6 +80,22 @@ export const PROFESSIONALS: Professional[] = [
     isActive: true,
     isVerified: false,
     testimonials: [
+        {
+        id: 10,
+        clientName: 'Sofía C.',
+        clientPhotoUrl: '',
+        clientPhotoHint: '',
+        rating: 5,
+        text: 'No me había dado cuenta de cuántos profesionales había en Bahía. Escribís cosas como "limpieza de casas" o "jardinería" y aparecen un montón de opciones. Lo que sea que necesites, acá está.',
+      },
+      {
+        id: 11,
+        clientName: 'Mateo R.',
+        clientPhotoUrl: '',
+        clientPhotoHint: '',
+        rating: 5,
+        text: 'La página está re buena... La verdad soy estudiante de afuera y me re salvó, no conocía a ningún plomero de confianza acá en Bahía y todo re bien! Recomendable.',
+      },
       {
         id: 1,
         clientName: 'Ana Gomez',
