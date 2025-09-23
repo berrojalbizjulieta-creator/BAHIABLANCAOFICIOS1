@@ -23,7 +23,7 @@ export default function PromoSlider() {
             SERVICIOS ESENCIALES DE TU HOGAR
           </h2>
           <p className="mt-3 max-w-2xl text-muted-foreground md:text-lg">
-            Descubre todo lo que nuestros profesionales pueden hacer por ti y tu hogar.
+            ENCONTRA PLOMEROS, ALBAÑILES, GASISTAS, ETC
           </p>
         </div>
         <Carousel
