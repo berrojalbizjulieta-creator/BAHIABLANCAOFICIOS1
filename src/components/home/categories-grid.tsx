@@ -28,7 +28,7 @@ export default function CategoriesGrid() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">
-            Nuestros Servicios Más Populares
+            Servicios más populares
           </h2>
           <p className="mt-3 max-w-2xl mx-auto text-muted-foreground md:text-lg">
             Encuentra al profesional ideal para cada tipo de trabajo.
