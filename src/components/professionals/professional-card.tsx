@@ -1,4 +1,7 @@
-import Image from 'next/image';
+
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import { Star, MessageSquare, DollarSign } from 'lucide-react';
 import type { Professional } from '@/lib/types';
@@ -17,6 +20,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import PaymentDialog from './payment-dialog';
 
 interface ProfessionalCardProps {
   professional: Professional;
@@ -44,73 +48,81 @@ export default function ProfessionalCard({
   professional,
 }: ProfessionalCardProps) {
   const firstTestimonial = professional.testimonials[0];
+  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
 
   return (
-    <Card className="flex flex-col md:flex-row items-start w-full overflow-hidden transition-shadow hover:shadow-md">
-      <div className="flex-shrink-0 p-6 flex flex-col items-center text-center md:w-1/4">
-        <Avatar className="w-20 h-20 border-4 border-background shadow-sm">
-             <AvatarImage
-                src={professional.photoUrl}
-                alt={professional.name}
-                data-ai-hint={professional.photoHint}
-                />
-            <AvatarFallback>{professional.name.charAt(0)}</AvatarFallback>
-        </Avatar>
-       
-        <CardHeader className="p-0 pt-3">
-          <CardTitle className="text-lg font-headline">
-            {professional.name}
-          </CardTitle>
-        </CardHeader>
-        <div className="mt-1">
-          <StarRating rating={professional.avgRating} count={professional.testimonials.length} />
-        </div>
-      </div>
-      <div className="p-6 pt-0 md:pt-6 border-t md:border-t-0 md:border-l w-full md:w-3/4">
-        <CardContent className="p-0">
-          <h4 className="font-semibold text-sm mb-2">Especialidades:</h4>
-          <div className="flex flex-wrap gap-2 mb-4">
-            {professional.specialties.map((spec) => (
-              <Badge key={spec} variant="secondary">
-                {spec}
-              </Badge>
-            ))}
+    <>
+      <Card className="flex flex-col md:flex-row items-start w-full overflow-hidden transition-shadow hover:shadow-md">
+        <div className="flex-shrink-0 p-6 flex flex-col items-center text-center md:w-1/4">
+          <Avatar className="w-20 h-20 border-4 border-background shadow-sm">
+              <AvatarImage
+                  src={professional.photoUrl}
+                  alt={professional.name}
+                  data-ai-hint={professional.photoHint}
+                  />
+              <AvatarFallback>{professional.name.charAt(0)}</AvatarFallback>
+          </Avatar>
+        
+          <CardHeader className="p-0 pt-3">
+            <CardTitle className="text-lg font-headline">
+              {professional.name}
+            </CardTitle>
+          </CardHeader>
+          <div className="mt-1">
+            <StarRating rating={professional.avgRating} count={professional.testimonials.length} />
           </div>
-          {firstTestimonial && (
-            <div className="relative mt-4">
-               <div className="flex items-start gap-3 text-sm text-muted-foreground italic">
-                <MessageSquare className="w-5 h-5 flex-shrink-0" />
-                <p>
-                    &quot;{firstTestimonial.text}&quot;
-                    <span className="font-semibold not-italic"> - {firstTestimonial.clientName}</span>
-                </p>
-               </div>
+        </div>
+        <div className="p-6 pt-0 md:pt-6 border-t md:border-t-0 md:border-l w-full md:w-3/4">
+          <CardContent className="p-0">
+            <h4 className="font-semibold text-sm mb-2">Especialidades:</h4>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {professional.specialties.map((spec) => (
+                <Badge key={spec} variant="secondary">
+                  {spec}
+                </Badge>
+              ))}
             </div>
-          )}
-        </CardContent>
-        <CardFooter className="p-0 pt-4 flex justify-between items-center">
-            <div className="flex items-center gap-4">
-                 <Button>Contactar</Button>
-                 {professional.priceInfo && (
-                 <Popover>
-                    <PopoverTrigger asChild>
-                        <Button variant="outline" size="sm">
-                            <DollarSign className="mr-2 h-4 w-4" /> Ver Precios
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-60 text-sm">
-                        <p>{professional.priceInfo}</p>
-                    </PopoverContent>
-                </Popover>
-                 )}
-            </div>
-           {professional.testimonials.length > 0 && (
-                <Button variant="link" size="sm" asChild>
-                    <Link href={`/servicios/profil/${professional.id}`} target="_blank">Ver más</Link>
-                </Button>
-           )}
-        </CardFooter>
-      </div>
-    </Card>
+            {firstTestimonial && (
+              <div className="relative mt-4">
+                <div className="flex items-start gap-3 text-sm text-muted-foreground italic">
+                  <MessageSquare className="w-5 h-5 flex-shrink-0" />
+                  <p>
+                      &quot;{firstTestimonial.text}&quot;
+                      <span className="font-semibold not-italic"> - {firstTestimonial.clientName}</span>
+                  </p>
+                </div>
+              </div>
+            )}
+          </CardContent>
+          <CardFooter className="p-0 pt-4 flex justify-between items-center">
+              <div className="flex items-center gap-4">
+                  <Button onClick={() => setIsPaymentDialogOpen(true)}>Contactar</Button>
+                  {professional.priceInfo && (
+                  <Popover>
+                      <PopoverTrigger asChild>
+                          <Button variant="outline" size="sm">
+                              <DollarSign className="mr-2 h-4 w-4" /> Ver Precios
+                          </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-60 text-sm">
+                          <p>{professional.priceInfo}</p>
+                      </PopoverContent>
+                  </Popover>
+                  )}
+              </div>
+            {professional.testimonials.length > 0 && (
+                  <Button variant="link" size="sm" asChild>
+                      <Link href={`/servicios/profil/${professional.id}`} target="_blank">Ver más</Link>
+                  </Button>
+            )}
+          </CardFooter>
+        </div>
+      </Card>
+      <PaymentDialog
+        isOpen={isPaymentDialogOpen}
+        onOpenChange={setIsPaymentDialogOpen}
+        professionalName={professional.name}
+      />
+    </>
   );
 }

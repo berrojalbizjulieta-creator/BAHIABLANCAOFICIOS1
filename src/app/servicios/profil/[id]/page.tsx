@@ -1,25 +1,18 @@
 
 'use client';
 import { useParams } from 'next/navigation';
+import { useState } from 'react';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import { PROFESSIONALS } from '@/lib/data';
-import Image from 'next/image';
 import {
     Star,
     Share2,
     Trophy,
-    MapPin,
-    Users,
-    Clock,
-    Briefcase,
-    CheckCircle,
-    MessageSquare,
     ShieldCheck,
     Shield,
   } from 'lucide-react';
@@ -27,6 +20,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import TestimonialSlider from '@/components/professionals/testimonial-slider';
+import PaymentDialog from '@/components/professionals/payment-dialog';
 
 function StarRating({
   rating,
@@ -62,6 +56,7 @@ export default function ProfessionalProfilePage() {
     const params = useParams();
     const professionalId = params.id;
     const professional = PROFESSIONALS.find((p) => p.id === Number(professionalId));
+    const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
 
   if (!professional) {
     return (
@@ -75,6 +70,7 @@ export default function ProfessionalProfilePage() {
   }
 
   return (
+    <>
     <div className="bg-muted/30">
         <div className="container mx-auto px-4 py-12 md:px-6">
              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -118,7 +114,7 @@ export default function ProfessionalProfilePage() {
                             )}
                         </div>
                         <div className="flex gap-2">
-                           <Button>
+                           <Button onClick={() => setIsPaymentDialogOpen(true)}>
                                 Contactar
                             </Button>
                             <Button variant="outline">
@@ -147,5 +143,11 @@ export default function ProfessionalProfilePage() {
             </div>
         </div>
     </div>
+    <PaymentDialog
+        isOpen={isPaymentDialogOpen}
+        onOpenChange={setIsPaymentDialogOpen}
+        professionalName={professional.name}
+      />
+    </>
   );
 }

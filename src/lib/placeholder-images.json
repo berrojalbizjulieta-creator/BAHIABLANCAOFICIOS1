@@ -9,7 +9,7 @@
     {
       "id": "promo-banner-2",
       "description": "An electrician working on a circuit breaker.",
-      "imageUrl": "https://images.unsplash.com/photo-1667922578520-61558e79aa7e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxlbGVjdHJpY2lhbiUyMHdvcmt8ZW58MHx8fHwxNzU4NTk4MDUzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1667922578520-611558e79aa7e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxlbGVjdHJpY2lhbiUyMHdvcmt8ZW58MHx8fHwxNzU4NTk4MDUzfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "electrician work"
     },
     {
@@ -23,6 +23,12 @@
       "description": "A sculpture in a park at dusk with a purple and pink sky.",
       "imageUrl": "https://images.unsplash.com/photo-1570501677759-490d84c3e526?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjaXR5JTIwc3Vuc2V0fGVufDB8fHx8MTc1ODU5OTYyNXww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "city sunset"
+    },
+    {
+      "id": "mp-qr-code",
+      "description": "A sample QR code for Mercado Pago.",
+      "imageUrl": "/mp-qr.png",
+      "imageHint": "qr code"
     },
     {
       "id": "prof-1",
@@ -93,7 +99,7 @@
     {
       "id": "work-2",
       "description": "A freshly painted living room wall.",
-      "imageUrl": "https://images.unsplash.com/photo-1517111109658-0780925e6178?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwYWludGVkJTIwd2FsbHxlbnwwfHx8fDE3NTg2MDE2MjF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1517111109658-0780925e6178?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwYWludGVkJTIwd2FsbHxlbnwwfHx8fDE3NTg2MDE2MjF8MA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "painted wall"
     },
     {
@@ -105,7 +111,7 @@
     {
       "id": "work-4",
       "description": "Custom wooden shelves built into a wall.",
-      "imageUrl": "https://images.unsplash.com/photo-1624993116516-21c8416a0052?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjdXN0b20lMjBzaGVsdmVzfGVufDB8fHx8MTc1ODYwMTYyMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1624993116516-21c8416a0052?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjdXN0b20lMjBzaGVsdmVzfGVufDB8fHx8MTc1ODYwMTYyMXww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "custom shelves"
     },
     {
@@ -117,7 +123,7 @@
     {
       "id": "work-6",
       "description": "A beautiful landscaped garden with a stone path.",
-      "imageUrl": "https://images.unsplash.com/photo-1647664876984-611e1666dc83?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxsYW5kc2NhcGVkJTIwZ2FyZGVufGVufDB8fHx8MTc1ODU5MTI1MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1647664876984-611e1666dc83?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxsYW5kc2NhcGVkJTIwZ2FyZGVufGVufDB8fHx8MTc1ODU5MTI1MXww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "landscaped garden"
     }
   ]
