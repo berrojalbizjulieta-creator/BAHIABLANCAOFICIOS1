@@ -39,12 +39,8 @@ export default function LoginPage() {
         description: 'Has iniciado sesión correctamente.',
       });
 
-      // Redirect based on role
-      if (esAdmin(user.email ?? undefined)) {
-        router.push('/admin');
-      } else {
-        router.push('/dashboard');
-      }
+      // Redirect to dashboard for all roles
+      router.push('/dashboard');
 
     } catch (error: any) {
       console.error(error);
