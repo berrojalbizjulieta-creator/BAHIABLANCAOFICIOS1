@@ -20,20 +20,28 @@ export function useAdminAuth() {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       if (user) {
-        // Check admin status from email
         const adminStatus = esAdmin(user.email ?? undefined);
         setIsAdmin(adminStatus);
         
-        // Check role from Firestore
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDocSnap = await getDoc(userDocRef);
+        // If user is admin, we don't need to check firestore for professional role
+        if (adminStatus) {
+            setIsProfessional(false);
+            setLoading(false);
+            return;
+        }
 
-        if (userDocSnap.exists()) {
-          const userData = userDocSnap.data();
-          setIsProfessional(userData.role === 'professional');
-        } else {
-            // This might happen for the admin user if not in DB
-            // or if there's a delay in DB creation
+        try {
+            const userDocRef = doc(db, 'users', user.uid);
+            const userDocSnap = await getDoc(userDocRef);
+
+            if (userDocSnap.exists()) {
+              const userData = userDocSnap.data();
+              setIsProfessional(userData.role === 'professional');
+            } else {
+              setIsProfessional(false);
+            }
+        } catch (error) {
+            console.error("Error fetching user role from Firestore:", error);
             setIsProfessional(false);
         }
 
