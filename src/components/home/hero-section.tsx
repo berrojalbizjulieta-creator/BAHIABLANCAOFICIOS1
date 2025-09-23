@@ -3,7 +3,6 @@ import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
-import { suggestTradesFromPrompt } from '@/ai/flows/suggest-trades-from-prompt';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
 import Image from 'next/image';
@@ -14,6 +13,8 @@ import {
   CarouselItem,
 } from '@/components/ui/carousel';
 import Autoplay from "embla-carousel-autoplay";
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const heroImages = PlaceHolderImages.filter(img => img.id.startsWith('promo-banner-'));
 
@@ -22,32 +23,21 @@ export default function HeroSection() {
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>(['Plomero', 'Electricista', 'Pintor']);
   const { toast } = useToast();
+  const router = useRouter();
 
   const plugin = useRef(
     Autoplay({ delay: 5000, stopOnInteraction: false, stopOnMouseEnter: true })
   );
 
-  const handleSearch = async (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!prompt) return;
-
-    setLoading(true);
-    try {
-      const result = await suggestTradesFromPrompt({ prompt });
-      if (result.suggestedTrades && result.suggestedTrades.length > 0) {
-        setSuggestions(result.suggestedTrades);
-      }
-    } catch (error) {
-      console.error('Error suggesting trades:', error);
-      toast({
-        title: 'Error',
-        description: 'No se pudieron obtener sugerencias. Intente de nuevo.',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
+    router.push(`/servicios?search=${encodeURIComponent(prompt)}`);
   };
+
+  const createCategorySlug = (categoryName: string) => {
+    return encodeURIComponent(categoryName.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-'));
+  }
 
   return (
     <section className="relative w-full py-20 md:py-32 lg:py-40 overflow-hidden">
@@ -116,9 +106,9 @@ export default function HeroSection() {
               Sugerencias:
             </span>
             {suggestions.map((trade) => (
-              <Badge key={trade} variant="secondary" className="cursor-pointer bg-white/20 text-white hover:bg-white/30 transition-colors">
-                {trade}
-              </Badge>
+              <Button key={trade} variant="secondary" size="sm" asChild className="h-auto bg-white/20 text-white hover:bg-white/30 transition-colors">
+                 <Link href={`/servicios/${createCategorySlug(trade)}`}>{trade}</Link>
+              </Button>
             ))}
           </div>
         </div>

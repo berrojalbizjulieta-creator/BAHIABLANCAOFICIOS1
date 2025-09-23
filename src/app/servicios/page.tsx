@@ -1,14 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { CATEGORIES } from '@/lib/data';
 import Link from 'next/link';
 import { Search } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 
 export default function ServicesPage() {
-  const [searchTerm, setSearchTerm] = useState('');
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams.get('search') || '';
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
+
+  useEffect(() => {
+    // If you want to update the state if the query param changes while on the page
+    const newSearch = searchParams.get('search') || '';
+    if (newSearch !== searchTerm) {
+      setSearchTerm(newSearch);
+    }
+  }, [searchParams, searchTerm]);
+
 
   const filteredCategories = CATEGORIES.filter((category) =>
     category.name.toLowerCase().includes(searchTerm.toLowerCase())
