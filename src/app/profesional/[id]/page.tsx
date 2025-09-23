@@ -2,7 +2,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import {
   Star,
@@ -43,6 +43,7 @@ import {
 import { useParams } from 'next/navigation';
 import { CATEGORIES, PROFESSIONALS } from '@/lib/data';
 import { Textarea } from '@/components/ui/textarea';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 
 function StarRatingDisplay({
   rating,
@@ -153,6 +154,7 @@ function ReviewForm() {
 
 export default function PublicProfilePage() {
   const params = useParams();
+  const { user, loading, isProfessional } = useAdminAuth();
   const professionalId = params.id;
   const professional = PROFESSIONALS.find(p => p.id === Number(professionalId));
 
@@ -334,7 +336,7 @@ export default function PublicProfilePage() {
               )}
              
               {/* Review Form for clients */}
-              <ReviewForm />
+              {!loading && user && !isProfessional && <ReviewForm />}
             </div>
 
             {/* Right Sidebar */}
