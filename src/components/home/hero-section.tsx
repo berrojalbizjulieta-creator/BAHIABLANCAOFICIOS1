@@ -62,7 +62,7 @@ export default function HeroSection() {
       const professionalCategories = Array.from(new Set(professionals.map(p => p.rubro)));
       const combinedSuggestions = Array.from(new Set([...(aiSuggestions.suggestedTrades || []), ...professionalCategories]));
 
-      setSuggestions(combinedSuggestions.slice(0, 5)); // show max 5 suggestions
+      setSuggestions(combinedSuggestions.slice(0, 3)); // show max 3 suggestions
 
       setIsDropdownOpen(true);
     } catch (e: any) {
@@ -153,7 +153,7 @@ export default function HeroSection() {
                 
                 {!isLoading && suggestions.length > 0 && (
                    <>
-                    <li className="px-4 pt-3 pb-1 text-xs font-semibold text-muted-foreground uppercase">Sugerencias</li>
+                    <li className="px-4 pt-3 pb-1 text-xs font-semibold text-muted-foreground uppercase">Sugerencias de Oficios</li>
                     {suggestions.map((suggestion) => (
                       <li 
                         key={suggestion} 
