@@ -48,7 +48,6 @@ export default function ProfessionalCard({
   professional,
 }: ProfessionalCardProps) {
   const firstTestimonial = professional.testimonials[0];
-  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
 
   return (
     <>
@@ -96,7 +95,7 @@ export default function ProfessionalCard({
           </CardContent>
           <CardFooter className="p-0 pt-4 flex justify-between items-center">
               <div className="flex items-center gap-4">
-                  <Button onClick={() => setIsPaymentDialogOpen(true)}>Contactar</Button>
+                  <Button>Contactar</Button>
                   {professional.priceInfo && (
                   <Popover>
                       <PopoverTrigger asChild>
@@ -118,11 +117,6 @@ export default function ProfessionalCard({
           </CardFooter>
         </div>
       </Card>
-      <PaymentDialog
-        isOpen={isPaymentDialogOpen}
-        onOpenChange={setIsPaymentDialogOpen}
-        professionalName={professional.name}
-      />
     </>
   );
 }

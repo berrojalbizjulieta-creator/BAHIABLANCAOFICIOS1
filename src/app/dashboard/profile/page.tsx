@@ -50,6 +50,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
+import PaymentDialog from '@/components/professionals/payment-dialog';
 
 function StarRating({
   rating,
@@ -105,6 +106,7 @@ export default function ProfilePage() {
   const [professional, setProfessional] = useState<Professional | null>(initialProfessionalData);
   const [paymentMethods, setPaymentMethods] = useState('');
   const [price, setPrice] = useState({ type: 'Por Hora', amount: '', details: '' });
+  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -130,6 +132,10 @@ export default function ProfilePage() {
     setIsEditing(false);
   }
 
+  const handlePublish = () => {
+    setIsPaymentDialogOpen(true);
+  }
+
   const handleAvatarClick = () => {
       if(isEditing && fileInputRef.current) {
           fileInputRef.current.click();
@@ -149,6 +155,7 @@ export default function ProfilePage() {
 
 
   return (
+    <>
     <div className="bg-muted/30">
       <div className="container mx-auto px-4 py-12 md:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -500,7 +507,7 @@ export default function ProfilePage() {
               </CardContent>
                  {isEditing && (
                     <CardFooter className="flex-col items-start gap-3 pt-4 border-t">
-                        <Button onClick={handleSave} className="w-full">
+                        <Button onClick={handlePublish} className="w-full">
                            <PartyPopper className="mr-2" /> ¡Terminar Edición y Publicar!
                         </Button>
                         <p className="text-xs text-center w-full text-muted-foreground">
@@ -513,5 +520,11 @@ export default function ProfilePage() {
         </div>
       </div>
     </div>
+     <PaymentDialog
+        isOpen={isPaymentDialogOpen}
+        onOpenChange={setIsPaymentDialogOpen}
+        professionalName={professional.name}
+      />
+    </>
   );
 }

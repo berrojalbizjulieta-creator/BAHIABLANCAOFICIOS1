@@ -56,7 +56,6 @@ export default function ProfessionalProfilePage() {
     const params = useParams();
     const professionalId = params.id;
     const professional = PROFESSIONALS.find((p) => p.id === Number(professionalId));
-    const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
 
   if (!professional) {
     return (
@@ -114,7 +113,7 @@ export default function ProfessionalProfilePage() {
                             )}
                         </div>
                         <div className="flex gap-2">
-                           <Button onClick={() => setIsPaymentDialogOpen(true)}>
+                           <Button>
                                 Contactar
                             </Button>
                             <Button variant="outline">
@@ -143,11 +142,6 @@ export default function ProfessionalProfilePage() {
             </div>
         </div>
     </div>
-    <PaymentDialog
-        isOpen={isPaymentDialogOpen}
-        onOpenChange={setIsPaymentDialogOpen}
-        professionalName={professional.name}
-      />
     </>
   );
 }
