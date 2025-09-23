@@ -211,8 +211,8 @@ export const BANNERS: Banner[] = [
     id: 2,
     title: 'Jardinería',
     description: 'Cortá el pasto, poné luces y armá tu patio',
-    imageUrl: getImage('work-3').imageUrl,
-    imageHint: getImage('work-3').imageHint,
+    imageUrl: 'https://i.pinimg.com/1200x/ce/30/e6/ce30e6fa6063da846fedd81b4d6d5567.jpg',
+    imageHint: 'garden tools',
     buttonText: 'Buscar Técnicos',
     buttonLink: '/servicios/reparaciones-y-servicios-tecnicos',
   },
@@ -267,6 +267,7 @@ export const CLIENTS: Client[] = [
     
 
     
+
 
 
 
