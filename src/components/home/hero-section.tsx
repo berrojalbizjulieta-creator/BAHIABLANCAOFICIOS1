@@ -8,6 +8,8 @@ import { placeholderImages } from '@/lib/placeholder-images';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '../ui/card';
+import { suggestTradesFromPrompt } from '@/ai/flows/suggest-trades-from-prompt';
+
 
 const heroImage = placeholderImages.find(
   (img) => img.id === 'hero-background-parque-de-mayo'
@@ -29,24 +31,15 @@ export default function HeroSection() {
       setError('');
       return;
     }
-    
+
     setShowSuggestions(true);
     setIsSuggestionsLoading(true);
     setError('');
 
     const timeoutId = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/sugerencia?q=${prompt}`);
-        if (!res.ok) {
-          throw new Error(`Server responded with ${res.status}`);
-        }
-        const data = await res.json();
-        
-        if (data.error) {
-            throw new Error(data.error);
-        }
-
-        setSuggestions(data.suggestedTrades || []);
+        const response = await suggestTradesFromPrompt({ prompt });
+        setSuggestions(response.suggestedTrades || []);
       } catch (e: any) {
         console.error('Error fetching suggestions:', e);
         setError('No se pudieron obtener sugerencias. Intenta de nuevo.');
