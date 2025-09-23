@@ -1,63 +1,91 @@
 
 'use client';
 
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CATEGORIES } from '@/lib/data';
 import Link from 'next/link';
+import Image from 'next/image';
 
-// Define las categorías que consideras "esenciales"
-const essentialCategoryNames = [
+const maintenanceCategories = [
   'Plomería',
   'Electricista',
-  'Albañilería',
   'Gasista',
   'Cerrajería',
-  'Pintores',
-  'Carpintería',
   'Climatización',
-  'Herrería',
   'Vidriería',
-  'Limpieza',
   'Reparaciones',
+  'Limpieza',
 ];
 
-const essentialCategories = CATEGORIES.filter((category) =>
-  essentialCategoryNames.includes(category.name)
-);
+const improvementCategories = [
+  'Albañilería',
+  'Pintores',
+  'Carpintería',
+  'Herrería',
+  'Jardinería',
+];
+
+const getCategoryByName = (name: string) => CATEGORIES.find(c => c.name === name);
+
+const renderCategoryCard = (categoryName: string) => {
+  const category = getCategoryByName(categoryName);
+  if (!category) return null;
+
+  return (
+    <Link
+      key={category.id}
+      href={`/servicios/${encodeURIComponent(
+        category.name.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-')
+      )}`}
+      className="group relative block"
+    >
+      <Card className="overflow-hidden shadow-lg transition-all duration-300 group-hover:shadow-xl">
+        <div className="relative aspect-[4/3] w-full">
+          <Image
+            src={category.imageUrl || 'https://picsum.photos/seed/placeholder/400/300'}
+            alt={category.description}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            data-ai-hint={category.imageHint}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+        </div>
+        <div className="absolute bottom-0 left-0 p-4">
+          <CardTitle className="font-headline text-lg text-white">
+            {category.name}
+          </CardTitle>
+        </div>
+      </Card>
+    </Link>
+  );
+};
 
 export default function EssentialServicesPage() {
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
-      <div className="text-center mb-10">
+      <div className="text-left mb-12">
         <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">
-          Servicios Esenciales para tu Hogar
+          Servicios Esenciales
         </h1>
-        <p className="mt-3 max-w-2xl mx-auto text-muted-foreground md:text-lg">
-          Todo lo que necesitas para mantener tu casa en perfecto estado. Encuentra profesionales de confianza para cada tarea.
+        <p className="mt-3 max-w-2xl text-muted-foreground md:text-lg">
+          Encuentra profesionales de confianza para cada tarea, desde reparaciones urgentes hasta mejoras para tu hogar.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {essentialCategories.map((category) => (
-          <Link
-            key={category.id}
-            href={`/servicios/${encodeURIComponent(
-              category.name.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-')
-            )}`}
-            className="cursor-pointer group"
-          >
-            <Card className="hover:shadow-lg transition-all h-full">
-              <CardHeader className="flex flex-row items-center gap-4 space-y-0">
-                <div className="bg-primary/10 p-3 rounded-full group-hover:bg-accent/20 transition-colors">
-                  <category.icon className="h-6 w-6 text-primary group-hover:text-accent-foreground" />
-                </div>
-                <CardTitle className="font-headline text-base">
-                  {category.name}
-                </CardTitle>
-              </CardHeader>
-            </Card>
-          </Link>
-        ))}
+      <div className="space-y-16">
+        <section>
+          <h2 className="text-2xl font-bold font-headline mb-6">Mantenimiento y Reparaciones del Hogar</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {maintenanceCategories.map(renderCategoryCard)}
+          </div>
+        </section>
+
+        <section>
+          <h2 className="text-2xl font-bold font-headline mb-6">Mejoras y Proyectos</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {improvementCategories.map(renderCategoryCard)}
+          </div>
+        </section>
       </div>
     </div>
   );

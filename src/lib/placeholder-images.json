@@ -107,6 +107,126 @@
       "description": "A beautiful landscaped garden with a stone path.",
       "imageUrl": "https://images.unsplash.com/photo-1647664876984-611e1666dc83?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxsYW5kc2NhcGVkJTIwZ2FyZGVufGVufDB8fHx8MTc1ODU5MTI1MXww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "landscaped garden"
+    },
+    {
+      "id": "cat-plomeria",
+      "imageUrl": "https://production-next-images-cdn.thumbtack.com/i/502694998835822616/width/320.webp",
+      "imageHint": "plumbing pipes",
+      "description": "Pipes under a sink."
+    },
+    {
+      "id": "cat-electricista",
+      "imageUrl": "https://production-next-images-cdn.thumbtack.com/i/502695024227745814/width/320.webp",
+      "imageHint": "electrical outlet",
+      "description": "An electrical outlet."
+    },
+    {
+      "id": "cat-gasista",
+      "imageUrl": "https://production-next-images-cdn.thumbtack.com/i/502695011707912211/width/320.webp",
+      "imageHint": "water heater",
+      "description": "A home water heater."
+    },
+    {
+      "id": "cat-cerrajeria",
+      "imageUrl": "https://production-next-images-cdn.thumbtack.com/i/502694982052020224/width/320.webp",
+      "imageHint": "door lock",
+      "description": "A door lock."
+    },
+    {
+      "id": "cat-climatizacion",
+      "imageUrl": "https://production-next-images-cdn.thumbtack.com/i/502694981779398668/width/320.webp",
+      "imageHint": "ac unit",
+      "description": "An air conditioning unit."
+    },
+    {
+      "id": "cat-vidrieria",
+      "imageUrl": "https://production-next-images-cdn.thumbtack.com/i/502695034375634960/width/320.webp",
+      "imageHint": "window installation",
+      "description": "A person installing a window."
+    },
+    {
+      "id": "cat-reparaciones",
+      "imageUrl": "https://production-next-images-cdn.thumbtack.com/i/502695000570593301/width/320.webp",
+      "imageHint": "appliance repair",
+      "description": "A person repairing a washing machine."
+    },
+    {
+      "id": "cat-limpieza",
+      "imageUrl": "https://production-next-images-cdn.thumbtack.com/i/502694991185575936/width/320.webp",
+      "imageHint": "house cleaning",
+      "description": "A person cleaning a house."
+    },
+    {
+      "id": "cat-albanileria",
+      "imageUrl": "https://images.unsplash.com/photo-1581193635718-f6874a5a5d20?q=80&w=870",
+      "imageHint": "bricklaying",
+      "description": "A person laying bricks."
+    },
+    {
+      "id": "cat-pintores",
+      "imageUrl": "https://production-next-images-cdn.thumbtack.com/i/502695007127928854/width/320.webp",
+      "imageHint": "painting wall",
+      "description": "A person painting a wall."
+    },
+    {
+      "id": "cat-carpinteria",
+      "imageUrl": "https://production-next-images-cdn.thumbtack.com/i/502695035256422416/width/320.webp",
+      "imageHint": "carpentry",
+      "description": "A person doing carpentry."
+    },
+    {
+      "id": "cat-herreria",
+      "imageUrl": "https://images.unsplash.com/photo-1621926220815-a04396263e77?q=80&w=870",
+      "imageHint": "welding",
+      "description": "A person welding."
+    },
+    {
+      "id": "cat-jardineria",
+      "imageUrl": "https://production-next-images-cdn.thumbtack.com/i/502694994246991873/width/320.webp",
+      "imageHint": "gardening",
+      "description": "A person gardening."
+    },
+    {
+      "id": "cat-mudanzas",
+      "imageUrl": "https://images.unsplash.com/photo-1587584445348-a07efa71872b?q=80&w=870",
+      "imageHint": "moving boxes",
+      "description": "Moving boxes."
+    },
+    {
+      "id": "cat-fotografia",
+      "imageUrl": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=764",
+      "imageHint": "camera",
+      "description": "A camera."
+    },
+    {
+      "id": "cat-eventos",
+      "imageUrl": "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?q=80&w=870",
+      "imageHint": "party",
+      "description": "A party with people."
+    },
+    {
+      "id": "cat-clases",
+      "imageUrl": "https://images.unsplash.com/photo-1532012197267-da84d127e765?q=80&w=987",
+      "imageHint": "books",
+      "description": "A stack of books."
+    },
+    {
+      "id": "cat-entrenadores",
+      "imageUrl": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=870",
+      "imageHint": "gym",
+      "description": "A person working out in a gym."
+    },
+    {
+      "id": "cat-mascotas",
+      "imageUrl": "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?q=80&w=994",
+      "imageHint": "dog",
+      "description": "A happy dog."
+    },
+    {
+      "id": "cat-tecnologia",
+      "imageUrl": "https://images.unsplash.com/photo-1550745165-9bc0b252726a?q=80&w=870",
+      "imageHint": "computer",
+      "description": "A computer setup."
     }
   ]
 }

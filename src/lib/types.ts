@@ -52,6 +52,8 @@ export interface Category {
   name: string;
   icon: LucideIcon;
   description: string;
+  imageUrl?: string;
+  imageHint?: string;
 }
 
 export interface Banner {
