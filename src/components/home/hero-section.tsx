@@ -1,10 +1,9 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import Image from 'next/image';
-import { placeholderImages } from '@/lib/placeholder-images';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '../ui/card';
@@ -18,9 +17,7 @@ export default function HeroSection() {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const heroImage = placeholderImages.find(
-    (img) => img.id === 'hero-background-parque-de-mayo'
-  );
+  const heroImage = "https://upload.wikimedia.org/wikipedia/commons/2/20/P%C3%B3rtico_del_Parque_de_Mayo%2C_Bah%C3%ADa_Blanca.JPG"; // ruta en /public/images
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPrompt = e.target.value;
@@ -73,11 +70,10 @@ export default function HeroSection() {
     <section className="relative w-full py-20 md:py-32 lg:py-40 overflow-hidden">
       {heroImage && (
         <Image
-          src={heroImage.imageUrl}
-          alt={heroImage.description}
+          src={heroImage}
+          alt="Parque de Mayo"
           fill
-          className="object-cover"
-          data-ai-hint={heroImage.imageHint}
+          style={{ objectFit: 'cover' }}
           priority
         />
       )}

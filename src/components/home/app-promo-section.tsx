@@ -2,24 +2,21 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { placeholderImages } from '@/lib/placeholder-images';
 
 export default function AppPromoSection() {
 
-  const backgroundImage = placeholderImages.find(img => img.id === 'white-tile-background');
-  const appMockupImage = placeholderImages.find(img => img.id === 'app-promo-mockup');
+  const fondoBaldosas = "https://images.unsplash.com/photo-1581788788934-9e32ce7b439c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+  const celularImg = "/phone-mockup.png";
 
   return (
     <section className="relative py-20 md:py-24 bg-muted/30 overflow-hidden">
-      {backgroundImage && (
-        <Image
-          src={backgroundImage.imageUrl}
-          alt={backgroundImage.description}
+      <Image
+          src={fondoBaldosas}
+          alt="Fondo de baldosas blancas"
           fill
-          className="object-cover"
-          data-ai-hint={backgroundImage.imageHint}
+          style={{ objectFit: "cover" }}
+          data-ai-hint="white tiles"
         />
-      )}
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="max-w-md text-left">
@@ -39,16 +36,14 @@ export default function AppPromoSection() {
                 </div>
             </div>
              <div className="flex justify-center md:justify-end">
-                {appMockupImage && (
-                    <Image 
-                        src={appMockupImage.imageUrl}
-                        alt={appMockupImage.description}
-                        width={300}
-                        height={600}
-                        className="object-contain"
-                        data-ai-hint={appMockupImage.imageHint}
-                    />
-                )}
+                <Image 
+                    src={celularImg}
+                    alt="Celular con app"
+                    width={300}
+                    height={600}
+                    className="object-contain"
+                    data-ai-hint="phone app"
+                />
             </div>
         </div>
       </div>
