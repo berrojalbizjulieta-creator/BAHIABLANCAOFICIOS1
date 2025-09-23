@@ -17,6 +17,7 @@ import {
   X,
   Upload,
   ShieldCheck,
+  Shield,
 } from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {
@@ -174,7 +175,7 @@ export default function ProfilePage() {
                             {professional.name}
                         </h1>
                         )}
-                        {professional.isVerified && <ShieldCheck className="w-7 h-7 text-blue-500" />}
+                        {professional.isVerified ? <ShieldCheck className="w-7 h-7 text-blue-500" /> : <Shield className="w-7 h-7 text-muted-foreground" />}
                     </div>
 
                     <div className="mt-1">
