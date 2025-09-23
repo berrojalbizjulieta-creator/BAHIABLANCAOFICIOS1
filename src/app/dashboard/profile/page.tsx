@@ -485,6 +485,7 @@ export default function ProfilePage() {
                 <VerificationTab 
                   isVerified={professional.isVerified}
                   onVerify={() => handleInputChange('isVerified', true)}
+                  professionalName={professional.name}
                 />
               </TabsContent>
             </Tabs>

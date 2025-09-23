@@ -15,36 +15,51 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { ShieldCheck, CheckCircle, Clock } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { createVerificationMailto } from '@/ai/flows/create-verification-mailto';
 
 interface VerificationTabProps {
     isVerified?: boolean;
     onVerify: () => void;
+    professionalName?: string;
 }
 
 
-export default function VerificationTab({ isVerified, onVerify }: VerificationTabProps) {
+export default function VerificationTab({ isVerified, onVerify, professionalName = "Profesional" }: VerificationTabProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPending, setIsPending] = useState(false);
+  const [cuil, setCuil] = useState('');
 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
 
-    // In a real app, you would send the form data to your backend
-    // to be reviewed by an administrator.
-    
-    toast({
-      title: 'Solicitud Enviada',
-      description: 'Hemos recibido tus documentos. Revisaremos tu información y te notificaremos cuando tu cuenta sea verificada.',
-    });
-    // onVerify(); // We won't optimistically update anymore, we'll show a pending state.
-    setIsPending(true);
-    setIsSubmitting(false);
+    try {
+        const { mailto } = await createVerificationMailto({
+            cuil,
+            professionalName,
+        });
+
+        window.location.href = mailto;
+        
+        toast({
+          title: 'Abre tu cliente de correo',
+          description: 'Hemos preparado un borrador. Por favor, adjunta los archivos y envía el correo para completar tu solicitud.',
+        });
+
+        setIsPending(true);
+
+    } catch (error) {
+        console.error('Error creating mailto link:', error);
+        toast({
+            title: 'Error',
+            description: 'No se pudo generar el correo de verificación. Inténtalo de nuevo.',
+            variant: 'destructive',
+        });
+    } finally {
+        setIsSubmitting(false);
+    }
   };
 
   if (isVerified) {
@@ -119,12 +134,19 @@ export default function VerificationTab({ isVerified, onVerify }: VerificationTa
         </div>
          <div className="space-y-2">
             <Label htmlFor="cuil">Número de CUIL</Label>
-            <Input id="cuil" type="text" placeholder="Ej: 20-12345678-9" required />
+            <Input 
+                id="cuil" 
+                type="text" 
+                placeholder="Ej: 20-12345678-9" 
+                required 
+                value={cuil}
+                onChange={(e) => setCuil(e.target.value)}
+            />
         </div>
       </CardContent>
       <CardFooter>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Enviando Solicitud..." : "Verificar mi Cuenta"}
+          {isSubmitting ? "Generando correo..." : "Verificar mi Cuenta"}
         </Button>
       </CardFooter>
       </form>
