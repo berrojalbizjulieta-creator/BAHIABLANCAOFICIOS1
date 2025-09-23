@@ -4,21 +4,43 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
 import { esAdmin } from '@/lib/auth';
+import { doc, getDoc } from 'firebase/firestore';
 
-// En una app real, el rol 'professional' vendría de tu base de datos (Firestore)
-// Por ahora, lo simulamos para la demo.
-const MOCK_PROFESSIONAL_EMAILS = ['profesional@email.com'];
 
 export function useAdminAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isProfessional, setIsProfessional] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
+      if (user) {
+        // Check admin status from email
+        const adminStatus = esAdmin(user.email ?? undefined);
+        setIsAdmin(adminStatus);
+        
+        // Check role from Firestore
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (userDocSnap.exists()) {
+          const userData = userDocSnap.data();
+          setIsProfessional(userData.role === 'professional');
+        } else {
+            // This might happen for the admin user if not in DB
+            // or if there's a delay in DB creation
+            setIsProfessional(false);
+        }
+
+      } else {
+        setIsAdmin(false);
+        setIsProfessional(false);
+      }
       setLoading(false);
     });
 
@@ -26,10 +48,6 @@ export function useAdminAuth() {
     return () => unsubscribe();
   }, []);
 
-  const isAdmin = esAdmin(user?.email ?? undefined);
-  // Esta es una simulación. En una app real, deberías consultar tu base de datos
-  // para saber si un usuario es profesional o cliente.
-  const isProfessional = user && MOCK_PROFESSIONAL_EMAILS.includes(user.email || '');
 
   return { user, isAdmin, isProfessional, loading };
 }

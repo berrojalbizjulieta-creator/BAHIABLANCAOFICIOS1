@@ -35,8 +35,8 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
-import type { Client, Professional } from '@/lib/types';
+import { auth, db } from '@/lib/firebase';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 
 const clientSchema = z.object({
@@ -77,23 +77,55 @@ export default function SignupPage() {
     setIsLoading(true);
     
     try {
+      // 1. Create user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       const user = userCredential.user;
-      console.log('Firebase user created:', user);
 
-      // Here you would typically also save user data to Firestore
-      // For now, we'll just show a success message
+      // 2. Prepare user data for Firestore
+      const isProfessional = accountType === 'professional';
+      const userData = {
+        name: data.fullName,
+        email: data.email,
+        role: isProfessional ? 'professional' : 'client',
+        registrationDate: serverTimestamp(),
+        isActive: true,
+        photoUrl: '', // Default empty photo
+      };
 
+      // 3. Save user data to 'users' collection in Firestore
+      await setDoc(doc(db, 'users', user.uid), userData);
+
+      // 4. If professional, save additional details
+      if (isProfessional) {
+        const professionalData = data as ProfessionalFormValues;
+        const professionalDetails = {
+          description: '',
+          specialties: [],
+          avgRating: 0,
+          categoryId: Number(professionalData.category),
+          isVerified: false,
+          subscription: {
+            tier: 'standard',
+            isSubscriptionActive: false,
+            lastPaymentDate: null,
+            nextPaymentDate: null,
+          },
+          workPhotos: [],
+          testimonials: [],
+        };
+        await setDoc(doc(db, 'professionalsDetails', user.uid), professionalDetails);
+      }
+      
       toast({
         title: "¡Cuenta Creada!",
         description: `Tu cuenta de ${accountType === 'client' ? 'cliente' : 'profesional'} ha sido creada exitosamente.`,
       });
 
-      // Redirect user after signup
-      if (accountType === 'client') {
-        router.push('/');
-      } else {
+      // 5. Redirect user after signup
+      if (isProfessional) {
         router.push('/dashboard/profile');
+      } else {
+        router.push('/');
       }
 
     } catch (error: any) {
