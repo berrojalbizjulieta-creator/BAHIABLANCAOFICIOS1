@@ -10,7 +10,6 @@ import {
 } from '@/components/ui/card';
 import { CATEGORIES } from '@/lib/data';
 import type { Category } from '@/lib/types';
-import ProfessionalsModal from '../professionals/professionals-modal';
 import Link from 'next/link';
 
 const TOP_CATEGORIES = [
@@ -23,7 +22,6 @@ const TOP_CATEGORIES = [
 ];
 
 export default function CategoriesGrid() {
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
   const topCategories = CATEGORIES.filter(c => TOP_CATEGORIES.includes(c.name));
 
@@ -41,23 +39,29 @@ export default function CategoriesGrid() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
           {topCategories.map((category) => (
-            <Card
+             <Link
               key={category.id}
-              onClick={() => setSelectedCategory(category)}
-              className="cursor-pointer group hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              href={`/servicios/${encodeURIComponent(category.name.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-'))}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="cursor-pointer group"
             >
-              <CardHeader className="items-center text-center">
-                <div className="bg-primary/10 p-4 rounded-full mb-3 group-hover:bg-accent/20 transition-colors">
-                  <category.icon className="h-8 w-8 text-primary group-hover:text-accent-foreground" />
-                </div>
-                <CardTitle className="font-headline text-lg">
-                  {category.name}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-center text-sm text-muted-foreground -mt-4 pb-4">
-                <p>{category.description}</p>
-              </CardContent>
-            </Card>
+              <Card
+                className="h-full hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <CardHeader className="items-center text-center">
+                  <div className="bg-primary/10 p-4 rounded-full mb-3 group-hover:bg-accent/20 transition-colors">
+                    <category.icon className="h-8 w-8 text-primary group-hover:text-accent-foreground" />
+                  </div>
+                  <CardTitle className="font-headline text-lg">
+                    {category.name}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-center text-sm text-muted-foreground -mt-4 pb-4">
+                  <p>{category.description}</p>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
          <div className="mt-6 text-right">
@@ -66,11 +70,6 @@ export default function CategoriesGrid() {
             </Link>
         </div>
       </div>
-      <ProfessionalsModal 
-        category={selectedCategory}
-        isOpen={!!selectedCategory}
-        onClose={() => setSelectedCategory(null)}
-      />
     </section>
   );
 }
