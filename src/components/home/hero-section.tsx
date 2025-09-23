@@ -56,7 +56,7 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative w-full h-[500px] flex items-center justify-center text-white" style={{ backgroundImage: "url('https://i.pinimg.com/736x/8b/63/0a/8b630a889d24216a4c21ef30529d4605.jpg')" , backgroundSize: 'cover', backgroundPosition: 'center top' }}>
+    <section className="relative w-full h-[500px] flex items-center justify-center text-white" style={{ backgroundImage: "url('https://i.pinimg.com/736x/8b/63/0a/8b630a889d24216a4c21ef30529d4605.jpg')" , backgroundSize: 'cover', backgroundPosition: 'center' }}>
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/50"></div>
 
