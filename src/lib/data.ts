@@ -202,7 +202,7 @@ export const BANNERS: Banner[] = [
     id: 1,
     title: 'Servicios esenciales de tu hogar',
     description: 'Encontrá plomeros, albañiles, gasistas, etc',
-    imageUrl: 'https://i.pinimg.com/736x/26/88/73/268873f9675136944ab3f685f294e322.jpg',
+    imageUrl: 'https://i.pinimg.com/1200x/e2/41/5e/e2415e5d7e8e6e804e007d4147a9a04b.jpg',
     imageHint: 'plumber working',
     buttonText: 'Ver Profesionales',
     buttonLink: '/servicios',
@@ -267,6 +267,7 @@ export const CLIENTS: Client[] = [
     
 
     
+
 
 
 
