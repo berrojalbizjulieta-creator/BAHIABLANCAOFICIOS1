@@ -23,6 +23,7 @@ import {
   Dumbbell,
   GlassWater,
   Fan,
+  Bug,
 } from 'lucide-react';
 import type { Category, Professional, Banner, Client } from '@/lib/types';
 import { placeholderImages } from './placeholder-images';
@@ -36,7 +37,7 @@ const getImage = (id: string) =>
   };
 
 export const CATEGORIES: Category[] = [
-    { id: 11, name: 'Plomería', icon: Wrench, description: 'Arreglar canillas, caños y desagües.', imageUrl: getImage('cat-plomeria').imageUrl, imageHint: getImage('cat-plomeria').imageHint },
+    { id: 11, name: 'Plomería', icon: Wrench, description: 'Arreglar canillas, caños y desagües.', imageUrl: getImage('cat-plomeria-2').imageUrl, imageHint: getImage('cat-plomeria-2').imageHint },
     { id: 14, name: 'Electricista', icon: Plug, description: 'Enchufes, cables, arreglos eléctricos.', imageUrl: getImage('cat-electricista').imageUrl, imageHint: getImage('cat-electricista').imageHint },
     { id: 17, name: 'Pintores', icon: Paintbrush, description: 'Pintura de paredes, revoques y techos.', imageUrl: getImage('cat-pintores').imageUrl, imageHint: getImage('cat-pintores').imageHint },
     { id: 15, name: 'Carpintería', icon: Hammer, description: 'Muebles a medida, puertas, madera.', imageUrl: getImage('cat-carpinteria').imageUrl, imageHint: getImage('cat-carpinteria').imageHint },
@@ -56,6 +57,7 @@ export const CATEGORIES: Category[] = [
     { id: 64, name: 'Cerrajería', icon: KeyRound, description: 'Apertura de puertas, cerraduras, llaves.', imageUrl: getImage('cat-cerrajeria').imageUrl, imageHint: getImage('cat-cerrajeria').imageHint },
     { id: 23, name: 'Climatización', icon: Fan, description: 'Aires acondicionados, estufas y radiadores.', imageUrl: getImage('cat-climatizacion').imageUrl, imageHint: getImage('cat-climatizacion').imageHint },
     { id: 65, name: 'Vidriería', icon: GlassWater, description: 'Reemplazo de vidrios, espejos y ventanas.', imageUrl: getImage('cat-vidrieria').imageUrl, imageHint: getImage('cat-vidrieria').imageHint },
+    { id: 66, name: 'Control de Plagas', icon: Bug, description: 'Fumigación y control de plagas.', imageUrl: getImage('cat-plagas').imageUrl, imageHint: getImage('cat-plagas').imageHint },
 ];
 
 
@@ -267,6 +269,7 @@ export const CLIENTS: Client[] = [
     
 
     
+
 
 
 

@@ -99,14 +99,20 @@
     {
       "id": "work-5",
       "description": "An electrician wiring a new light fixture.",
-      "imageUrl": "https://images.unsplash.com/photo-1597502310092-31cdaa35b46d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxlbGVjdHJpY2lhbiUyMHdpcmluZ3xlbnwwfHx8fDE3NTg1OTEyNTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1597502310092-31cdaa35b46d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxlbGVjdHJpY2lhbiUyMHdpcmluZ3xlbnwwfHx8fDE3NTg1OTEyNTF8MA&ixlibrb-4.1.0&q=80&w=1080",
       "imageHint": "electrician wiring"
     },
     {
       "id": "work-6",
       "description": "A beautiful landscaped garden with a stone path.",
-      "imageUrl": "https://images.unsplash.com/photo-1647664876984-611e1666dc83?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxsYW5kc2NhcGVkJTIwZ2FyZGVufGVufDB8fHx8MTc1ODU5MTI1MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1647664876984-611e1666dc83?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxsYW5kc2NhcGVkJTIwZ2FyZGVufGVufDB8fHx8MTc1ODU5MTI1MXww&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "landscaped garden"
+    },
+    {
+      "id": "cat-plomeria-2",
+      "imageUrl": "https://i.pinimg.com/1200x/32/b1/98/32b198f79fca1f095128e0a0b179365b.jpg",
+      "imageHint": "plumbing tools",
+      "description": "Plumbing tools on a dark background."
     },
     {
       "id": "cat-plomeria",
@@ -155,6 +161,12 @@
       "imageUrl": "https://production-next-images-cdn.thumbtack.com/i/502694991185575936/width/320.webp",
       "imageHint": "house cleaning",
       "description": "A person cleaning a house."
+    },
+    {
+      "id": "cat-plagas",
+      "imageUrl": "https://images.unsplash.com/photo-1596521712213-5a0c3300539c?q=80&w=870",
+      "imageHint": "pest control",
+      "description": "A pest control professional working."
     },
     {
       "id": "cat-albanileria",
