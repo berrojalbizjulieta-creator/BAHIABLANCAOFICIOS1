@@ -246,7 +246,7 @@ export default function ProfilePage() {
                 <div className="flex flex-col sm:flex-row items-start gap-6">
                   <div className="relative group">
                     <Avatar 
-                        className={`w-24 h-24 border-4 border-background shadow-md ${isEditing ? 'cursor-pointer' : ''}`}
+                        className={`w-32 h-32 border-4 border-background shadow-md ${isEditing ? 'cursor-pointer' : ''}`}
                         onClick={handleAvatarClick}
                     >
                         <AvatarImage
@@ -667,5 +667,3 @@ export default function ProfilePage() {
     </>
   );
 }
-
-    

@@ -220,7 +220,7 @@ export default function PublicProfilePage() {
               <Card className="overflow-hidden shadow-lg">
                 <CardContent className="p-6">
                   <div className="flex flex-col sm:flex-row items-start gap-6">
-                    <Avatar className="w-24 h-24 border-4 border-background shadow-md">
+                    <Avatar className="w-32 h-32 border-4 border-background shadow-md">
                       <AvatarImage
                         src={professional.photoUrl}
                         alt={professional.name}

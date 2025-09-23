@@ -62,7 +62,7 @@ export default function ProfessionalCard({
       <Card className="flex flex-col md:flex-row items-start w-full overflow-hidden transition-shadow hover:shadow-md">
         <div className="flex-shrink-0 p-6 flex flex-col items-center text-center md:w-1/4">
           <Link href={`/profesional/${professional.id}`} passHref>
-            <Avatar className="w-20 h-20 border-4 border-background shadow-sm relative cursor-pointer">
+            <Avatar className="w-24 h-24 border-4 border-background shadow-sm relative cursor-pointer">
               {professional.photoUrl && (
                   <AvatarImage
                   src={professional.photoUrl}
