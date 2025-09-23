@@ -115,6 +115,12 @@
       "description": "Plumbing tools on a dark background."
     },
     {
+      "id": "cat-electricista-2",
+      "imageUrl": "https://i.pinimg.com/736x/1e/e6/6e/1ee66e61ec9c2948e8169444801fe4af.jpg",
+      "imageHint": "electrician tools",
+      "description": "Electrician tools and equipment."
+    },
+    {
       "id": "cat-plomeria",
       "imageUrl": "https://production-next-images-cdn.thumbtack.com/i/502694998835822616/width/320.webp",
       "imageHint": "plumbing pipes",
