@@ -18,6 +18,7 @@ export interface Professional {
   avgRating: number;
   categoryId: number;
   testimonials: Testimonial[];
+  isVerified?: boolean;
 }
 
 export interface Category {

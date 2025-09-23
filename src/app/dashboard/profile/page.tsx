@@ -16,6 +16,7 @@ import {
   Save,
   X,
   Upload,
+  ShieldCheck,
 } from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {
@@ -35,6 +36,7 @@ import type { Professional } from '@/lib/types';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {useToast} from '@/hooks/use-toast';
 import {Switch} from '@/components/ui/switch';
+import VerificationTab from '@/components/professionals/verification-tab';
 
 function StarRating({
   rating,
@@ -74,6 +76,7 @@ const initialProfessionalData: Professional = {
     avgRating: 0,
     categoryId: 0,
     testimonials: [],
+    isVerified: false,
 }
 
 export default function ProfilePage() {
@@ -87,7 +90,7 @@ export default function ProfilePage() {
     return <div>Profesional no encontrado.</div>;
   }
 
-  const handleInputChange = (field: string, value: string | number) => {
+  const handleInputChange = (field: string, value: string | number | boolean) => {
     setProfessional(prev => (prev ? {...prev, [field]: value} : null));
   };
   
@@ -159,17 +162,21 @@ export default function ProfilePage() {
                     />
                   </div>
                   <div className="flex-1">
-                    {isEditing ? (
-                       <Input
-                          value={professional.name}
-                          onChange={(e) => handleInputChange('name', e.target.value)}
-                          className="text-3xl font-bold font-headline h-auto p-0 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                       />
-                    ) : (
-                      <h1 className="text-3xl font-bold font-headline">
-                        {professional.name}
-                      </h1>
-                    )}
+                    <div className="flex items-center gap-2">
+                        {isEditing ? (
+                        <Input
+                            value={professional.name}
+                            onChange={(e) => handleInputChange('name', e.target.value)}
+                            className="text-3xl font-bold font-headline h-auto p-0 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                        />
+                        ) : (
+                        <h1 className="text-3xl font-bold font-headline">
+                            {professional.name}
+                        </h1>
+                        )}
+                        {professional.isVerified && <ShieldCheck className="w-7 h-7 text-blue-500" />}
+                    </div>
+
                     <div className="mt-1">
                       {professional.testimonials.length > 0 ? (
                         <StarRating
@@ -211,6 +218,7 @@ export default function ProfilePage() {
                 <TabsTrigger value="reviews">Reseñas</TabsTrigger>
                 <TabsTrigger value="photos">Fotos</TabsTrigger>
                 <TabsTrigger value="credentials">Credenciales</TabsTrigger>
+                <TabsTrigger value="verification">Verificación</TabsTrigger>
               </TabsList>
 
               <TabsContent value="about" className="mt-6">
@@ -328,6 +336,13 @@ export default function ProfilePage() {
                     }
                   </CardContent>
                 </Card>
+              </TabsContent>
+
+              <TabsContent value="verification" className="mt-6">
+                <VerificationTab 
+                  isVerified={professional.isVerified}
+                  onVerify={() => handleInputChange('isVerified', true)}
+                />
               </TabsContent>
             </Tabs>
           </div>
