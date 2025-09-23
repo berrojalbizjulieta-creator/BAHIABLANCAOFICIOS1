@@ -582,6 +582,15 @@ export const BANNERS: Banner[] = [
     buttonText: 'Contratar Jardineros',
     buttonLink: '/servicios/jardineria-y-paisajismo',
   },
+  {
+    id: 4,
+    title: 'Servicios de Pintura',
+    description: 'Dale un nuevo color a tu vida con pintores expertos.',
+    imageUrl: 'https://i0.wp.com/villamariavivo.com/wp-content/uploads/2025/05/Chamtac-Pintores-en-Cordoba.png?fit=600%2C315&ssl=1',
+    imageHint: 'painter working',
+    buttonText: 'Ver Pintores',
+    buttonLink: '/servicios/pintura',
+  },
 ];
 
 export const CLIENTS: Client[] = [
