@@ -634,32 +634,32 @@ export const PROFESSIONALS: Professional[] = [
 export const BANNERS: Banner[] = [
   {
     id: 1,
-    title: 'Descuentos de Invierno en Calefacción',
+    title: 'Plomería',
     description:
-      'Prepara tu hogar para el frío. 20% de descuento en instalación y mantenimiento de sistemas de calefacción.',
+      'Soluciones rápidas y efectivas para cualquier problema de plomería en tu hogar.',
     imageUrl: getImage('promo-banner-1').imageUrl,
     imageHint: getImage('promo-banner-1').imageHint,
-    buttonText: 'Ver Profesionales',
-    buttonLink: '/servicios/aire-acondicionado-y-calefaccion',
+    buttonText: 'Ver Plomeros',
+    buttonLink: '/servicios/plomeria',
   },
   {
     id: 2,
-    title: 'Renueva tu Hogar',
+    title: 'Personal de Mantenimiento',
     description:
-      'Servicios de pintura y carpintería para darle una nueva vida a tus espacios. Pide tu presupuesto sin cargo.',
-    imageUrl: getImage('promo-banner-3').imageUrl,
-    imageHint: getImage('promo-banner-3').imageHint,
-    buttonText: 'Explorar Servicios',
-    buttonLink: '/servicios',
+      'Expertos para reparaciones generales, instalaciones y todo lo que tu casa necesite.',
+    imageUrl: getImage('promo-banner-2').imageUrl,
+    imageHint: getImage('promo-banner-2').imageHint,
+    buttonText: 'Ver Expertos',
+    buttonLink: '/servicios/reparaciones-y-servicios-tecnicos',
   },
   {
     id: 3,
-    title: '¿Emergencia Eléctrica?',
-    description: 'Electricistas matriculados disponibles 24/7 para urgencias.',
-    imageUrl: getImage('promo-banner-2').imageUrl,
-    imageHint: getImage('promo-banner-2').imageHint,
-    buttonText: 'Buscar Electricista',
-    buttonLink: '/servicios/electricidad',
+    title: 'Mudanzas y Fletes',
+    description: 'Transporte seguro y confiable para tus pertenencias. Pequeños y grandes traslados.',
+    imageUrl: getImage('promo-banner-3').imageUrl,
+    imageHint: getImage('promo-banner-3').imageHint,
+    buttonText: 'Buscar Transportistas',
+    buttonLink: '/servicios/fletes-y-transportes-pequenos',
   },
 ];
 

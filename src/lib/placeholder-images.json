@@ -8,27 +8,21 @@
     },
     {
       "id": "promo-banner-1",
-      "description": "A person receiving a key to their new home, representing home services.",
-      "imageUrl": "https://images.unsplash.com/photo-1560518883-ce09059ee212?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxob21lJTIwc2VydmljZXN8ZW58MHx8fHwxNzU4NjAwODU3fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "home services"
+      "description": "Plumber fixing a sink.",
+      "imageUrl": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "plumber working"
     },
     {
       "id": "promo-banner-2",
-      "description": "An electrician working on a circuit breaker.",
-      "imageUrl": "https://images.unsplash.com/photo-1667922578520-611558e79aa7e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxlbGVjdHJpY2lhbiUyMHdvcmt8ZW58MHx8fHwxNzU4NTk4MDUzfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "electrician work"
+      "description": "Handyman installing a light fixture on a ceiling.",
+      "imageUrl": "https://images.unsplash.com/photo-1603712725038-17a9a13145a3?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "handyman working"
     },
     {
       "id": "promo-banner-3",
-      "description": "A painter painting a wall with a roller.",
-      "imageUrl": "https://images.unsplash.com/photo-1688372199140-cade7ae820fe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwYWludGVyJTIwd2FsbHxlbnwwfHx8fDE3NTg1OTEyNTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "painter wall"
-    },
-    {
-      "id": "promo-banner-4",
-      "description": "A sculpture in a park at dusk with a purple and pink sky.",
-      "imageUrl": "https://images.unsplash.com/photo-1570501677759-490d84c3e526?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjaXR5JTIwc3Vuc2V0fGVufDB8fHx8MTc1ODU5OTYyNXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "city sunset"
+      "description": "Movers carrying a box together.",
+      "imageUrl": "https://images.unsplash.com/photo-1590506048633-5056bede6931?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "movers working"
     },
     {
       "id": "mp-qr-code",
@@ -51,7 +45,7 @@
     {
       "id": "prof-3",
       "description": "Portrait of a painter in work clothes.",
-      "imageUrl": "https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODUxMDl8MA&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODUxMDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "person portrait"
     },
     {
@@ -87,7 +81,7 @@
     {
       "id": "client-3",
       "description": "Pleased client portrait.",
-      "imageUrl": "https://images.unsplash.com/photo-1639747280804-dd2d6b3d88ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYW4lMjBzbWlsaW5nfGVufDB8fHx8MTc1ODU4NDAyMHww&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1639747280804-dd2d6b3d88ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYW4lMjBzbWlsaW5nfGVufDB8fHx8MTc1ODU4NDAyMHww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "man smiling"
     },
     {
