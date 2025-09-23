@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
@@ -22,6 +22,10 @@ export default function HeroSection() {
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>(['Plomero', 'Electricista', 'Pintor']);
   const { toast } = useToast();
+
+  const plugin = useRef(
+    Autoplay({ delay: 5000, stopOnInteraction: false, stopOnMouseEnter: true })
+  );
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,12 +53,10 @@ export default function HeroSection() {
     <section className="relative w-full py-20 md:py-32 lg:py-40 overflow-hidden">
       <Carousel 
         opts={{ loop: true }}
-        plugins={[
-          Autoplay({
-            delay: 5000,
-          }),
-        ]}
+        plugins={[plugin.current]}
         className="absolute inset-0 w-full h-full"
+        onMouseEnter={plugin.current.stop}
+        onMouseLeave={plugin.current.reset}
       >
         <CarouselContent className="h-full" data-embla-carousel-fade="true">
           {heroImages.map((image) => (
@@ -65,7 +67,7 @@ export default function HeroSection() {
                 fill
                 className="object-cover"
                 data-ai-hint={image.imageHint}
-                priority
+                priority={heroImages.indexOf(image) === 0}
               />
             </CarouselItem>
           ))}
