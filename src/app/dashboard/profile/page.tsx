@@ -18,6 +18,7 @@ import {
   Upload,
   ShieldCheck,
   Shield,
+  PlusCircle,
 } from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {
@@ -38,6 +39,14 @@ import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {useToast} from '@/hooks/use-toast';
 import {Switch} from '@/components/ui/switch';
 import VerificationTab from '@/components/professionals/verification-tab';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
 
 function StarRating({
   rating,
@@ -79,6 +88,8 @@ const initialProfessionalData: Professional = {
     testimonials: [],
     isVerified: false,
 }
+
+const workPhotos = PlaceHolderImages.filter(p => p.id.startsWith('work-'));
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(true);
@@ -335,6 +346,62 @@ export default function ProfilePage() {
                       <p className="text-muted-foreground">Todavía no hay reseñas para mostrar.</p>
                     )
                     }
+                  </CardContent>
+                </Card>
+              </TabsContent>
+               <TabsContent value="photos" className="mt-6">
+                <Card className="shadow-lg">
+                  <CardHeader className="flex-row items-center justify-between">
+                    <CardTitle>Galería de Trabajos</CardTitle>
+                    {isEditing && (
+                      <Button variant="outline">
+                        <PlusCircle className="mr-2" /> Añadir Foto
+                      </Button>
+                    )}
+                  </CardHeader>
+                  <CardContent>
+                    {workPhotos.length > 0 ? (
+                      <Carousel
+                        opts={{
+                          align: 'start',
+                        }}
+                        className="w-full"
+                      >
+                        <CarouselContent>
+                          {workPhotos.map((photo, index) => (
+                            <CarouselItem
+                              key={index}
+                              className="md:basis-1/2 lg:basis-1/3"
+                            >
+                              <div className="p-1">
+                                  <div className="relative aspect-video overflow-hidden rounded-lg">
+                                    <Image
+                                      src={photo.imageUrl}
+                                      alt={photo.description}
+                                      fill
+                                      className="object-cover"
+                                      data-ai-hint={photo.imageHint}
+                                    />
+                                  </div>
+                              </div>
+                            </CarouselItem>
+                          ))}
+                        </CarouselContent>
+                        <CarouselPrevious className="ml-12" />
+                        <CarouselNext className="mr-12" />
+                      </Carousel>
+                    ) : (
+                      <div className="text-center py-10">
+                        <p className="text-muted-foreground">
+                          Aún no has subido fotos de tus trabajos.
+                        </p>
+                        {isEditing && (
+                          <Button className="mt-4">
+                            <Upload className="mr-2" /> Subir mi primer trabajo
+                          </Button>
+                        )}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
