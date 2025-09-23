@@ -31,16 +31,12 @@ const prompt = ai.definePrompt({
   name: 'suggestTradesFromPromptPrompt',
   input: {schema: SuggestTradesFromPromptInputSchema},
   output: {schema: SuggestTradesFromPromptOutputSchema},
-  prompt: `You are an expert in matching user needs to trade categories.
-
-  Based on the following user prompt, suggest a list of relevant trade categories (oficios) that would help them find the right professional.
-
-  Prompt: {{{prompt}}}
-
-  Your response should be a list of trade categories that best match the user's needs.
-  Each item in the list should be short and to the point. Do not respond with full sentences, only the list of trade categories.
-  Example: ["Electricista", "Fontanero", "Gasista"]
-  `,
+  prompt: `Analyze the user's prompt and suggest relevant trade categories (oficios).
+  User Prompt: {{{prompt}}}
+  Your response MUST be ONLY a JSON array of strings. Each string should be a trade category.
+  Example of a valid response: ["Electricista", "Fontanero", "Gasista"]
+  If no relevant trades are found, return an empty array: []
+  Do not include any other text, explanation, or markdown.`,
 });
 
 const suggestTradesFromPromptFlow = ai.defineFlow(
