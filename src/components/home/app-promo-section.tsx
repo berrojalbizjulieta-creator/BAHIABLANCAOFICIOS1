@@ -33,9 +33,9 @@ export default function AppPromoSection() {
               <Image
                 src={appImage.imageUrl}
                 alt={appImage.description}
-                width={350}
-                height={700}
-                className="rounded-[2.5rem] shadow-2xl"
+                width={300}
+                height={600}
+                className="rounded-[2.5rem] shadow-2xl object-cover"
                 data-ai-hint={appImage.imageHint}
               />
             )}
