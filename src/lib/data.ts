@@ -78,6 +78,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subMonths(new Date(), 2),
     lastPaymentDate: subMonths(new Date(), 2),
     isActive: true,
+    isVerified: false,
     testimonials: [
       {
         id: 1,
@@ -116,6 +117,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 15),
     lastPaymentDate: subDays(new Date(), 10),
     isActive: true,
+    isVerified: true,
     testimonials: [
       {
         id: 3,
@@ -154,6 +156,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subMonths(new Date(), 6),
     lastPaymentDate: subDays(new Date(), 5),
     isActive: true,
+    isVerified: false,
     testimonials: [
       {
         id: 5,
@@ -183,6 +186,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subMonths(new Date(), 1),
     lastPaymentDate: subDays(new Date(), 20),
     isActive: false,
+    isVerified: false,
     testimonials: [
       {
         id: 6,

@@ -29,7 +29,7 @@ export interface Professional {
   categoryId: number;
   testimonials: Testimonial[];
   workPhotos?: WorkPhoto[];
-  isVerified?: boolean;
+  isVerified: boolean;
   priceInfo?: string;
   isSubscriptionActive?: boolean;
   subscriptionTier?: 'standard' | 'premium';
