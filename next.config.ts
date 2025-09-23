@@ -45,6 +45,12 @@ const nextConfig: NextConfig = {
         hostname: 'px.cdn.lanueva.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'production-next-images-cdn.thumbtack.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },

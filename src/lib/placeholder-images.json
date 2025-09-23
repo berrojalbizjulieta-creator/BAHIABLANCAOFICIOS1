@@ -14,9 +14,9 @@
     },
     {
       "id": "white-tile-background",
-      "description": "A clean white tile wall background.",
-      "imageUrl": "https://images.unsplash.com/photo-1581788788934-9e32ce7b439c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "imageHint": "white tiles"
+      "description": "A background with a tool pattern.",
+      "imageUrl": "https://production-next-images-cdn.thumbtack.com/i/541387002261708826/width/320.png",
+      "imageHint": "tools background"
     },
     {
       "id": "mp-qr-code",
