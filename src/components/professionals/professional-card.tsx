@@ -73,7 +73,6 @@ export default function ProfessionalCard({
                     />
                 )}
              </div>
-              <AvatarFallback>{professional.name.charAt(0)}</AvatarFallback>
           </Avatar>
         
           <CardHeader className="p-0 pt-3">
