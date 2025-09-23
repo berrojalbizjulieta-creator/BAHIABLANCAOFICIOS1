@@ -52,9 +52,9 @@ export default function ProfessionalCard({
 
   const getWhatsAppLink = (phone?: string) => {
     if (!phone) return '#';
-    // Remove non-numeric characters
     const cleanedPhone = phone.replace(/[^0-9]/g, '');
-    return `https://wa.me/${cleanedPhone}`;
+    const message = encodeURIComponent('Hola, me comunico desde Bahia Blanca Oficios. Estoy interesado en tus servicios.');
+    return `https://wa.me/${cleanedPhone}?text=${message}`;
   }
 
   return (
