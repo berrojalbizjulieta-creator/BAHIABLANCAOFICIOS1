@@ -205,7 +205,7 @@ export const BANNERS: Banner[] = [
     imageUrl: 'https://i.pinimg.com/1200x/e2/41/5e/e2415e5d7e8e6e804e007d4147a9a04b.jpg',
     imageHint: 'plumber working',
     buttonText: 'Ver Profesionales',
-    buttonLink: '/servicios',
+    buttonLink: '/servicios-esenciales',
   },
   {
     id: 2,
@@ -267,6 +267,7 @@ export const CLIENTS: Client[] = [
     
 
     
+
 
 
 
