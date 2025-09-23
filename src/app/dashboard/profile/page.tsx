@@ -52,6 +52,8 @@ import {
 } from '@/components/ui/carousel';
 import PaymentDialog from '@/components/professionals/payment-dialog';
 import { subMonths } from 'date-fns';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CATEGORIES } from '@/lib/data';
 
 
 function StarRating({
@@ -126,6 +128,8 @@ export default function ProfilePage() {
   if (!professional) {
     return <div>Profesional no encontrado.</div>;
   }
+  
+  const selectedCategory = CATEGORIES.find(c => c.id === professional.categoryId);
 
   const handleInputChange = (field: string, value: string | number | boolean) => {
     setProfessional(prev => (prev ? {...prev, [field]: value} : null));
@@ -231,8 +235,36 @@ export default function ProfilePage() {
                         )}
                         {professional.isVerified ? <ShieldCheck className="w-7 h-7 text-blue-500" /> : <Shield className="w-7 h-7 text-muted-foreground" />}
                     </div>
-
-                    <div className="mt-1">
+                     <div className="mt-2 text-sm">
+                      {isEditing ? (
+                        <div className="flex items-center gap-2">
+                          <Briefcase className="w-4 h-4 text-muted-foreground" />
+                           <Select 
+                              value={String(professional.categoryId)}
+                              onValueChange={(value) => handleInputChange('categoryId', Number(value))}
+                           >
+                              <SelectTrigger className="w-fit h-auto p-1 border-dashed">
+                                <SelectValue placeholder="Selecciona tu rubro" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {CATEGORIES.map((category) => (
+                                  <SelectItem key={category.id} value={String(category.id)}>
+                                    {category.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                        </div>
+                      ) : (
+                        selectedCategory && (
+                           <div className="flex items-center gap-2 text-muted-foreground">
+                            <Briefcase className="w-4 h-4" /> 
+                            <span>{selectedCategory.name}</span>
+                          </div>
+                        )
+                      )}
+                    </div>
+                    <div className="mt-2">
                       {professional.testimonials.length > 0 ? (
                         <StarRating
                           rating={professional.avgRating}
