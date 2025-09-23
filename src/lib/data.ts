@@ -200,12 +200,12 @@ export const PROFESSIONALS: Professional[] = [
 export const BANNERS: Banner[] = [
   {
     id: 1,
-    title: 'Plomería de Confianza',
-    description: 'Soluciones rápidas para fugas, instalaciones y más.',
+    title: 'SERVICIOS ESENCIALES DE TU HOGAR',
+    description: 'ENCONTRA PLOMEROS, ALBAÑILES, GASISTAS, ETC',
     imageUrl: 'https://i.pinimg.com/736x/26/88/73/268873f9675136944ab3f685f294e322.jpg',
     imageHint: 'plumber working',
-    buttonText: 'Ver Plomeros',
-    buttonLink: '/servicios/plomeria',
+    buttonText: 'Ver Profesionales',
+    buttonLink: '/servicios',
   },
   {
     id: 2,
@@ -267,3 +267,4 @@ export const CLIENTS: Client[] = [
     
 
     
+
