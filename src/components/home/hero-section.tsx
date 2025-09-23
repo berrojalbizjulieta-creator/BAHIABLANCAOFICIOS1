@@ -9,6 +9,8 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '../ui/card';
 import { placeholderImages } from '@/lib/placeholder-images';
 
+const heroImage = placeholderImages.find(p => p.id === 'hero-background-parque-de-mayo');
+
 export default function HeroSection() {
   const [prompt, setPrompt] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -16,8 +18,6 @@ export default function HeroSection() {
   const [error, setError] = useState('');
   const router = useRouter();
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
-
-  const heroImage = placeholderImages.find(p => p.id === 'hero-background-parque-de-mayo');
 
   useEffect(() => {
     if (debounceTimeout.current) {

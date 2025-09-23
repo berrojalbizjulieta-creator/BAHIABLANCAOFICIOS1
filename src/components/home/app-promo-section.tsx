@@ -4,10 +4,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { placeholderImages } from '@/lib/placeholder-images';
 
-export default function AppPromoSection() {
+const fondoBaldosas = placeholderImages.find(p => p.id === 'white-tile-background');
+const celularImg = placeholderImages.find(p => p.id === 'app-promo-mockup');
 
-  const fondoBaldosas = placeholderImages.find(p => p.id === 'white-tile-background');
-  const celularImg = placeholderImages.find(p => p.id === 'app-promo-mockup');
+export default function AppPromoSection() {
 
   return (
     <section className="relative py-20 md:py-24 bg-muted/30 overflow-hidden">
