@@ -150,9 +150,17 @@ export default function ProfilePage() {
                     />
                   </div>
                   <div className="flex-1">
-                    <h1 className="text-3xl font-bold font-headline">
-                      {professional.name}
-                    </h1>
+                    {isEditing ? (
+                       <Input
+                          value={professional.name}
+                          onChange={(e) => handleInputChange('name', e.target.value)}
+                          className="text-3xl font-bold font-headline h-auto p-0 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                       />
+                    ) : (
+                      <h1 className="text-3xl font-bold font-headline">
+                        {professional.name}
+                      </h1>
+                    )}
                     <div className="mt-1">
                       <StarRating
                         rating={professional.avgRating}
