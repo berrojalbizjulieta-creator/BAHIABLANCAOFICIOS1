@@ -8,7 +8,6 @@ import { placeholderImages } from '@/lib/placeholder-images';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { runFlow } from '@genkit-ai/next/client';
-import type { SuggestTradesFromPromptOutput } from '@/ai/flows/suggest-trades-from-prompt';
 import { suggestTradesFromPrompt } from '@/ai/flows/suggest-trades-from-prompt';
 import { Card, CardContent } from '../ui/card';
 
@@ -18,10 +17,10 @@ const heroImage = placeholderImages.find(
 
 export default function HeroSection() {
   const [prompt, setPrompt] = useState('');
-  const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isSuggestionsLoading, setIsSuggestionsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [error, setError] = useState('');
   const router = useRouter();
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
@@ -31,11 +30,13 @@ export default function HeroSection() {
     if (prompt.length < 3) {
       setSuggestions([]);
       setShowSuggestions(false);
+      setError('');
       return;
     }
 
     setIsSuggestionsLoading(true);
     setShowSuggestions(true);
+    setError('');
 
     if (debounceTimeout.current) {
       clearTimeout(debounceTimeout.current);
@@ -45,8 +46,9 @@ export default function HeroSection() {
       try {
         const response = await runFlow(suggestTradesFromPrompt, { prompt });
         setSuggestions(response.suggestedTrades || []);
-      } catch (error) {
-        console.error('Error fetching suggestions:', error);
+      } catch (e) {
+        console.error('Error fetching suggestions:', e);
+        setError('No se pudieron obtener sugerencias. Intenta de nuevo.');
         setSuggestions([]);
       } finally {
         setIsSuggestionsLoading(false);
@@ -131,9 +133,9 @@ export default function HeroSection() {
                 type="submit"
                 size="icon"
                 className="rounded-full flex-shrink-0 w-12 h-12"
-                disabled={loading}
+                disabled={isSuggestionsLoading}
               >
-                {loading ? (
+                {isSuggestionsLoading ? (
                   <svg
                     className="animate-spin h-5 w-5 text-white"
                     xmlns="http://www.w3.org/2000/svg"
@@ -168,7 +170,12 @@ export default function HeroSection() {
                       Buscando sugerencias...
                     </div>
                   )}
-                  {!isSuggestionsLoading && suggestions.length > 0 && (
+                  {error && (
+                    <div className="px-4 py-2 text-sm text-destructive">
+                      {error}
+                    </div>
+                  )}
+                  {!isSuggestionsLoading && !error && suggestions.length > 0 && (
                     <ul>
                       {suggestions.map((trade) => (
                         <li key={trade}>
@@ -183,7 +190,7 @@ export default function HeroSection() {
                       ))}
                     </ul>
                   )}
-                  {!isSuggestionsLoading &&
+                  {!isSuggestionsLoading && !error &&
                     suggestions.length === 0 &&
                     prompt.length > 2 && (
                       <div className="px-4 py-2 text-sm text-muted-foreground">
