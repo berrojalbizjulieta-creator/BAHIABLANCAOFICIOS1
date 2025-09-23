@@ -11,28 +11,25 @@ import { Card, CardContent } from '../ui/card';
 import { suggestTradesFromPrompt } from '@/ai/flows/suggest-trades-from-prompt';
 
 
-const heroImage = placeholderImages.find(
-  (img) => img.id === 'hero-background-parque-de-mayo'
-);
-
 export default function HeroSection() {
   const [prompt, setPrompt] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isSuggestionsLoading, setIsSuggestionsLoading] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
+  const heroImage = placeholderImages.find(
+    (img) => img.id === 'hero-background-parque-de-mayo'
+  );
+
   useEffect(() => {
     if (prompt.length < 3) {
       setSuggestions([]);
-      setShowSuggestions(false);
       setError('');
       return;
     }
 
-    setShowSuggestions(true);
     setIsSuggestionsLoading(true);
     setError('');
 
@@ -52,27 +49,9 @@ export default function HeroSection() {
     return () => clearTimeout(timeoutId);
   }, [prompt]);
 
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        searchContainerRef.current &&
-        !searchContainerRef.current.contains(event.target as Node)
-      ) {
-        setShowSuggestions(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!prompt) return;
-    setShowSuggestions(false);
     router.push(`/servicios?search=${encodeURIComponent(prompt)}`);
   };
 
@@ -116,7 +95,6 @@ export default function HeroSection() {
                 type="text"
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                onFocus={() => setShowSuggestions(prompt.length > 2)}
                 placeholder="¿Qué servicio estás buscando? Ej: 'arreglar una canilla'"
                 className="flex-1 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-base text-gray-800 placeholder:text-gray-500"
               />
@@ -153,7 +131,7 @@ export default function HeroSection() {
                 <span className="sr-only">Buscar</span>
               </Button>
             </form>
-            {showSuggestions && (
+            {suggestions.length > 0 && (
               <Card className="absolute top-full mt-2 w-full text-left shadow-lg z-20">
                 <CardContent className="p-2">
                   {isSuggestionsLoading && (
@@ -173,7 +151,6 @@ export default function HeroSection() {
                           <Link
                             href={`/servicios/${createCategorySlug(trade)}`}
                             className="block px-4 py-2 text-sm rounded-md hover:bg-muted"
-                            onClick={() => setShowSuggestions(false)}
                           >
                             {trade}
                           </Link>
