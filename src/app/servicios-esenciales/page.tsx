@@ -48,12 +48,16 @@ const renderCategoryCard = (categoryName: string) => {
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             data-ai-hint={category.imageHint}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
         </div>
-        <div className="absolute bottom-0 left-0 p-4">
-          <CardTitle className="font-headline text-lg text-white">
+        <div className="absolute bottom-0 left-0 p-4 text-white">
+          <CardTitle className="font-headline text-lg">
             {category.name}
           </CardTitle>
+          <p className="text-sm mt-1 opacity-90">{category.description}</p>
+          <p className="text-xs mt-2 font-semibold opacity-80 group-hover:opacity-100 group-hover:underline">
+            Encontralo en {category.name}
+          </p>
         </div>
       </Card>
     </Link>
