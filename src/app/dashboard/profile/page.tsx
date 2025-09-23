@@ -99,6 +99,7 @@ const initialProfessionalData: Professional = {
     name: "Nombre del Profesional",
     description: "",
     phone: "",
+    email: "profesional@email.com",
     photoUrl: "",
     photoHint: "",
     specialties: [],
@@ -108,6 +109,8 @@ const initialProfessionalData: Professional = {
     workPhotos: placeholderImages.filter(p => p.id.startsWith('work-')),
     isVerified: false,
     subscriptionTier: 'standard',
+    registrationDate: new Date(),
+    isActive: true,
 }
 
 

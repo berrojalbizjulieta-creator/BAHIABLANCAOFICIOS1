@@ -1,24 +1,21 @@
 'use client';
 
 import React from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+
+// MOCK: En una app real, esto vendría de Firebase Auth
+// y determinaría a qué panel redirigir al usuario.
+const MOCK_USER_TYPE = 'professional'; // o 'client'
 
 export default function DashboardPage() {
   const router = useRouter();
   
-  // For now, let's assume the user is a client and redirect.
-  // In a real app, you'd have logic to determine user type.
   React.useEffect(() => {
-    router.replace('/dashboard/client');
+    if (MOCK_USER_TYPE === 'professional') {
+        router.replace('/dashboard/profile');
+    } else {
+        router.replace('/dashboard/client');
+    }
   }, [router]);
 
   return (
