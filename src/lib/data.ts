@@ -425,6 +425,7 @@ export const PROFESSIONALS: Professional[] = [
     categoryId: 11,
     priceInfo: 'Hora de trabajo desde $2500 ARS. Presupuestos sin cargo.',
     isSubscriptionActive: false, // Subscription expired
+    subscriptionTier: 'standard',
     testimonials: [
       {
         id: 1,
@@ -455,6 +456,7 @@ export const PROFESSIONALS: Professional[] = [
     categoryId: 14,
     priceInfo: 'Consultar por instalación. Revisiones desde $2000 ARS.',
     isSubscriptionActive: true,
+    subscriptionTier: 'premium',
     testimonials: [
       {
         id: 3,
@@ -484,6 +486,7 @@ export const PROFESSIONALS: Professional[] = [
     categoryId: 17,
     priceInfo: 'Presupuestos a medida según m2. Incluye materiales.',
     isSubscriptionActive: true,
+    subscriptionTier: 'standard',
     testimonials: [
       {
         id: 5,
@@ -505,6 +508,7 @@ export const PROFESSIONALS: Professional[] = [
     avgRating: 4.9,
     categoryId: 15,
     isSubscriptionActive: true,
+    subscriptionTier: 'premium',
     testimonials: [
       {
         id: 6,
@@ -525,6 +529,7 @@ export const PROFESSIONALS: Professional[] = [
     avgRating: 4.7,
     categoryId: 34,
     isSubscriptionActive: true,
+    subscriptionTier: 'standard',
     testimonials: [
       {
         id: 7,
@@ -545,6 +550,7 @@ export const PROFESSIONALS: Professional[] = [
     avgRating: 4.6,
     categoryId: 23,
     isSubscriptionActive: false,
+    subscriptionTier: 'standard',
     testimonials: [],
   },
   {
@@ -558,6 +564,7 @@ export const PROFESSIONALS: Professional[] = [
     categoryId: 13,
     priceInfo: 'Construcción desde $5000/m2. Consulte por reformas.',
     isSubscriptionActive: true,
+    subscriptionTier: 'premium',
     testimonials: [
       {
         id: 8,
@@ -579,6 +586,7 @@ export const PROFESSIONALS: Professional[] = [
     categoryId: 13,
     priceInfo: 'Presupuestos a medida.',
     isSubscriptionActive: true,
+    subscriptionTier: 'standard',
     testimonials: [
       {
         id: 9,
@@ -609,6 +617,7 @@ export const PROFESSIONALS: Professional[] = [
     categoryId: 13,
     priceInfo: 'Revoque fino y grueso. Consulte precios.',
     isSubscriptionActive: true,
+    subscriptionTier: 'standard',
     testimonials: [
       {
         id: 11,
@@ -653,3 +662,5 @@ export const BANNERS: Banner[] = [
     buttonLink: '/servicios/electricidad',
   },
 ];
+
+    
