@@ -14,9 +14,9 @@
     },
     {
       "id": "white-tile-background",
-      "description": "A background with a tool pattern.",
-      "imageUrl": "https://production-next-images-cdn.thumbtack.com/i/541387002261708826/width/320.png",
-      "imageHint": "tools background"
+      "description": "A background of a white subway tile wall.",
+      "imageUrl": "https://images.unsplash.com/photo-1581456495146-65a71b2c8e52?q=80&w=2000",
+      "imageHint": "white tiles"
     },
     {
       "id": "mp-qr-code",

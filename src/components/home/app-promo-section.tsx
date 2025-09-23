@@ -10,12 +10,13 @@ const celularImg = placeholderImages.find(p => p.id === 'app-promo-mockup');
 export default function AppPromoSection() {
 
   return (
-    <section className="relative py-20 md:py-24 bg-muted/30 overflow-hidden">
+    <section className="relative py-20 md:py-24 overflow-hidden">
       {fondoBaldosas && <Image
           src={fondoBaldosas.imageUrl}
           alt={fondoBaldosas.description}
           fill
           style={{ objectFit: "cover" }}
+          className="opacity-20"
           data-ai-hint={fondoBaldosas.imageHint}
         />}
       <div className="container mx-auto px-4 md:px-6 relative z-10">
