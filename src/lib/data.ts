@@ -202,14 +202,14 @@ export const BANNERS: Banner[] = [
     id: 1,
     title: 'Servicios esenciales de tu hogar',
     description: 'Encontrá plomeros, albañiles, gasistas, etc',
-    imageUrl: 'https://i.pinimg.com/736x/26/88/73/268873/268873f9675136944ab3f685f294e322.jpg',
+    imageUrl: 'https://i.pinimg.com/736x/26/88/73/268873f9675136944ab3f685f294e322.jpg',
     imageHint: 'plumber working',
     buttonText: 'Ver Profesionales',
     buttonLink: '/servicios',
   },
   {
     id: 2,
-    title: 'Jardinería',
+    title: 'Dale vida a tu jardín',
     description: 'Cortá el pasto, poné luces y armá tu patio',
     imageUrl: 'https://i.pinimg.com/1200x/ce/30/e6/ce30e6fa6063da846fedd81b4d6d5567.jpg',
     imageHint: 'garden tools',
@@ -267,6 +267,7 @@ export const CLIENTS: Client[] = [
     
 
     
+
 
 
 
