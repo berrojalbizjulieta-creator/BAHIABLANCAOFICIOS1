@@ -631,7 +631,7 @@ export const BANNERS: Banner[] = [
     imageUrl: getImage('promo-banner-1').imageUrl,
     imageHint: getImage('promo-banner-1').imageHint,
     buttonText: 'Ver Profesionales',
-    buttonLink: '#',
+    buttonLink: '/servicios/aire-acondicionado-y-calefaccion',
   },
   {
     id: 2,
@@ -641,7 +641,7 @@ export const BANNERS: Banner[] = [
     imageUrl: getImage('promo-banner-3').imageUrl,
     imageHint: getImage('promo-banner-3').imageHint,
     buttonText: 'Explorar Servicios',
-    buttonLink: '#',
+    buttonLink: '/servicios',
   },
   {
     id: 3,
@@ -649,5 +649,7 @@ export const BANNERS: Banner[] = [
     description: 'Electricistas matriculados disponibles 24/7 para urgencias.',
     imageUrl: getImage('promo-banner-2').imageUrl,
     imageHint: getImage('promo-banner-2').imageHint,
+    buttonText: 'Buscar Electricista',
+    buttonLink: '/servicios/electricidad',
   },
 ];

@@ -1,10 +1,16 @@
 {
   "placeholderImages": [
     {
-      "id": "promo-banner-1",
+      "id": "hero-background-1",
       "description": "El portal del Parque de Mayo en Bahía Blanca.",
       "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2f/P%C3%B3rtico_Parque_de_Mayo_Bahia_Blanca.jpg",
       "imageHint": "parque bahia"
+    },
+    {
+      "id": "promo-banner-1",
+      "description": "A person receiving a key to their new home, representing home services.",
+      "imageUrl": "https://images.unsplash.com/photo-1560518883-ce09059ee212?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxob21lJTIwc2VydmljZXN8ZW58MHx8fHwxNzU4NjAwODU3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "home services"
     },
     {
       "id": "promo-banner-2",
@@ -45,13 +51,13 @@
     {
       "id": "prof-3",
       "description": "Portrait of a painter in work clothes.",
-      "imageUrl": "https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODUxMDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODUxMDl8MA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "person portrait"
     },
     {
       "id": "prof-4",
       "description": "Portrait of a male carpenter.",
-      "imageUrl": "https://images.unsplash.com/photo-1607031542107-f6f46b5d54e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODI4MTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1607031542107-f6f46b5d54e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODI4MTZ8MA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "man portrait"
     },
     {

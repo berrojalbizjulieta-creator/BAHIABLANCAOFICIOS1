@@ -11,6 +11,20 @@ import {
 } from '@/components/ui/carousel';
 import { Button } from '../ui/button';
 import Link from 'next/link';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
+
+const getImage = (id: string) =>
+  PlaceHolderImages.find((img) => img.id === id) || {
+    imageUrl: '',
+    imageHint: '',
+  };
+
+const promoBanners = [
+    getImage('promo-banner-1'),
+    getImage('promo-banner-3'),
+    getImage('promo-banner-2'),
+].filter(Boolean);
+
 
 export default function PromoSlider() {
   return (

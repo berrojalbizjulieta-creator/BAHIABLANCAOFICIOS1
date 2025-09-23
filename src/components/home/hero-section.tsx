@@ -18,7 +18,7 @@ import { suggestTradesFromPrompt } from '@/ai/flows/suggest-trades-from-prompt';
 import { Card, CardContent } from '../ui/card';
 
 const heroImages = PlaceHolderImages.filter(img =>
-  img.id.startsWith('promo-banner-')
+  img.id.startsWith('hero-background-')
 );
 
 export default function HeroSection() {
