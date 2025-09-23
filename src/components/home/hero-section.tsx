@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
@@ -8,8 +8,8 @@ import { placeholderImages } from '@/lib/placeholder-images';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '../ui/card';
-import { suggestTradesFromPrompt } from '@/ai/flows/suggest-trades-from-prompt';
 
+let debounceTimeout: NodeJS.Timeout;
 
 export default function HeroSection() {
   const [prompt, setPrompt] = useState('');
@@ -17,14 +17,20 @@ export default function HeroSection() {
   const [isSuggestionsLoading, setIsSuggestionsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
-  const searchContainerRef = useRef<HTMLDivElement>(null);
 
   const heroImage = placeholderImages.find(
     (img) => img.id === 'hero-background-parque-de-mayo'
   );
 
-  useEffect(() => {
-    if (prompt.length < 3) {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPrompt = e.target.value;
+    setPrompt(newPrompt);
+
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
+    }
+
+    if (newPrompt.length < 3) {
       setSuggestions([]);
       setError('');
       return;
@@ -33,10 +39,14 @@ export default function HeroSection() {
     setIsSuggestionsLoading(true);
     setError('');
 
-    const timeoutId = setTimeout(async () => {
+    debounceTimeout = setTimeout(async () => {
       try {
-        const response = await suggestTradesFromPrompt({ prompt });
-        setSuggestions(response.suggestedTrades || []);
+        const res = await fetch(`/api/sugerencia?q=${newPrompt}`);
+        if (!res.ok) {
+          throw new Error(`Server responded with ${res.status}`);
+        }
+        const data = await res.json();
+        setSuggestions(data.suggestions || []);
       } catch (e: any) {
         console.error('Error fetching suggestions:', e);
         setError('No se pudieron obtener sugerencias. Intenta de nuevo.');
@@ -45,9 +55,7 @@ export default function HeroSection() {
         setIsSuggestionsLoading(false);
       }
     }, 500);
-
-    return () => clearTimeout(timeoutId);
-  }, [prompt]);
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,7 +93,6 @@ export default function HeroSection() {
           </p>
           <div
             className="relative w-full max-w-xl mx-auto"
-            ref={searchContainerRef}
           >
             <form
               onSubmit={handleSearch}
@@ -94,7 +101,7 @@ export default function HeroSection() {
               <Input
                 type="text"
                 value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
+                onChange={handleInputChange}
                 placeholder="¿Qué servicio estás buscando? Ej: 'arreglar una canilla'"
                 className="flex-1 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-base text-gray-800 placeholder:text-gray-500"
               />
@@ -131,7 +138,7 @@ export default function HeroSection() {
                 <span className="sr-only">Buscar</span>
               </Button>
             </form>
-            {suggestions.length > 0 && (
+            { (isSuggestionsLoading || error || suggestions.length > 0) && (
               <Card className="absolute top-full mt-2 w-full text-left shadow-lg z-20">
                 <CardContent className="p-2">
                   {isSuggestionsLoading && (
