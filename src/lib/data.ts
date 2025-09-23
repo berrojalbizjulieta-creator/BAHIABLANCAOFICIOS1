@@ -221,8 +221,8 @@ export const BANNERS: Banner[] = [
     title: 'Servicios de limpieza',
     description:
       'De casas, departamentos y limpieza post obra',
-    imageUrl: getImage('work-6').imageUrl,
-    imageHint: getImage('work-6').imageHint,
+    imageUrl: 'https://i.pinimg.com/1200x/65/bd/62/65bd622b8c2073058b8c0d669fdfde5a.jpg',
+    imageHint: 'cleaning products',
     buttonText: 'Contratar Jardineros',
     buttonLink: '/servicios/jardineria-y-paisajismo',
   },
@@ -267,6 +267,7 @@ export const CLIENTS: Client[] = [
     
 
     
+
 
 
 
