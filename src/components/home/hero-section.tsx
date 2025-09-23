@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
@@ -7,9 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '../ui/card';
-import { suggestTradesFromPrompt } from '@/ai/flows/suggest-trades-from-prompt';
 import { placeholderImages } from '@/lib/placeholder-images';
-
 
 export default function HeroSection() {
   const [prompt, setPrompt] = useState('');
@@ -18,18 +16,15 @@ export default function HeroSection() {
   const [error, setError] = useState('');
   const router = useRouter();
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
-  
+
   const heroImage = placeholderImages.find(p => p.id === 'hero-background-parque-de-mayo');
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newPrompt = e.target.value;
-    setPrompt(newPrompt);
-
+  useEffect(() => {
     if (debounceTimeout.current) {
       clearTimeout(debounceTimeout.current);
     }
 
-    if (newPrompt.length < 3) {
+    if (prompt.length < 3) {
       setSuggestions([]);
       setError('');
       return;
@@ -40,8 +35,12 @@ export default function HeroSection() {
 
     debounceTimeout.current = setTimeout(async () => {
       try {
-        const response = await suggestTradesFromPrompt({ prompt: newPrompt });
-        setSuggestions(response.suggestedTrades || []);
+        const res = await fetch(`/api/sugerencia?q=${prompt}`);
+        if (!res.ok) {
+          throw new Error(`Server responded with ${res.status}`);
+        }
+        const data = await res.json();
+        setSuggestions(data.suggestedTrades || []);
       } catch (e: any) {
         console.error('Error fetching suggestions:', e);
         setError('No se pudieron obtener sugerencias. Intenta de nuevo.');
@@ -50,7 +49,14 @@ export default function HeroSection() {
         setIsSuggestionsLoading(false);
       }
     }, 500);
-  };
+
+    return () => {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+    };
+  }, [prompt]);
+
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,7 +102,7 @@ export default function HeroSection() {
               <Input
                 type="text"
                 value={prompt}
-                onChange={handleInputChange}
+                onChange={(e) => setPrompt(e.target.value)}
                 placeholder="¿Qué servicio estás buscando? Ej: 'arreglar una canilla'"
                 className="flex-1 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-base text-gray-800 placeholder:text-gray-500"
               />
