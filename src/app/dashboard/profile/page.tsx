@@ -460,7 +460,7 @@ export default function ProfilePage() {
                       <TabsList className="grid w-full grid-cols-3">
                         <TabsTrigger value="Por Hora">Por Hora</TabsTrigger>
                         <TabsTrigger value="Por Trabajo">Por Trabajo</TabsTrigger>
-                        <TabsTrigger value="Por Mes">Por Mes</TabsTrigger>
+                        <TabsTrigger value="Por Distancia">Por Distancia</TabsTrigger>
                       </TabsList>
                     </Tabs>
                     <div className="relative">
