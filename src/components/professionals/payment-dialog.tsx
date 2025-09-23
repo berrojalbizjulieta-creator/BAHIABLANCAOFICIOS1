@@ -21,6 +21,7 @@ interface PaymentDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   professionalName: string;
+  onPaymentSuccess?: () => void;
 }
 
 const getImage = (id: string) =>
@@ -32,17 +33,27 @@ const getImage = (id: string) =>
 
 const mercadoPagoQr = getImage('mp-qr-code');
 
-export default function PaymentDialog({ isOpen, onOpenChange, professionalName }: PaymentDialogProps) {
+export default function PaymentDialog({ isOpen, onOpenChange, professionalName, onPaymentSuccess }: PaymentDialogProps) {
+
+  const handlePayment = () => {
+    // In a real app, you would handle the payment logic here.
+    // For this simulation, we'll just call the success callback.
+    if(onPaymentSuccess) {
+      onPaymentSuccess();
+    }
+    onOpenChange(false);
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
           <div className='flex items-center gap-3'>
             <Image src="/mp-logo.svg" alt="Mercado Pago" width={32} height={32} />
-            <DialogTitle className='text-2xl'>Contactar a {professionalName}</DialogTitle>
+            <DialogTitle className='text-2xl'>Publicar Perfil de {professionalName}</DialogTitle>
           </div>
           <DialogDescription>
-            Elige un método de pago para abonar la consulta o el servicio.
+            Realiza el pago para que tu perfil sea visible para miles de clientes.
           </DialogDescription>
         </DialogHeader>
 
@@ -106,7 +117,7 @@ export default function PaymentDialog({ isOpen, onOpenChange, professionalName }
             <p className='text-xs text-muted-foreground'>
                 Al pagar, aceptas los Términos y Condiciones de Mercado Pago.
             </p>
-            <Button onClick={() => onOpenChange(false)} className='w-full sm:w-auto' type="submit">
+            <Button onClick={handlePayment} className='w-full sm:w-auto' type="submit">
                 Pagar $5.000 ARS
             </Button>
         </DialogFooter>

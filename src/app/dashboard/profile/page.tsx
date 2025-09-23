@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useRef, useState} from 'react';
+import React, {useRef, useState, useEffect} from 'react';
 import Image from 'next/image';
 import {
   Star,
@@ -51,6 +51,8 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import PaymentDialog from '@/components/professionals/payment-dialog';
+import { subMonths } from 'date-fns';
+
 
 function StarRating({
   rating,
@@ -107,8 +109,19 @@ export default function ProfilePage() {
   const [paymentMethods, setPaymentMethods] = useState('');
   const [price, setPrice] = useState({ type: 'Por Hora', amount: '', details: '' });
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
+  // Simulate last payment date, setting it to 2 months ago to show the button by default.
+  const [lastPaymentDate, setLastPaymentDate] = useState(subMonths(new Date(), 2)); 
+  const [isSubscriptionActive, setIsSubscriptionActive] = useState(false);
+
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // Check if the last payment was within the last month
+    const oneMonthAgo = subMonths(new Date(), 1);
+    setIsSubscriptionActive(lastPaymentDate > oneMonthAgo);
+  }, [lastPaymentDate]);
+
 
   if (!professional) {
     return <div>Profesional no encontrado.</div>;
@@ -133,7 +146,20 @@ export default function ProfilePage() {
   }
 
   const handlePublish = () => {
+    // Before opening the payment dialog, we could do a final save
+    handleSave();
+    // Then open the dialog
     setIsPaymentDialogOpen(true);
+  }
+
+  const handlePaymentSuccess = () => {
+    // This would be called from the payment dialog on successful payment
+    setLastPaymentDate(new Date());
+    toast({
+        title: "¡Publicación Exitosa!",
+        description: "Tu perfil ahora está visible para nuevos clientes.",
+    });
+    setIsEditing(false);
   }
 
   const handleAvatarClick = () => {
@@ -505,7 +531,7 @@ export default function ProfilePage() {
                   </div>
                 )}
               </CardContent>
-                 {isEditing && (
+                 {isEditing && !isSubscriptionActive && (
                     <CardFooter className="flex-col items-start gap-3 pt-4 border-t">
                         <Button onClick={handlePublish} className="w-full">
                            <PartyPopper className="mr-2" /> ¡Terminar Edición y Publicar!
@@ -524,6 +550,7 @@ export default function ProfilePage() {
         isOpen={isPaymentDialogOpen}
         onOpenChange={setIsPaymentDialogOpen}
         professionalName={professional.name}
+        onPaymentSuccess={handlePaymentSuccess}
       />
     </>
   );
