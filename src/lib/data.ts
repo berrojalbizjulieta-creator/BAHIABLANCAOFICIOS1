@@ -210,7 +210,7 @@ export const BANNERS: Banner[] = [
   {
     id: 2,
     title: 'Jardinería',
-    description: 'Plomeros, gasistas y electricistas listos para ayudarte.',
+    description: 'Cortá el pasto, poné luces y armá tu patio',
     imageUrl: getImage('work-3').imageUrl,
     imageHint: getImage('work-3').imageHint,
     buttonText: 'Buscar Técnicos',
@@ -267,5 +267,6 @@ export const CLIENTS: Client[] = [
     
 
     
+
 
 
