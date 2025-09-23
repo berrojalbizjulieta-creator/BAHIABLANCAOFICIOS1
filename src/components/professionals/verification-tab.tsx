@@ -15,7 +15,6 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { ShieldCheck, CheckCircle, Clock } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import { createVerificationMailto } from '@/ai/flows/create-verification-mailto';
 
 interface VerificationTabProps {
     isVerified?: boolean;
@@ -43,31 +42,16 @@ export default function VerificationTab({ isVerified, onVerify, professionalName
     }
     setIsSubmitting(true);
 
-    try {
-        const { mailto } = await createVerificationMailto({
-            cuil,
-            professionalName,
-        });
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    toast({
+      title: 'Solicitud Enviada',
+      description: 'Hemos recibido tu solicitud de verificación. Te notificaremos cuando el proceso haya finalizado.',
+    });
 
-        window.location.href = mailto;
-        
-        toast({
-          title: 'Abre tu cliente de correo',
-          description: 'Hemos preparado un borrador. Por favor, adjunta los archivos y envía el correo para completar tu solicitud.',
-        });
-
-        setIsPending(true);
-
-    } catch (error) {
-        console.error('Error creating mailto link:', error);
-        toast({
-            title: 'Error',
-            description: 'No se pudo generar el correo de verificación. Inténtalo de nuevo.',
-            variant: 'destructive',
-        });
-    } finally {
-        setIsSubmitting(false);
-    }
+    setIsPending(true);
+    setIsSubmitting(false);
   };
 
   if (isVerified) {
@@ -121,7 +105,7 @@ export default function VerificationTab({ isVerified, onVerify, professionalName
         <Alert>
           <AlertTitle>¿Qué necesitas para verificar tu cuenta?</AlertTitle>
           <AlertDescription>
-            Para asegurar la autenticidad, se abrirá tu cliente de correo electrónico con un borrador. Por favor, **adjunta una foto de tu DNI (frente y dorso) y una selfie tuya sosteniéndolo** antes de enviarlo. Esta información es confidencial y solo se usará para el proceso de verificación.
+            Para asegurar la autenticidad, te pediremos que adjuntes una foto de tu DNI (frente y dorso) y una selfie tuya sosteniéndolo. Esta información es confidencial y solo se usará para el proceso de verificación.
           </AlertDescription>
         </Alert>
 
@@ -135,12 +119,12 @@ export default function VerificationTab({ isVerified, onVerify, professionalName
                 value={cuil}
                 onChange={(e) => setCuil(e.target.value)}
             />
-             <p className="text-xs text-muted-foreground">Este dato es necesario para identificarte en el correo.</p>
+             <p className="text-xs text-muted-foreground">Este dato es necesario para identificarte.</p>
         </div>
       </CardContent>
       <CardFooter>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Generando correo..." : "Iniciar Verificación"}
+          {isSubmitting ? "Enviando..." : "Iniciar Verificación"}
         </Button>
       </CardFooter>
       </form>
