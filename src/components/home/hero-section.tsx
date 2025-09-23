@@ -65,7 +65,7 @@ export default function HeroSection() {
           Acá está la persona que necesitas hoy!
         </h1>
         <p className="mb-6 text-lg">
-          Busca, elegí y resolvé lo que necesitas sin vueltas
+          Busca, elegí y contactate ya. Listos para ayudarte con lo que necesites
         </p>
 
         <form onSubmit={handleSearch} className="flex justify-center gap-2 max-w-xl mx-auto">
