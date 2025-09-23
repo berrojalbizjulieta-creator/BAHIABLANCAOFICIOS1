@@ -7,6 +7,8 @@ import Image from 'next/image';
 import { placeholderImages } from '@/lib/placeholder-images';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { runFlow } from '@genkit-ai/next/client';
+import type { SuggestTradesFromPromptOutput } from '@/ai/flows/suggest-trades-from-prompt';
 import { suggestTradesFromPrompt } from '@/ai/flows/suggest-trades-from-prompt';
 import { Card, CardContent } from '../ui/card';
 
@@ -41,7 +43,7 @@ export default function HeroSection() {
 
     debounceTimeout.current = setTimeout(async () => {
       try {
-        const response = await suggestTradesFromPrompt({ prompt });
+        const response = await runFlow(suggestTradesFromPrompt, { prompt });
         setSuggestions(response.suggestedTrades || []);
       } catch (error) {
         console.error('Error fetching suggestions:', error);

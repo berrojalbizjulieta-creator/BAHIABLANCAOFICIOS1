@@ -33,9 +33,9 @@ const prompt = ai.definePrompt({
   output: {schema: SuggestTradesFromPromptOutputSchema},
   prompt: `Analyze the user's prompt and suggest relevant trade categories (oficios).
   User Prompt: {{{prompt}}}
-  Your response MUST be ONLY a JSON array of strings. Each string should be a trade category.
-  Example of a valid response: ["Electricista", "Fontanero", "Gasista"]
-  If no relevant trades are found, return an empty array: []
+  Your response MUST be ONLY a JSON object with a 'suggestedTrades' key containing an array of strings. Each string should be a trade category.
+  Example of a valid response: {"suggestedTrades": ["Electricista", "Fontanero", "Gasista"]}
+  If no relevant trades are found, return an empty array: {"suggestedTrades": []}
   Do not include any other text, explanation, or markdown.`,
 });
 
