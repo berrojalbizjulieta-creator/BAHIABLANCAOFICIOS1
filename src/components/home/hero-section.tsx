@@ -55,13 +55,7 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative w-full h-[500px] flex items-center justify-center text-white">
-      {/* Fondo */}
-      <img
-        src="https://px.cdn.lanueva.com/022023/1677153888501/portal%20otra.jpg?cw=807"
-        alt="Parque de Mayo"
-        className="absolute inset-0 w-full h-full object-cover"
-      />
+    <section className="relative w-full h-[500px] flex items-center justify-center text-white" style={{ backgroundImage: "url('https://px.cdn.lanueva.com/022023/1677153888501/portal%20otra.jpg?cw=807')" , backgroundSize: 'cover', backgroundPosition: 'center' }}>
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/50"></div>
 
@@ -79,7 +73,7 @@ export default function HeroSection() {
             value={prompt}
             onChange={handleInputChange}
             placeholder="Ej: 'plomero', 'electricista' o 'arreglar una canilla'"
-            className="flex-1"
+            className="flex-1 text-black"
           />
           <Button
             type="submit"
