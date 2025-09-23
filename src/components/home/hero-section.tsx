@@ -29,25 +29,25 @@ export default function HeroSection() {
       setError('');
       return;
     }
-
-    setIsSuggestionsLoading(true);
+    
     setShowSuggestions(true);
+    setIsSuggestionsLoading(true);
     setError('');
 
     const timeoutId = setTimeout(async () => {
       try {
         const res = await fetch(`/api/sugerencia?q=${prompt}`);
         if (!res.ok) {
-            throw new Error(`Server responded with ${res.status}`);
+          throw new Error(`Server responded with ${res.status}`);
         }
         const data = await res.json();
-
+        
         if (data.error) {
             throw new Error(data.error);
         }
 
         setSuggestions(data.suggestedTrades || []);
-      } catch (e) {
+      } catch (e: any) {
         console.error('Error fetching suggestions:', e);
         setError('No se pudieron obtener sugerencias. Intenta de nuevo.');
         setSuggestions([]);
