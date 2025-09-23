@@ -22,7 +22,7 @@ import {
   Briefcase,
   Brush,
 } from 'lucide-react';
-import type { Category, Professional, Banner } from '@/lib/types';
+import type { Category, Professional, Banner, Client } from '@/lib/types';
 import { placeholderImages } from './placeholder-images';
 
 const getImage = (id: string) =>
@@ -663,4 +663,11 @@ export const BANNERS: Banner[] = [
   },
 ];
 
-    
+export const CLIENTS: Client[] = [
+    {
+        id: 1,
+        name: 'Cliente de Prueba',
+        email: 'cliente@test.com',
+        photoUrl: getImage('client-1').imageUrl,
+    }
+]

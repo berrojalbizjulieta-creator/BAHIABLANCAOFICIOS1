@@ -26,6 +26,13 @@ export interface Professional {
   subscriptionTier?: 'standard' | 'premium';
 }
 
+export interface Client {
+  id: number;
+  name: string;
+  email: string;
+  photoUrl: string;
+}
+
 export interface Category {
   id: number;
   name: string;

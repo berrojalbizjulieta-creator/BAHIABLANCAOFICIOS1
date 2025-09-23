@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CATEGORIES } from '@/lib/data';
+import { CATEGORIES, PROFESSIONALS, CLIENTS } from '@/lib/data';
 import Link from 'next/link';
 import {
   Form,
@@ -34,6 +34,8 @@ import {
 } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import type { Client, Professional } from '@/lib/types';
+
 
 const clientSchema = z.object({
   fullName: z.string().min(3, 'El nombre debe tener al menos 3 caracteres.'),
@@ -73,7 +75,40 @@ export default function SignupPage() {
     setIsLoading(true);
     console.log('Submitting data for', accountType, data);
     
+    // Simulate saving to our mock database
     await new Promise(resolve => setTimeout(resolve, 1500));
+
+    if (accountType === 'client') {
+        const newClient: Client = {
+            id: CLIENTS.length + 1,
+            name: data.fullName,
+            email: data.email,
+            photoUrl: '', // Default photo
+        };
+        CLIENTS.push(newClient);
+        console.log("New Client added:", newClient);
+        console.log("All Clients:", CLIENTS);
+        router.push('/dashboard/client');
+
+    } else {
+        const professionalData = data as ProfessionalFormValues;
+        const newProfessional: Professional = {
+            id: PROFESSIONALS.length + 1,
+            name: professionalData.fullName,
+            photoUrl: '',
+            photoHint: '',
+            specialties: [],
+            avgRating: 0,
+            categoryId: Number(professionalData.category),
+            testimonials: [],
+            subscriptionTier: 'standard', // Default plan
+            isSubscriptionActive: false,
+        };
+        PROFESSIONALS.push(newProfessional);
+        console.log("New Professional added:", newProfessional);
+        console.log("All Professionals:", PROFESSIONALS);
+        router.push('/dashboard/profile');
+    }
     
     toast({
         title: "¡Cuenta Creada!",
@@ -82,12 +117,6 @@ export default function SignupPage() {
 
     setIsLoading(false);
     activeForm.reset();
-
-    if (accountType === 'client') {
-      router.push('/dashboard/client');
-    } else {
-      router.push('/dashboard/profile');
-    }
   };
 
   return (
