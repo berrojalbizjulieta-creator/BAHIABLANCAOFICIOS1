@@ -273,7 +273,7 @@ export default function PublicProfilePage() {
                     <div className="flex flex-col sm:flex-row gap-2">
                       <Button asChild>
                          <a href={getWhatsAppLink(professional.phone)} target="_blank" rel="noopener noreferrer">
-                            <Phone className="mr-2" /> Contactar por WhatsApp
+                            <Phone className="mr-2" /> Whatsapp
                         </a>
                       </Button>
                       <Button variant="outline">

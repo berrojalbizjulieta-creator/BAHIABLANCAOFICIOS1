@@ -112,11 +112,11 @@ export default function ProfessionalCard({
                   {professional.phone ? (
                     <Button asChild>
                         <a href={getWhatsAppLink(professional.phone)} target="_blank" rel="noopener noreferrer">
-                            <Phone className="mr-2" /> Contactar
+                            <Phone className="mr-2" /> Whatsapp
                         </a>
                     </Button>
                   ) : (
-                     <Button disabled>Contactar</Button>
+                     <Button disabled>Whatsapp</Button>
                   )}
                   {professional.priceInfo && (
                   <Popover>
