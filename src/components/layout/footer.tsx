@@ -1,13 +1,16 @@
-import { Facebook, Instagram, Twitter } from 'lucide-react';
+import { Facebook, Instagram, Twitter, Phone, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { Logo } from '../icons/logo';
 
 export function Footer() {
+  const whatsappNumber = '5492915088831';
+  const emailAddress = 'bahiablancaoficios@gmail.com.ar';
+
   return (
     <footer className="bg-muted/40" id="about">
-      <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          <div>
+      <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
+          <div className="lg:col-span-1">
             <Logo className="h-10 w-auto" />
             <p className="mt-4 max-w-xs text-sm text-muted-foreground">
               Conectando a la comunidad de Bahía Blanca con los mejores
@@ -38,30 +41,30 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 lg:col-span-2 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-8 lg:col-span-3 sm:grid-cols-4">
             <div>
               <p className="font-bold text-foreground">Servicios</p>
               <nav className="mt-4 flex flex-col space-y-2 text-sm">
                 <Link
-                  href="#"
+                  href="/servicios/plomeria"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Plomería
                 </Link>
                 <Link
-                  href="#"
+                  href="/servicios/electricidad"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Electricidad
                 </Link>
                 <Link
-                  href="#"
+                  href="/servicios/pintura"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Pintura
                 </Link>
                 <Link
-                  href="#"
+                  href="/servicios/jardineria-y-paisajismo"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Jardinería
@@ -73,25 +76,48 @@ export function Footer() {
               <p className="font-bold text-foreground">Nosotros</p>
               <nav className="mt-4 flex flex-col space-y-2 text-sm">
                 <Link
-                  href="#"
+                  href="/#about"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Sobre OficiosBB
                 </Link>
                 <Link
-                  href="#"
+                  href="/signup"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Para Profesionales
                 </Link>
-                <Link
-                  href="#"
+                 <Link
+                  href="/contacto"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Contacto
                 </Link>
               </nav>
             </div>
+            
+             <div>
+              <p className="font-bold text-foreground">Contacto Rápido</p>
+              <nav className="mt-4 flex flex-col space-y-3 text-sm">
+                <a
+                  href={`https://wa.me/${whatsappNumber}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-muted-foreground hover:text-primary"
+                >
+                  <Phone className="h-4 w-4"/>
+                  WhatsApp
+                </a>
+                <a
+                  href={`mailto:${emailAddress}`}
+                  className="flex items-center gap-2 text-muted-foreground hover:text-primary"
+                >
+                  <Mail className="h-4 w-4" />
+                  Email
+                </a>
+              </nav>
+            </div>
+
              <div>
               <p className="font-bold text-foreground">Legal</p>
               <nav className="mt-4 flex flex-col space-y-2 text-sm">
@@ -112,7 +138,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 border-t border-border pt-6 text-center text-sm text-muted-foreground">
+        <div className="mt-10 border-t border-border pt-6 text-center text-sm text-muted-foreground">
           <p>
             &copy; {new Date().getFullYear()} Bahia Blanca Oficios. Todos los
             derechos reservados.

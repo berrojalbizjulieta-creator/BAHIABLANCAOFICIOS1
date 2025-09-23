@@ -8,9 +8,10 @@ import { Menu, Wrench } from 'lucide-react';
 
 const navLinks = [
   { href: '/', label: 'Inicio' },
-  { href: '#services', label: 'Servicios' },
+  { href: '/#services', label: 'Servicios' },
   { href: '/dashboard', label: 'Mi Panel' },
-  { href: '#about', label: 'Sobre Nosotros' },
+  { href: '/#about', label: 'Sobre Nosotros' },
+  { href: '/contacto', label: 'Contacto' },
 ];
 
 export function Header() {
@@ -41,7 +42,7 @@ export function Header() {
             <Link href="/signup">Registrarse</Link>
           </Button>
            <Button variant="outline" size="sm" asChild>
-            <Link href="/admin">Admin Panel (Temp)</Link>
+            <Link href="/admin">Admin Panel</Link>
           </Button>
         </div>
 
@@ -72,7 +73,7 @@ export function Header() {
                       href="/admin"
                       className="text-foreground/80 transition-colors hover:text-foreground"
                     >
-                      Admin Panel (Temp)
+                      Admin Panel
                     </Link>
                 </nav>
                 <div className="mt-auto border-t pt-6 flex flex-col gap-3">
