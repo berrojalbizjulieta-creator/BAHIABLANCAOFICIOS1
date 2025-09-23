@@ -12,6 +12,7 @@ export interface Testimonial {
 export interface Professional {
   id: number;
   name: string;
+  description?: string;
   phone?: string;
   photoUrl: string;
   photoHint: string;

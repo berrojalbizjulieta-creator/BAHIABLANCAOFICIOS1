@@ -95,6 +95,7 @@ const getImage = (id: string) =>
 const initialProfessionalData: Professional = {
     id: 0,
     name: "Nombre del Profesional",
+    description: "",
     phone: "",
     photoUrl: "",
     photoHint: "",
@@ -318,13 +319,14 @@ export default function ProfilePage() {
                   <CardContent className="space-y-6">
                     {isEditing ? (
                       <Textarea 
-                        value="" 
+                        value={professional.description}
+                        onChange={(e) => handleInputChange('description', e.target.value)}
                         placeholder="Describe tu trabajo, tu experiencia y lo que te diferencia del resto..."
                         className="min-h-[100px]"
                       />
                     ) : (
                       <p className="text-muted-foreground">
-                        Aún no has añadido una descripción.
+                        {professional.description || 'Aún no has añadido una descripción.'}
                       </p>
                     )}
                     <Separator />
