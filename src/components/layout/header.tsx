@@ -40,6 +40,9 @@ export function Header() {
           <Button size="sm" asChild>
             <Link href="/signup">Registrarse</Link>
           </Button>
+           <Button variant="outline" size="sm" asChild>
+            <Link href="/admin">Admin Panel (Temp)</Link>
+          </Button>
         </div>
 
         <div className="md:hidden">
@@ -65,6 +68,12 @@ export function Header() {
                       {link.label}
                     </Link>
                   ))}
+                   <Link
+                      href="/admin"
+                      className="text-foreground/80 transition-colors hover:text-foreground"
+                    >
+                      Admin Panel (Temp)
+                    </Link>
                 </nav>
                 <div className="mt-auto border-t pt-6 flex flex-col gap-3">
                   <Button variant="outline" asChild>
