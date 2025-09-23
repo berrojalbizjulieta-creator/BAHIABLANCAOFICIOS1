@@ -77,15 +77,28 @@ function StarRating({
   );
 }
 
+const getImage = (id: string) =>
+  PlaceHolderImages.find((img) => img.id === id) || {
+    imageUrl: '',
+    imageHint: '',
+  };
+
 const initialProfessionalData: Professional = {
     id: 0,
     name: "Nombre del Profesional",
     photoUrl: "",
     photoHint: "",
     specialties: [],
-    avgRating: 0,
+    avgRating: 5,
     categoryId: 0,
-    testimonials: [],
+    testimonials: [{
+        id: 1,
+        clientName: 'Ana Gomez',
+        clientPhotoUrl: getImage('client-1').imageUrl,
+        clientPhotoHint: getImage('client-1').imageHint,
+        rating: 5,
+        text: 'Excelente servicio. Rápido y muy profesional.',
+    }],
     isVerified: false,
 }
 
@@ -343,7 +356,7 @@ export default function ProfilePage() {
                           </div>
                         ))
                     ) : (
-                      <p className="text-muted-foreground">Todavía no hay reseñas para mostrar.</p>
+                      <p className="text-muted-foreground">Aún no hay reseñas.</p>
                     )
                     }
                   </CardContent>
