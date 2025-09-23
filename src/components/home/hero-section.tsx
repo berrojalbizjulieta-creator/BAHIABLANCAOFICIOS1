@@ -7,33 +7,27 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '../ui/card';
-import { placeholderImages } from '@/lib/placeholder-images';
 
-const heroImage = placeholderImages.find(p => p.id === 'hero-background-parque-de-mayo');
+const heroImageUrl = "https://px.cdn.lanueva.com/022023/1677153888501/portal%20otra.jpg?cw=807";
 
 export default function HeroSection() {
   const [prompt, setPrompt] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [isSuggestionsLoading, setIsSuggestionsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
-  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (debounceTimeout.current) {
-      clearTimeout(debounceTimeout.current);
-    }
-
     if (prompt.length < 3) {
       setSuggestions([]);
       setError('');
       return;
     }
 
-    setIsSuggestionsLoading(true);
+    setIsLoading(true);
     setError('');
 
-    debounceTimeout.current = setTimeout(async () => {
+    const timeoutId = setTimeout(async () => {
       try {
         const res = await fetch(`/api/sugerencia?q=${prompt}`);
         if (!res.ok) {
@@ -46,15 +40,11 @@ export default function HeroSection() {
         setError('No se pudieron obtener sugerencias. Intenta de nuevo.');
         setSuggestions([]);
       } finally {
-        setIsSuggestionsLoading(false);
+        setIsLoading(false);
       }
     }, 500);
 
-    return () => {
-      if (debounceTimeout.current) {
-        clearTimeout(debounceTimeout.current);
-      }
-    };
+    return () => clearTimeout(timeoutId);
   }, [prompt]);
 
 
@@ -72,16 +62,14 @@ export default function HeroSection() {
 
   return (
     <section className="relative w-full py-20 md:py-32 lg:py-40 overflow-hidden">
-      {heroImage && (
-        <Image
-          src={heroImage.imageUrl}
-          alt={heroImage.description}
+      <Image
+          src={heroImageUrl}
+          alt="Pórtico del Parque de Mayo en Bahía Blanca."
           fill
           style={{ objectFit: 'cover' }}
           priority
-          data-ai-hint={heroImage.imageHint}
+          data-ai-hint="parque bahia blanca"
         />
-      )}
       <div className="absolute inset-0 bg-black/60"></div>
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="mx-auto max-w-3xl text-center">
@@ -110,9 +98,9 @@ export default function HeroSection() {
                 type="submit"
                 size="icon"
                 className="rounded-full flex-shrink-0 w-12 h-12"
-                disabled={isSuggestionsLoading}
+                disabled={isLoading}
               >
-                {isSuggestionsLoading ? (
+                {isLoading ? (
                   <svg
                     className="animate-spin h-5 w-5 text-white"
                     xmlns="http://www.w3.org/2000/svg"
@@ -139,10 +127,10 @@ export default function HeroSection() {
                 <span className="sr-only">Buscar</span>
               </Button>
             </form>
-            { (isSuggestionsLoading || error || suggestions.length > 0) && (
+            { (isLoading || error || suggestions.length > 0) && (
               <Card className="absolute top-full mt-2 w-full text-left shadow-lg z-20">
                 <CardContent className="p-2">
-                  {isSuggestionsLoading && (
+                  {isLoading && (
                     <div className="px-4 py-2 text-sm text-muted-foreground">
                       Buscando sugerencias...
                     </div>
@@ -152,7 +140,7 @@ export default function HeroSection() {
                       {error}
                     </div>
                   )}
-                  {!isSuggestionsLoading && !error && suggestions.length > 0 && (
+                  {!isLoading && !error && suggestions.length > 0 && (
                     <ul>
                       {suggestions.map((trade) => (
                         <li key={trade}>
@@ -166,7 +154,7 @@ export default function HeroSection() {
                       ))}
                     </ul>
                   )}
-                  {!isSuggestionsLoading && !error &&
+                  {!isLoading && !error &&
                     suggestions.length === 0 &&
                     prompt.length > 2 && (
                       <div className="px-4 py-2 text-sm text-muted-foreground">
