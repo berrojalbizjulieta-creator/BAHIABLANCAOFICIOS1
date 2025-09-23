@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -34,7 +35,7 @@ export default function PromoSlider() {
         >
           <CarouselContent>
             {BANNERS.map((banner) => (
-              <CarouselItem key={banner.id} className="md:basis-1/2 lg:basis-1/3">
+              <CarouselItem key={banner.id} className="md:basis-1/2 lg:basis-1/4">
                 <Link href={banner.buttonLink || '#'} className="block group">
                  <Card className="overflow-hidden h-full flex flex-col">
                     <div className="relative aspect-[4/3] w-full overflow-hidden">
@@ -42,7 +43,7 @@ export default function PromoSlider() {
                         src={banner.imageUrl}
                         alt={banner.title}
                         fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                         data-ai-hint={banner.imageHint}
                       />
