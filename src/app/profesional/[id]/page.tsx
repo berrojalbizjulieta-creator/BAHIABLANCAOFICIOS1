@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState } from 'react';
@@ -32,7 +33,6 @@ import { Separator } from '@/components/ui/separator';
 import type { Professional, Testimonial } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
-import { placeholderImages } from '@/lib/placeholder-images';
 import {
   Carousel,
   CarouselContent,
@@ -73,7 +73,6 @@ function StarRatingDisplay({
   );
 }
 
-const workPhotos = placeholderImages.filter(p => p.id.startsWith('work-'));
 
 function ReviewForm() {
   const [rating, setRating] = useState(0);
@@ -345,14 +344,14 @@ export default function PublicProfilePage() {
                     <CardTitle>Galería de Trabajos</CardTitle>
                   </CardHeader>
                   <CardContent>
-                     {workPhotos.length > 0 ? (
+                     {professional.workPhotos && professional.workPhotos.length > 0 ? (
                       <Carousel
                         opts={{ align: 'start' }}
                         className="w-full"
                       >
                         <CarouselContent>
-                          {workPhotos.map((photo, index) => (
-                            <CarouselItem key={index}>
+                          {professional.workPhotos.map((photo, index) => (
+                            <CarouselItem key={photo.id}>
                               <div className="p-1">
                                   <div className="relative aspect-video overflow-hidden rounded-lg">
                                     <Image
@@ -398,3 +397,5 @@ export default function PublicProfilePage() {
     </>
   );
 }
+
+    

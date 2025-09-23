@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, {useRef, useState, useEffect} from 'react';
@@ -39,7 +40,7 @@ import {Separator} from '@/components/ui/separator';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Textarea} from '@/components/ui/textarea';
-import type { Professional } from '@/lib/types';
+import type { Professional, WorkPhoto } from '@/lib/types';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {useToast} from '@/hooks/use-toast';
 import {Switch} from '@/components/ui/switch';
@@ -104,11 +105,11 @@ const initialProfessionalData: Professional = {
     avgRating: 0,
     categoryId: 0,
     testimonials: [],
+    workPhotos: placeholderImages.filter(p => p.id.startsWith('work-')),
     isVerified: false,
     subscriptionTier: 'standard',
 }
 
-const workPhotos = placeholderImages.filter(p => p.id.startsWith('work-'));
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(true);
@@ -121,7 +122,9 @@ export default function ProfilePage() {
   const [isSubscriptionActive, setIsSubscriptionActive] = useState(false);
 
   const { toast } = useToast();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const avatarFileInputRef = useRef<HTMLInputElement>(null);
+  const workPhotoInputRef = useRef<HTMLInputElement>(null);
+
 
   useEffect(() => {
     // Check if the last payment was within the last month
@@ -175,12 +178,12 @@ export default function ProfilePage() {
   }
 
   const handleAvatarClick = () => {
-      if(isEditing && fileInputRef.current) {
-          fileInputRef.current.click();
+      if(isEditing && avatarFileInputRef.current) {
+          avatarFileInputRef.current.click();
       }
   }
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  
+  const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file && professional) {
           const reader = new FileReader();
@@ -190,6 +193,42 @@ export default function ProfilePage() {
           reader.readAsDataURL(file);
       }
   }
+
+  const handleAddWorkPhotoClick = () => {
+    if (isEditing && workPhotoInputRef.current) {
+      workPhotoInputRef.current.click();
+    }
+  };
+
+  const handleWorkPhotoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && professional) {
+      const newPhotos: WorkPhoto[] = [];
+      const filesArray = Array.from(files);
+
+      filesArray.forEach(file => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          newPhotos.push({
+            id: `work-${Date.now()}-${Math.random()}`,
+            imageUrl: reader.result as string,
+            description: "Trabajo realizado",
+            imageHint: "professional work"
+          });
+
+          // When the last file is read, update the state
+          if (newPhotos.length === filesArray.length) {
+            setProfessional(prev => prev ? { ...prev, workPhotos: [...(prev.workPhotos || []), ...newPhotos] } : null);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+        toast({
+            title: `${files.length} foto(s) añadida(s)`,
+            description: "Tus nuevas fotos de trabajo ahora están en la galería."
+        })
+    }
+  };
 
 
   return (
@@ -222,8 +261,8 @@ export default function ProfilePage() {
                     )}
                     <input 
                         type="file" 
-                        ref={fileInputRef} 
-                        onChange={handleFileChange}
+                        ref={avatarFileInputRef} 
+                        onChange={handleAvatarFileChange}
                         className="hidden" 
                         accept="image/*"
                     />
@@ -456,13 +495,23 @@ export default function ProfilePage() {
                   <CardHeader className="flex-row items-center justify-between">
                     <CardTitle>Galería de Trabajos</CardTitle>
                     {isEditing && (
-                      <Button variant="outline">
-                        <PlusCircle className="mr-2" /> Añadir Foto
-                      </Button>
+                      <>
+                        <Button variant="outline" onClick={handleAddWorkPhotoClick}>
+                          <PlusCircle className="mr-2" /> Añadir Foto
+                        </Button>
+                        <input
+                          type="file"
+                          ref={workPhotoInputRef}
+                          onChange={handleWorkPhotoFileChange}
+                          className="hidden"
+                          accept="image/*"
+                          multiple
+                        />
+                      </>
                     )}
                   </CardHeader>
                   <CardContent>
-                    {workPhotos.length > 0 ? (
+                    {professional.workPhotos && professional.workPhotos.length > 0 ? (
                       <Carousel
                         opts={{
                           align: 'start',
@@ -470,9 +519,9 @@ export default function ProfilePage() {
                         className="w-full"
                       >
                         <CarouselContent>
-                          {workPhotos.map((photo, index) => (
+                          {professional.workPhotos.map((photo, index) => (
                             <CarouselItem
-                              key={index}
+                              key={photo.id}
                               className="md:basis-1/2 lg:basis-1/3"
                             >
                               <div className="p-1">
@@ -498,7 +547,7 @@ export default function ProfilePage() {
                           Aún no has subido fotos de tus trabajos.
                         </p>
                         {isEditing && (
-                          <Button className="mt-4">
+                          <Button className="mt-4" onClick={handleAddWorkPhotoClick}>
                             <Upload className="mr-2" /> Subir mi primer trabajo
                           </Button>
                         )}

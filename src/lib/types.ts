@@ -9,6 +9,13 @@ export interface Testimonial {
   text: string;
 }
 
+export interface WorkPhoto {
+    id: string;
+    imageUrl: string;
+    description: string;
+    imageHint: string;
+}
+
 export interface Professional {
   id: number;
   name: string;
@@ -20,6 +27,7 @@ export interface Professional {
   avgRating: number;
   categoryId: number;
   testimonials: Testimonial[];
+  workPhotos?: WorkPhoto[];
   isVerified?: boolean;
   priceInfo?: string;
   isSubscriptionActive?: boolean;
@@ -49,3 +57,5 @@ export interface Banner {
   buttonText?: string;
   buttonLink?: string;
 }
+
+    

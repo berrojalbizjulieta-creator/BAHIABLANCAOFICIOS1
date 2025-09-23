@@ -29,6 +29,7 @@ const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
     imageUrl: '',
     imageHint: '',
+    description: '',
   };
 
 export const CATEGORIES: Category[] = [
@@ -444,6 +445,9 @@ export const PROFESSIONALS: Professional[] = [
         text: 'Buen trabajo, resolvió el problema de la tubería eficientemente.',
       },
     ],
+    workPhotos: [
+      getImage('work-3'),
+    ],
   },
   {
     id: 2,
@@ -475,6 +479,9 @@ export const PROFESSIONALS: Professional[] = [
         text: 'La mejor electricista de la ciudad. Totalmente recomendada.',
       },
     ],
+    workPhotos: [
+      getImage('work-5'),
+    ]
   },
   {
     id: 3,
@@ -497,6 +504,9 @@ export const PROFESSIONALS: Professional[] = [
         text: 'El departamento quedó como nuevo, aunque tardó un poco más de lo esperado.',
       },
     ],
+    workPhotos: [
+        getImage('work-2'),
+    ]
   },
   {
     id: 4,
@@ -519,6 +529,9 @@ export const PROFESSIONALS: Professional[] = [
         text: 'El ropero que diseñó es perfecto. Un verdadero artesano.',
       },
     ],
+    workPhotos: [
+        getImage('work-4'),
+    ]
   },
    {
     id: 5,
@@ -540,6 +553,7 @@ export const PROFESSIONALS: Professional[] = [
         text: 'Me salvó a las 3 AM cuando perdí las llaves. ¡Una genia!',
       },
     ],
+    workPhotos: [],
   },
    {
     id: 6,
@@ -552,6 +566,7 @@ export const PROFESSIONALS: Professional[] = [
     isSubscriptionActive: false,
     subscriptionTier: 'standard',
     testimonials: [],
+    workPhotos: [],
   },
   {
     id: 7,
@@ -575,6 +590,7 @@ export const PROFESSIONALS: Professional[] = [
         text: 'Un trabajo de primera. Muy responsable y detallista.',
       },
     ],
+    workPhotos: [],
   },
   {
     id: 8,
@@ -605,6 +621,7 @@ export const PROFESSIONALS: Professional[] = [
         text: 'Buen trabajo en general.',
       },
     ],
+    workPhotos: [],
   },
   {
     id: 9,
@@ -628,6 +645,7 @@ export const PROFESSIONALS: Professional[] = [
         text: 'Quedó bien el revoque.',
       },
     ],
+    workPhotos: [],
   },
 ];
 
@@ -671,3 +689,5 @@ export const CLIENTS: Client[] = [
         photoUrl: getImage('client-1').imageUrl,
     }
 ]
+
+    
