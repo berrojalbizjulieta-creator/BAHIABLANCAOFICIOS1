@@ -20,6 +20,7 @@ import {
   Shield,
   PlusCircle,
   DollarSign,
+  PartyPopper,
 } from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {
@@ -216,7 +217,7 @@ export default function ProfilePage() {
                    <div className="flex gap-2">
                     {isEditing ? (
                         <>
-                            <Button onClick={handleSave}><Save className="mr-2" /> Guardar</Button>
+                            <Button onClick={handleSave}><Save className="mr-2" /> Guardar Cambios</Button>
                             <Button variant="outline" onClick={() => setIsEditing(false)}><X className="mr-2"/> Cancelar</Button>
                         </>
                     ) : (
@@ -496,6 +497,16 @@ export default function ProfilePage() {
                   </div>
                 )}
               </CardContent>
+                 {isEditing && (
+                    <CardFooter className="flex-col items-start gap-3 pt-4 border-t">
+                        <Button onClick={handleSave} className="w-full">
+                           <PartyPopper className="mr-2" /> ¡Terminar Edición y Publicar!
+                        </Button>
+                        <p className="text-xs text-center w-full text-muted-foreground">
+                            ¡Estás a un clic de empezar a mostrarle tus laburos a nuevos clientes!
+                        </p>
+                    </CardFooter>
+                 )}
             </Card>
           </div>
         </div>
