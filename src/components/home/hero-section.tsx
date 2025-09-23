@@ -132,7 +132,7 @@ export default function HeroSection() {
           <div className="relative w-full max-w-xl mx-auto" ref={searchContainerRef}>
             <form
               onSubmit={handleSearch}
-              className="mt-8 flex w-full items-center space-x-2 rounded-full bg-white/90 backdrop-blur-sm p-2 shadow-lg"
+              className="mt-8 flex w-full items-center space-x-2 rounded-full bg-white/90 p-2 shadow-lg"
             >
               <Input
                 type="text"
