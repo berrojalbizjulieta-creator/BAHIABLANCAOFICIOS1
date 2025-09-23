@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { ShieldCheck, CheckCircle, Clock } from 'lucide-react';
+import { ShieldCheck, CheckCircle, Clock, Upload } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
 interface VerificationTabProps {
@@ -121,6 +121,23 @@ export default function VerificationTab({ isVerified, onVerify, professionalName
             />
              <p className="text-xs text-muted-foreground">Este dato es necesario para identificarte.</p>
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+                <Label htmlFor="dniFrente">DNI (Frente)</Label>
+                <Input id="dniFrente" type="file" required className="file:text-primary file:font-medium" />
+            </div>
+             <div className="space-y-2">
+                <Label htmlFor="dniDorso">DNI (Dorso)</Label>
+                <Input id="dniDorso" type="file" required className="file:text-primary file:font-medium"/>
+            </div>
+             <div className="space-y-2">
+                <Label htmlFor="selfie">Selfie con DNI</Label>
+                <Input id="selfie" type="file" required className="file:text-primary file:font-medium"/>
+            </div>
+        </div>
+
+
       </CardContent>
       <CardFooter>
         <Button type="submit" disabled={isSubmitting}>
