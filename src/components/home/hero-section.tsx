@@ -91,13 +91,14 @@ export default function HeroSection() {
     
     // Redirect to the category page based on the search term
     const categorySlug = encodeURIComponent(searchValue.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-'));
-    router.push(`/servicios/${categorySlug}`);
+    router.push(`/servicios?search=${searchValue}`);
   };
 
   const handleSuggestionClick = (suggestion: string) => {
     setSearchValue(suggestion);
-    setSuggestions([]); // Clear suggestions
-    fetchSuggestions(suggestion); // Re-fetch results for the selected suggestion
+    setIsDropdownOpen(false);
+    const categorySlug = encodeURIComponent(suggestion.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-'));
+    router.push(`/servicios/${categorySlug}`);
   }
 
   return (
@@ -151,7 +152,7 @@ export default function HeroSection() {
                         className="px-4 py-2 cursor-pointer hover:bg-muted font-medium"
                         onClick={() => handleSuggestionClick(suggestion)}
                       >
-                        {suggestion}
+                        en <span className='text-primary'>{suggestion}</span>
                       </li>
                     ))}
                     {results.length > 0 && <Separator />}
@@ -177,7 +178,7 @@ export default function HeroSection() {
                     </li>
                 ))}
 
-                {!isLoading && results.length === 0 && suggestions.length === 0 && searchValue.length > 1 && (
+                {!isLoading && results.length === 0 && searchValue.length > 1 && (
                     <li className="px-4 py-3 text-muted-foreground">No se encontraron resultados para "{searchValue}".</li>
                 )}
               </motion.ul>
