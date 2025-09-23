@@ -32,9 +32,15 @@
     },
     {
       "id": "app-promo-mockup",
-      "description": "A mockup of a phone showing a services app interface.",
-      "imageUrl": "https://images.unsplash.com/photo-1583573636253-53372b160157?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "description": "A mockup of a phone showing a services app interface, with a slight angle.",
+      "imageUrl": "/phone-mockup.png",
       "imageHint": "phone app"
+    },
+    {
+      "id": "white-tile-background",
+      "description": "A clean white tile wall background.",
+      "imageUrl": "https://images.unsplash.com/photo-1581788788934-9e32ce7b439c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "white tiles"
     },
     {
       "id": "prof-1",
@@ -129,7 +135,7 @@
     {
       "id": "work-6",
       "description": "A beautiful landscaped garden with a stone path.",
-      "imageUrl": "https://images.unsplash.com/photo-1647664876984-611e1666dc83?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxsYW5kc2NhcGVkJTIwZ2FyZGVufGVufDB8fHx8MTc1ODU5MTI1MXww&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1647664876984-611e1666dc83?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxsYW5kc2NhcGVkJTIwZ2FyZGVufGVufDB8fHx8MTc1ODU5MTI1MXww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "landscaped garden"
     }
   ]
