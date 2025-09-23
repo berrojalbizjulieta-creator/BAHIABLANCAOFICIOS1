@@ -33,6 +33,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 const clientSchema = z.object({
   fullName: z.string().min(3, 'El nombre debe tener al menos 3 caracteres.'),
@@ -50,136 +51,11 @@ const professionalSchema = z.object({
 type ClientFormValues = z.infer<typeof clientSchema>;
 type ProfessionalFormValues = z.infer<typeof professionalSchema>;
 
-function ClientForm() {
-  const form = useForm<ClientFormValues>({
-    resolver: zodResolver(clientSchema),
-    defaultValues: { fullName: '', email: '', password: '' },
-  });
-  
-  return (
-    <div className="space-y-4">
-      <FormField
-        control={form.control}
-        name="fullName"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Nombre completo</FormLabel>
-            <FormControl>
-              <Input placeholder="Juan Pérez" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="email"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Email</FormLabel>
-            <FormControl>
-              <Input type="email" placeholder="tu@email.com" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="password"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Contraseña</FormLabel>
-            <FormControl>
-              <Input type="password" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </div>
-  );
-}
-
-function ProfessionalForm() {
-  const form = useForm<ProfessionalFormValues>({
-    resolver: zodResolver(professionalSchema),
-    defaultValues: { fullName: '', email: '', password: '', category: '' },
-  });
-  
-  return (
-    <div className="space-y-4">
-      <FormField
-        control={form.control}
-        name="fullName"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Nombre completo</FormLabel>
-            <FormControl>
-              <Input placeholder="María Gomez" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="email"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Email</FormLabel>
-            <FormControl>
-              <Input type="email" placeholder="tu@email.com" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="category"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Oficio principal</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona tu oficio" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {CATEGORIES.map((category) => (
-                  <SelectItem key={category.id} value={String(category.id)}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="password"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Contraseña</FormLabel>
-            <FormControl>
-              <Input type="password" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </div>
-  );
-}
-
 export default function SignupPage() {
   const [accountType, setAccountType] = useState('client');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   const clientForm = useForm<ClientFormValues>({
     resolver: zodResolver(clientSchema),
@@ -206,6 +82,12 @@ export default function SignupPage() {
 
     setIsLoading(false);
     activeForm.reset();
+
+    if (accountType === 'client') {
+      router.push('/dashboard/client');
+    } else {
+      router.push('/dashboard/profile');
+    }
   };
 
   return (
