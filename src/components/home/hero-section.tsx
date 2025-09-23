@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
@@ -12,16 +12,22 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
-import Autoplay from "embla-carousel-autoplay";
+import Autoplay from 'embla-carousel-autoplay';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { suggestTradesFromPrompt } from '@/ai/flows/suggest-trades-from-prompt';
+import { Card, CardContent } from '../ui/card';
 
-const heroImages = PlaceHolderImages.filter(img => img.id.startsWith('promo-banner-'));
+const heroImages = PlaceHolderImages.filter(img =>
+  img.id.startsWith('promo-banner-')
+);
 
 export default function HeroSection() {
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
-  const [suggestions, setSuggestions] = useState<string[]>(['Plomero', 'Electricista', 'Pintor']);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [isSuggestionsLoading, setIsSuggestionsLoading] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -29,15 +35,52 @@ export default function HeroSection() {
     Autoplay({ delay: 5000, stopOnInteraction: false, stopOnMouseEnter: true })
   );
 
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (prompt.length > 2) {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+      setIsSuggestionsLoading(true);
+      debounceTimeout.current = setTimeout(async () => {
+        try {
+          const response = await suggestTradesFromPrompt({ prompt });
+          setSuggestions(response.suggestedTrades);
+        } catch (error) {
+          console.error('Error fetching suggestions:', error);
+          toast({
+            title: 'Error',
+            description: 'No se pudieron cargar las sugerencias.',
+            variant: 'destructive',
+          });
+        } finally {
+          setIsSuggestionsLoading(false);
+        }
+      }, 500); // 500ms debounce
+    } else {
+      setSuggestions([]);
+    }
+
+    return () => {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+    };
+  }, [prompt, toast]);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!prompt) return;
+    setShowSuggestions(false);
     router.push(`/servicios?search=${encodeURIComponent(prompt)}`);
   };
 
   const createCategorySlug = (categoryName: string) => {
-    return encodeURIComponent(categoryName.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-'));
-  }
+    return encodeURIComponent(
+      categoryName.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-')
+    );
+  };
 
   return (
     <section className="relative w-full py-20 md:py-32 lg:py-40 overflow-hidden">
@@ -73,41 +116,99 @@ export default function HeroSection() {
             Desde plomeros hasta electricistas, conecta con los mejores oficios
             de Bahía Blanca.
           </p>
-          <form
-            onSubmit={handleSearch}
-            className="mt-8 flex w-full max-w-xl mx-auto items-center space-x-2 rounded-full bg-white/90 backdrop-blur-sm p-2 shadow-lg"
-          >
-            <Input
-              type="text"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="¿Qué servicio estás buscando? Ej: 'arreglar una canilla'"
-              className="flex-1 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-base text-gray-800 placeholder:text-gray-500"
-            />
-            <Button
-              type="submit"
-              size="icon"
-              className="rounded-full flex-shrink-0 w-12 h-12"
-              disabled={loading}
+          <div className="relative w-full max-w-xl mx-auto">
+            <form
+              onSubmit={handleSearch}
+              className="mt-8 flex w-full items-center space-x-2 rounded-full bg-white/90 backdrop-blur-sm p-2 shadow-lg"
             >
-              {loading ? (
-                 <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <Input
+                type="text"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                placeholder="¿Qué servicio estás buscando? Ej: 'arreglar una canilla'"
+                className="flex-1 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-base text-gray-800 placeholder:text-gray-500"
+              />
+              <Button
+                type="submit"
+                size="icon"
+                className="rounded-full flex-shrink-0 w-12 h-12"
+                disabled={loading}
+              >
+                {loading ? (
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
-              ) : (
-                <Search className="h-6 w-6" />
-              )}
-              <span className="sr-only">Buscar</span>
-            </Button>
-          </form>
+                ) : (
+                  <Search className="h-6 w-6" />
+                )}
+                <span className="sr-only">Buscar</span>
+              </Button>
+            </form>
+            {showSuggestions && (prompt.length > 2) && (
+              <Card className="absolute top-full mt-2 w-full text-left shadow-lg z-20">
+                <CardContent className="p-2">
+                  {isSuggestionsLoading && (
+                    <div className="px-4 py-2 text-sm text-muted-foreground">
+                      Buscando sugerencias...
+                    </div>
+                  )}
+                  {!isSuggestionsLoading && suggestions.length > 0 && (
+                    <ul>
+                      {suggestions.map((trade) => (
+                        <li key={trade}>
+                          <Link
+                            href={`/servicios/${createCategorySlug(trade)}`}
+                            className="block px-4 py-2 text-sm rounded-md hover:bg-muted"
+                          >
+                            {trade}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {!isSuggestionsLoading && suggestions.length === 0 && prompt.length > 2 && (
+                     <div className="px-4 py-2 text-sm text-muted-foreground">
+                      No se encontraron sugerencias.
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </div>
           <div className="mt-6 flex flex-wrap justify-center gap-2">
             <span className="text-sm text-white/80 font-medium mr-2">
-              Sugerencias:
+              Búsquedas populares:
             </span>
-            {suggestions.map((trade) => (
-              <Button key={trade} variant="secondary" size="sm" asChild className="h-auto bg-white/20 text-white hover:bg-white/30 transition-colors">
-                 <Link href={`/servicios/${createCategorySlug(trade)}`}>{trade}</Link>
+            {['Plomero', 'Electricista', 'Pintor'].map((trade) => (
+              <Button
+                key={trade}
+                variant="secondary"
+                size="sm"
+                asChild
+                className="h-auto bg-white/20 text-white hover:bg-white/30 transition-colors"
+              >
+                <Link href={`/servicios/${createCategorySlug(trade)}`}>
+                  {trade}
+                </Link>
               </Button>
             ))}
           </div>
