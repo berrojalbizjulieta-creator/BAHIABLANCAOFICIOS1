@@ -3,7 +3,6 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -28,10 +27,8 @@ export default function HeroSection() {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isSuggestionsLoading, setIsSuggestionsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const { toast } = useToast();
   const router = useRouter();
   const searchContainerRef = useRef<HTMLDivElement>(null);
-
 
   const plugin = useRef(
     Autoplay({ delay: 5000, stopOnInteraction: false, stopOnMouseEnter: true })
@@ -39,41 +36,38 @@ export default function HeroSection() {
 
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    const fetchSuggestions = async () => {
-      if (prompt.length > 2) {
-        setIsSuggestionsLoading(true);
-        if (debounceTimeout.current) {
-          clearTimeout(debounceTimeout.current);
-        }
-        debounceTimeout.current = setTimeout(async () => {
-          try {
-            const response = await suggestTradesFromPrompt({ prompt });
-            setSuggestions(response.suggestedTrades);
-          } catch (error) {
-            console.error('Error fetching suggestions:', error);
-            setSuggestions([]);
-             toast({
-              title: 'Error',
-              description: 'No se pudieron cargar las sugerencias.',
-              variant: 'destructive',
-            });
-          } finally {
-            setIsSuggestionsLoading(false);
-          }
-        }, 500); // 500ms debounce
-      } else {
+   useEffect(() => {
+    if (prompt.length < 3) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    setIsSuggestionsLoading(true);
+    setShowSuggestions(true);
+
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
+
+    debounceTimeout.current = setTimeout(async () => {
+      try {
+        const response = await suggestTradesFromPrompt({ prompt });
+        setSuggestions(response.suggestedTrades || []);
+      } catch (error) {
+        console.error('Error fetching suggestions:', error);
         setSuggestions([]);
+      } finally {
+        setIsSuggestionsLoading(false);
       }
-    };
-    fetchSuggestions();
-    
+    }, 500);
+
     return () => {
       if (debounceTimeout.current) {
         clearTimeout(debounceTimeout.current);
       }
     };
-  }, [prompt, toast]);
+  }, [prompt]);
 
     useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -181,7 +175,7 @@ export default function HeroSection() {
                 <span className="sr-only">Buscar</span>
               </Button>
             </form>
-            {showSuggestions && prompt.length > 2 && (
+            {showSuggestions && (
               <Card className="absolute top-full mt-2 w-full text-left shadow-lg z-20">
                 <CardContent className="p-2">
                   {isSuggestionsLoading && (
@@ -196,6 +190,7 @@ export default function HeroSection() {
                           <Link
                             href={`/servicios/${createCategorySlug(trade)}`}
                             className="block px-4 py-2 text-sm rounded-md hover:bg-muted"
+                            onClick={() => setShowSuggestions(false)}
                           >
                             {trade}
                           </Link>
@@ -203,7 +198,7 @@ export default function HeroSection() {
                       ))}
                     </ul>
                   )}
-                  {!isSuggestionsLoading && suggestions.length === 0 && (
+                  {!isSuggestionsLoading && suggestions.length === 0 && prompt.length > 2 && (
                      <div className="px-4 py-2 text-sm text-muted-foreground">
                       No se encontraron sugerencias.
                     </div>
