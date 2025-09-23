@@ -33,6 +33,14 @@ export default function VerificationTab({ isVerified, onVerify, professionalName
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!cuil) {
+        toast({
+            title: 'Error',
+            description: 'Por favor, completa tu número de CUIL.',
+            variant: 'destructive',
+        });
+        return;
+    }
     setIsSubmitting(true);
 
     try {
@@ -97,6 +105,7 @@ export default function VerificationTab({ isVerified, onVerify, professionalName
 
   return (
     <Card className="shadow-lg">
+       <form onSubmit={handleSubmit}>
       <CardHeader>
         <div className="flex items-center gap-3">
           <ShieldCheck className="w-8 h-8 text-blue-500" />
@@ -108,32 +117,16 @@ export default function VerificationTab({ isVerified, onVerify, professionalName
           resto. Solo te tomará unos minutos.
         </CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit}>
       <CardContent className="space-y-6">
         <Alert>
           <AlertTitle>¿Qué necesitas para verificar tu cuenta?</AlertTitle>
           <AlertDescription>
-            Para asegurar la autenticidad, te pediremos una foto de tu DNI (frente y dorso) y una selfie tuya sosteniéndolo. Esta información es confidencial y solo se usará para el proceso de verificación.
+            Para asegurar la autenticidad, se abrirá tu cliente de correo electrónico con un borrador. Por favor, **adjunta una foto de tu DNI (frente y dorso) y una selfie tuya sosteniéndolo** antes de enviarlo. Esta información es confidencial y solo se usará para el proceso de verificación.
           </AlertDescription>
         </Alert>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-                <Label htmlFor="dni-front">DNI (Frente)</Label>
-                <Input id="dni-front" type="file" required accept="image/*" />
-            </div>
-             <div className="space-y-2">
-                <Label htmlFor="dni-back">DNI (Dorso)</Label>
-                <Input id="dni-back" type="file" required accept="image/*" />
-            </div>
-        </div>
          <div className="space-y-2">
-            <Label htmlFor="selfie">Selfie con tu DNI</Label>
-            <Input id="selfie" type="file" required accept="image/*" />
-             <p className="text-xs text-muted-foreground">Asegúrate de que tu cara y el DNI se vean con claridad.</p>
-        </div>
-         <div className="space-y-2">
-            <Label htmlFor="cuil">Número de CUIL</Label>
+            <Label htmlFor="cuil">Tu Número de CUIL</Label>
             <Input 
                 id="cuil" 
                 type="text" 
@@ -142,11 +135,12 @@ export default function VerificationTab({ isVerified, onVerify, professionalName
                 value={cuil}
                 onChange={(e) => setCuil(e.target.value)}
             />
+             <p className="text-xs text-muted-foreground">Este dato es necesario para identificarte en el correo.</p>
         </div>
       </CardContent>
       <CardFooter>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Generando correo..." : "Verificar mi Cuenta"}
+          {isSubmitting ? "Generando correo..." : "Iniciar Verificación"}
         </Button>
       </CardFooter>
       </form>
