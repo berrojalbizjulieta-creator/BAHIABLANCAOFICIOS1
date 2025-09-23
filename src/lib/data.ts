@@ -209,7 +209,7 @@ export const BANNERS: Banner[] = [
   },
   {
     id: 2,
-    title: 'Soluciones para el hogar',
+    title: 'Jardinería',
     description: 'Plomeros, gasistas y electricistas listos para ayudarte.',
     imageUrl: getImage('work-3').imageUrl,
     imageHint: getImage('work-3').imageHint,
@@ -267,4 +267,5 @@ export const CLIENTS: Client[] = [
     
 
     
+
 
