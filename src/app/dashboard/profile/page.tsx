@@ -21,6 +21,7 @@ import {
   PlusCircle,
   DollarSign,
   PartyPopper,
+  Phone,
 } from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {
@@ -94,6 +95,7 @@ const getImage = (id: string) =>
 const initialProfessionalData: Professional = {
     id: 0,
     name: "Nombre del Profesional",
+    phone: "",
     photoUrl: "",
     photoHint: "",
     specialties: [],
@@ -131,7 +133,7 @@ export default function ProfilePage() {
   
   const selectedCategory = CATEGORIES.find(c => c.id === professional.categoryId);
 
-  const handleInputChange = (field: string, value: string | number | boolean) => {
+  const handleInputChange = (field: keyof Professional, value: string | number | boolean) => {
     setProfessional(prev => (prev ? {...prev, [field]: value} : null));
   };
   
@@ -342,6 +344,18 @@ export default function ProfilePage() {
                            <li className="flex items-center gap-3"><Clock className="w-4 h-4 text-primary" /> 
                             {isEditing ? <div className="flex items-center gap-2"><Input type="number" placeholder="0" className="w-16 h-8"/> <span>años en el negocio</span></div> : <span>0 años en el negocio</span>}
                            </li>
+                           {isEditing && (
+                            <li className="flex items-center gap-3">
+                               <Phone className="w-4 h-4 text-primary" /> 
+                                <Input 
+                                    type="tel" 
+                                    placeholder="2914..." 
+                                    className="w-48 h-8"
+                                    value={professional.phone}
+                                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                                /> 
+                           </li>
+                           )}
                         </ul>
                       </div>
                       <div>

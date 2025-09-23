@@ -417,6 +417,7 @@ export const PROFESSIONALS: Professional[] = [
   {
     id: 1,
     name: 'Carlos Rodriguez',
+    phone: '2914123456',
     photoUrl: getImage('prof-1').imageUrl,
     photoHint: getImage('prof-1').imageHint,
     specialties: ['Reparación de Fugas', 'Instalación de Grifería'],
@@ -446,6 +447,7 @@ export const PROFESSIONALS: Professional[] = [
   {
     id: 2,
     name: 'Lucía Fernandez',
+    phone: '2914123457',
     photoUrl: getImage('prof-2').imageUrl,
     photoHint: getImage('prof-2').imageHint,
     specialties: ['Instalaciones Eléctricas', 'Tableros'],
@@ -496,6 +498,7 @@ export const PROFESSIONALS: Professional[] = [
   {
     id: 4,
     name: 'Jorge Herrera',
+    phone: '2914123459',
     photoUrl: getImage('prof-4').imageUrl,
     photoHint: getImage('prof-4').imageHint,
     specialties: ['Muebles a Medida'],
@@ -547,6 +550,7 @@ export const PROFESSIONALS: Professional[] = [
   {
     id: 7,
     name: 'Alberto Gómez',
+    phone: '2914123450',
     photoUrl: getImage('prof-1').imageUrl,
     photoHint: getImage('prof-1').imageHint,
     specialties: ['Paredes y Cimientos', 'Reformas'],
@@ -597,6 +601,7 @@ export const PROFESSIONALS: Professional[] = [
   {
     id: 9,
     name: 'Esteban Quito',
+    phone: '2914123451',
     photoUrl: getImage('prof-3').imageUrl,
     photoHint: getImage('prof-3').imageHint,
     specialties: ['Colocación de Ladrillos', 'Revoque'],
