@@ -40,8 +40,8 @@ export default function AppPromoSection() {
                 {celularImg && <Image 
                     src={celularImg.imageUrl}
                     alt={celularImg.description}
-                    width={300}
-                    height={600}
+                    width={250}
+                    height={500}
                     className="object-contain"
                     data-ai-hint={celularImg.imageHint}
                 />}
