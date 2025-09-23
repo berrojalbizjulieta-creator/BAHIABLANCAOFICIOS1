@@ -121,7 +121,7 @@ export default function HeroSection() {
                 type="text"
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                onFocus={() => setShowSuggestions(true)}
+                onFocus={() => setShowSuggestions(prompt.length > 2)}
                 placeholder="¿Qué servicio estás buscando? Ej: 'arreglar una canilla'"
                 className="flex-1 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-base text-gray-800 placeholder:text-gray-500"
               />
@@ -185,7 +185,7 @@ export default function HeroSection() {
                     suggestions.length === 0 &&
                     prompt.length > 2 && (
                       <div className="px-4 py-2 text-sm text-muted-foreground">
-                        No se encontraron sugerencias.
+                        No se encontraron sugerencias. Intenta con otro término.
                       </div>
                     )}
                 </CardContent>
