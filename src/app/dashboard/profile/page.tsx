@@ -89,16 +89,9 @@ const initialProfessionalData: Professional = {
     photoUrl: "",
     photoHint: "",
     specialties: [],
-    avgRating: 5,
+    avgRating: 0,
     categoryId: 0,
-    testimonials: [{
-        id: 1,
-        clientName: 'Ana Gomez',
-        clientPhotoUrl: getImage('client-1').imageUrl,
-        clientPhotoHint: getImage('client-1').imageHint,
-        rating: 5,
-        text: 'Excelente servicio. Rápido y muy profesional.',
-    }],
+    testimonials: [],
     isVerified: false,
 }
 
@@ -455,3 +448,5 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+    
