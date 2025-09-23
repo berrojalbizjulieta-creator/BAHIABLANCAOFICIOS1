@@ -60,9 +60,9 @@ export default function ProfessionalCard({
   return (
     <>
       <Card className="flex flex-col md:flex-row items-start w-full overflow-hidden transition-shadow hover:shadow-md">
-        <div className="flex-shrink-0 p-6 flex flex-col items-center text-center md:w-1/4">
+        <div className="flex-shrink-0 p-6 flex flex-col items-center text-center md:w-1/3">
           <Link href={`/profesional/${professional.id}`} passHref>
-            <Avatar className="w-24 h-24 border-4 border-background shadow-sm relative cursor-pointer">
+            <Avatar className="w-36 h-36 border-4 border-background shadow-md relative cursor-pointer">
               {professional.photoUrl && (
                   <AvatarImage
                   src={professional.photoUrl}
@@ -85,7 +85,7 @@ export default function ProfessionalCard({
             <StarRating rating={professional.avgRating} count={professional.testimonials.length} />
           </div>
         </div>
-        <div className="p-6 pt-0 md:pt-6 border-t md:border-t-0 md:border-l w-full md:w-3/4">
+        <div className="p-6 pt-0 md:pt-6 border-t md:border-t-0 md:border-l w-full md:w-2/3">
           <CardContent className="p-0">
             <h4 className="font-semibold text-sm mb-2">Especialidades:</h4>
             <div className="flex flex-wrap gap-2 mb-4">
