@@ -39,10 +39,10 @@ export default function HeroSection() {
 
   useEffect(() => {
     if (prompt.length > 2) {
+      setIsSuggestionsLoading(true);
       if (debounceTimeout.current) {
         clearTimeout(debounceTimeout.current);
       }
-      setIsSuggestionsLoading(true);
       debounceTimeout.current = setTimeout(async () => {
         try {
           const response = await suggestTradesFromPrompt({ prompt });
@@ -60,6 +60,7 @@ export default function HeroSection() {
       }, 500); // 500ms debounce
     } else {
       setSuggestions([]);
+      setIsSuggestionsLoading(false);
     }
 
     return () => {
