@@ -61,7 +61,7 @@ export default function ProfessionalCard({
     <>
       <Card className="flex flex-col md:flex-row items-start w-full overflow-hidden transition-shadow hover:shadow-md">
         <div className="flex-shrink-0 p-6 flex flex-col items-center text-center md:w-1/4">
-          <Link href={`/servicios/profil/${professional.id}`} passHref>
+          <Link href={`/profesional/${professional.id}`} passHref>
             <Avatar className="w-20 h-20 border-4 border-background shadow-sm relative cursor-pointer">
               {professional.photoUrl && (
                   <AvatarImage
@@ -75,8 +75,8 @@ export default function ProfessionalCard({
           </Link>
         
           <CardHeader className="p-0 pt-3">
-            <Link href={`/servicios/profil/${professional.id}`} passHref>
-              <CardTitle className="text-lg font-headline hover:underline">
+            <Link href={`/profesional/${professional.id}`} passHref>
+              <CardTitle className="text-lg font-headline hover:underline cursor-pointer">
                 {professional.name}
               </CardTitle>
             </Link>
@@ -133,7 +133,7 @@ export default function ProfessionalCard({
               </div>
             {professional.testimonials.length > 0 && (
                   <Button variant="link" size="sm" asChild>
-                      <Link href={`/servicios/profil/${professional.id}`} target="_blank">Ver más</Link>
+                      <Link href={`/profesional/${professional.id}`} target="_blank">Ver más</Link>
                   </Button>
             )}
           </CardFooter>
