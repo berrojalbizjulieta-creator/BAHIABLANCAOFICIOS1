@@ -2,9 +2,9 @@
   "placeholderImages": [
     {
       "id": "promo-banner-1",
-      "description": "A plumber fixing a sink.",
-      "imageUrl": "https://images.unsplash.com/photo-1546173974-49aab15604d5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxwbHVtYmVyJTIwd29ya3xlbnwwfHx8fDE3NTg1OTEyNTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "plumber work"
+      "description": "El portal del Parque de Mayo en Bahía Blanca.",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2f/P%C3%B3rtico_Parque_de_Mayo_Bahia_Blanca.jpg",
+      "imageHint": "parque bahia"
     },
     {
       "id": "promo-banner-2",
@@ -63,7 +63,7 @@
     {
       "id": "prof-6",
       "description": "Portrait of a female locksmith.",
-      "imageUrl": "https://images.unsplash.com/photo-1593351799227-75df2026356b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc1ODU1NDA2MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1593351799227-75df2026356b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc1ODU1NDA2MXww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "woman portrait"
     },
     {
@@ -93,7 +93,7 @@
     {
       "id": "work-1",
       "description": "A newly renovated modern kitchen.",
-      "imageUrl": "https://images.unsplash.com/photo-1609280069678-ab9ef26a0b05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxyZW5vdmF0ZWQlMjBraXRjaGVufGVufDB8fHx8MTc1ODYwMTYyMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1609280069678-ab9ef26a0b05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxyZW5vdmF0ZWQlMjBraXRjaGVufGVufDB8fHx8MTc1ODYwMTYyMXww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "renovated kitchen"
     },
     {
@@ -105,7 +105,7 @@
     {
       "id": "work-3",
       "description": "A plumber installing a new sink.",
-      "imageUrl": "https://images.unsplash.com/photo-1751486403890-793880b12adb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwbHVtYmVyJTIwaW5zdGFsbGF0aW9ufGVufDB8fHx8MTc1ODYwMTYyMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1751486403890-793880b12adb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwbHVtYmVyJTIwaW5zdGFsbGF0aW9ufGVufDB8fHx8MTc1ODYwMTYyMXww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "plumber installation"
     },
     {
@@ -117,7 +117,7 @@
     {
       "id": "work-5",
       "description": "An electrician wiring a new light fixture.",
-      "imageUrl": "https://images.unsplash.com/photo-1597502310092-31cdaa35b46d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxlbGVjdHJpY2lhbiUyMHdpcmluZ3xlbnwwfHx8fDE3NTg1OTEyNTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1597502310092-31cdaa35b46d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxlbGVjdHJpY2lhbiUyMHdpcmluZ3xlbnwwfHx8fDE3NTg1OTEyNTF8MA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "electrician wiring"
     },
     {
