@@ -1,14 +1,18 @@
 'use client';
 
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { useState } from 'react';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { CATEGORIES } from '@/lib/data';
 import Link from 'next/link';
+import { Search } from 'lucide-react';
 
 export default function ServicesPage() {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredCategories = CATEGORIES.filter((category) =>
+    category.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
@@ -21,22 +25,35 @@ export default function ServicesPage() {
         </p>
       </div>
 
+      <div className="max-w-xl mx-auto mb-10">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="¿Qué estás buscando? Ej: Plomería, Electricidad..."
+            className="w-full pl-10"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {CATEGORIES.map((category) => (
+        {filteredCategories.map((category) => (
           <Link
             key={category.id}
-            href={`/servicios/${encodeURIComponent(category.name.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-'))}`}
+            href={`/servicios/${encodeURIComponent(
+              category.name.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-')
+            )}`}
             target="_blank"
             rel="noopener noreferrer"
             className="cursor-pointer group"
           >
-            <Card
-              className="hover:shadow-lg transition-all"
-            >
+            <Card className="hover:shadow-lg transition-all">
               <CardHeader className="flex flex-row items-center gap-4 space-y-0">
                 <div className="bg-primary/10 p-3 rounded-full group-hover:bg-accent/20 transition-colors">
-                    <category.icon className="h-6 w-6 text-primary group-hover:text-accent-foreground" />
-                  </div>
+                  <category.icon className="h-6 w-6 text-primary group-hover:text-accent-foreground" />
+                </div>
                 <CardTitle className="font-headline text-base">
                   {category.name}
                 </CardTitle>
@@ -45,6 +62,16 @@ export default function ServicesPage() {
           </Link>
         ))}
       </div>
+       {filteredCategories.length === 0 && (
+        <div className="text-center col-span-full py-16">
+          <p className="text-lg font-medium text-muted-foreground">
+            No se encontraron oficios que coincidan con tu búsqueda.
+          </p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Intenta con otro término o explora la lista completa.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
