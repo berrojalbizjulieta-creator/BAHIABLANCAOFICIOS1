@@ -220,15 +220,10 @@ export default function PublicProfilePage() {
               <Card className="overflow-hidden shadow-lg">
                 <CardContent className="p-6">
                   <div className="flex flex-col sm:flex-row items-start gap-6">
-                     <div className="relative w-36 h-36">
-                        <Image
-                            src={professional.photoUrl}
-                            alt={professional.name}
-                            width={144}
-                            height={144}
-                            className="rounded-full object-cover border-4 border-background shadow-md"
-                        />
-                     </div>
+                     <Avatar className="w-36 h-36 border-4 border-background shadow-md">
+                        <AvatarImage src={professional.photoUrl} alt={professional.name} />
+                        <AvatarFallback>{professional.name.charAt(0)}</AvatarFallback>
+                     </Avatar>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <h1 className="text-3xl font-bold font-headline">
