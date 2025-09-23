@@ -423,6 +423,7 @@ export const PROFESSIONALS: Professional[] = [
     avgRating: 4.8,
     categoryId: 11,
     priceInfo: 'Hora de trabajo desde $2500 ARS. Presupuestos sin cargo.',
+    isSubscriptionActive: false, // Subscription expired
     testimonials: [
       {
         id: 1,
@@ -451,6 +452,7 @@ export const PROFESSIONALS: Professional[] = [
     avgRating: 5.0,
     categoryId: 14,
     priceInfo: 'Consultar por instalación. Revisiones desde $2000 ARS.',
+    isSubscriptionActive: true,
     testimonials: [
       {
         id: 3,
@@ -479,6 +481,7 @@ export const PROFESSIONALS: Professional[] = [
     avgRating: 4.5,
     categoryId: 17,
     priceInfo: 'Presupuestos a medida según m2. Incluye materiales.',
+    isSubscriptionActive: true,
     testimonials: [
       {
         id: 5,
@@ -498,6 +501,7 @@ export const PROFESSIONALS: Professional[] = [
     specialties: ['Muebles a Medida'],
     avgRating: 4.9,
     categoryId: 15,
+    isSubscriptionActive: true,
     testimonials: [
       {
         id: 6,
@@ -516,7 +520,8 @@ export const PROFESSIONALS: Professional[] = [
     photoHint: getImage('prof-6').imageHint,
     specialties: ['Cambio de Cerraduras', 'Aperturas de emergencia'],
     avgRating: 4.7,
-    categoryId: 4,
+    categoryId: 34,
+    isSubscriptionActive: true,
     testimonials: [
       {
         id: 7,
@@ -536,6 +541,7 @@ export const PROFESSIONALS: Professional[] = [
     specialties: ['Instalación de Split', 'Mantenimiento'],
     avgRating: 4.6,
     categoryId: 23,
+    isSubscriptionActive: false,
     testimonials: [],
   },
   {
@@ -547,6 +553,7 @@ export const PROFESSIONALS: Professional[] = [
     avgRating: 4.9,
     categoryId: 13,
     priceInfo: 'Construcción desde $5000/m2. Consulte por reformas.',
+    isSubscriptionActive: true,
     testimonials: [
       {
         id: 8,
@@ -567,6 +574,7 @@ export const PROFESSIONALS: Professional[] = [
     avgRating: 4.7,
     categoryId: 13,
     priceInfo: 'Presupuestos a medida.',
+    isSubscriptionActive: true,
     testimonials: [
       {
         id: 9,
@@ -595,6 +603,7 @@ export const PROFESSIONALS: Professional[] = [
     avgRating: 4.2,
     categoryId: 13,
     priceInfo: 'Revoque fino y grueso. Consulte precios.',
+    isSubscriptionActive: true,
     testimonials: [
       {
         id: 11,

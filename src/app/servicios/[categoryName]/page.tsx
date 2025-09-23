@@ -36,7 +36,7 @@ export default function CategoryPage() {
   }
 
   const filteredProfessionals = PROFESSIONALS.filter(
-    (p) => p.categoryId === category.id
+    (p) => p.categoryId === category.id && p.isSubscriptionActive
   );
 
   return (

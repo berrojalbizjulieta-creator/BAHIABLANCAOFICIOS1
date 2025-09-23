@@ -20,6 +20,7 @@ export interface Professional {
   testimonials: Testimonial[];
   isVerified?: boolean;
   priceInfo?: string;
+  isSubscriptionActive?: boolean;
 }
 
 export interface Category {
