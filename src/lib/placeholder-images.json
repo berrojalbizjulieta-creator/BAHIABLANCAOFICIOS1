@@ -7,22 +7,22 @@
       "imageHint": "parque bahia blanca"
     },
     {
-      "id": "promo-banner-1",
-      "description": "Plumber fixing a sink.",
-      "imageUrl": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "imageHint": "plumber working"
+      "id": "essential-services",
+      "description": "Close-up of the siding on the corner of a house.",
+      "imageUrl": "https://images.unsplash.com/photo-1600585152225-3579fe9d9406?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "house exterior"
     },
     {
-      "id": "promo-banner-2",
-      "description": "Handyman installing a light fixture on a ceiling.",
-      "imageUrl": "https://images.unsplash.com/photo-1603712725038-17a9a13145a3?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "imageHint": "handyman working"
+      "id": "outdoor-upkeep",
+      "description": "A well-maintained front yard of a house with a large tree.",
+      "imageUrl": "https://images.unsplash.com/photo-1588392382834-a891154bca4d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "front yard"
     },
     {
-      "id": "promo-banner-3",
-      "description": "Movers carrying a box together.",
-      "imageUrl": "https://images.unsplash.com/photo-1590506048633-5056bede6931?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "imageHint": "movers working"
+      "id": "healthy-at-home",
+      "description": "A child playing in a clean and tidy living room.",
+      "imageUrl": "https://images.unsplash.com/photo-1540518614846-7eded433c457?q=80&w=2057&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "clean living room"
     },
     {
       "id": "mp-qr-code",

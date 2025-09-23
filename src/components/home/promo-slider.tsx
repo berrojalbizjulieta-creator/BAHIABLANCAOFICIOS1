@@ -9,8 +9,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import { Button } from '../ui/button';
 import Link from 'next/link';
+import { Card, CardContent } from '../ui/card';
+import { ArrowRight } from 'lucide-react';
 
 export default function PromoSlider() {
   return (
@@ -18,10 +19,10 @@ export default function PromoSlider() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-left mb-10">
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">
-            Servicios que podrían interesarte
+            Explora otros servicios
           </h2>
           <p className="mt-3 max-w-2xl text-muted-foreground md:text-lg">
-            Explora otras categorías populares y encuentra la ayuda que necesitas.
+            Descubre todo lo que nuestros profesionales pueden hacer por ti y tu hogar.
           </p>
         </div>
         <Carousel
@@ -35,27 +36,32 @@ export default function PromoSlider() {
             {BANNERS.map((banner) => (
               <CarouselItem key={banner.id} className="md:basis-1/2 lg:basis-1/3">
                 <Link href={banner.buttonLink || '#'} className="block group">
-                  <div className="relative h-80 w-full overflow-hidden rounded-lg shadow-lg">
-                    <Image
-                      src={banner.imageUrl}
-                      alt={banner.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      data-ai-hint={banner.imageHint}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                    <div className="absolute bottom-0 left-0 p-6 text-white">
-                      <h3 className="text-2xl font-bold font-headline">
-                        {banner.title}
-                      </h3>
-                      {banner.buttonText && (
-                        <Button asChild className="mt-2" variant="secondary" size="sm">
-                          <span tabIndex={-1}>{banner.buttonText}</span>
-                        </Button>
-                      )}
+                 <Card className="overflow-hidden h-full flex flex-col">
+                    <div className="relative aspect-[4/3] w-full overflow-hidden">
+                      <Image
+                        src={banner.imageUrl}
+                        alt={banner.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        data-ai-hint={banner.imageHint}
+                      />
                     </div>
-                  </div>
+                    <CardContent className="p-4 flex-1 flex flex-col justify-between">
+                       <div>
+                          <h3 className="text-lg font-bold font-headline mb-1">
+                            {banner.title}
+                          </h3>
+                           <p className="text-sm text-muted-foreground">{banner.description}</p>
+                       </div>
+                       {banner.buttonText && (
+                         <div className="flex items-center text-primary font-semibold text-sm mt-4 group-hover:underline">
+                           {banner.buttonText}
+                           <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                         </div>
+                       )}
+                    </CardContent>
+                  </Card>
                 </Link>
               </CarouselItem>
             ))}

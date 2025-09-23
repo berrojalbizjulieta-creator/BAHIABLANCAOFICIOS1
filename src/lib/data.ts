@@ -652,32 +652,30 @@ export const PROFESSIONALS: Professional[] = [
 export const BANNERS: Banner[] = [
   {
     id: 1,
-    title: 'Plomería',
-    description:
-      'Soluciones rápidas y efectivas para cualquier problema de plomería en tu hogar.',
-    imageUrl: getImage('promo-banner-1').imageUrl,
-    imageHint: getImage('promo-banner-1').imageHint,
-    buttonText: 'Ver Plomeros',
-    buttonLink: '/servicios/plomeria',
-  },
-  {
-    id: 2,
-    title: 'Personal de Mantenimiento',
-    description:
-      'Expertos para reparaciones generales, instalaciones y todo lo que tu casa necesite.',
-    imageUrl: getImage('promo-banner-2').imageUrl,
-    imageHint: getImage('promo-banner-2').imageHint,
-    buttonText: 'Ver Expertos',
+    title: 'Servicios Esenciales',
+    description: 'Plomería, electricidad y reparaciones urgentes para tu hogar.',
+    imageUrl: getImage('essential-services').imageUrl,
+    imageHint: getImage('essential-services').imageHint,
+    buttonText: 'Ver Servicios',
     buttonLink: '/servicios/reparaciones-y-servicios-tecnicos',
   },
   {
+    id: 2,
+    title: 'Mantenimiento de Exteriores',
+    description: 'Corte de césped, jardinería y cuidado de tus espacios verdes.',
+    imageUrl: getImage('outdoor-upkeep').imageUrl,
+    imageHint: getImage('outdoor-upkeep').imageHint,
+    buttonText: 'Ver Jardineros',
+    buttonLink: '/servicios/jardineria-y-paisajismo',
+  },
+  {
     id: 3,
-    title: 'Mudanzas y Fletes',
-    description: 'Transporte seguro y confiable para tus pertenencias. Pequeños y grandes traslados.',
-    imageUrl: getImage('promo-banner-3').imageUrl,
-    imageHint: getImage('promo-banner-3').imageHint,
-    buttonText: 'Buscar Transportistas',
-    buttonLink: '/servicios/fletes-y-transportes-pequenos',
+    title: 'Bienestar en Casa',
+    description: 'Limpieza profunda, organización y todo para un ambiente saludable.',
+    imageUrl: getImage('healthy-at-home').imageUrl,
+    imageHint: getImage('healthy-at-home').imageHint,
+    buttonText: 'Ver Servicios',
+    buttonLink: '/servicios/limpieza-y-mantenimiento',
   },
 ];
 
