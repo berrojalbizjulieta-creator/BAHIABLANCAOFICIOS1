@@ -56,7 +56,7 @@ export const CATEGORIES: Category[] = [
     { id: 12, name: 'Gasista', icon: Wind, description: 'Instalación y arreglo de gas, calderas, cocinas.', imageUrl: getImage('cat-gasista').imageUrl, imageHint: getImage('cat-gasista').imageHint },
     { id: 64, name: 'Cerrajería', icon: KeyRound, description: 'Apertura de puertas, cerraduras, llaves.', imageUrl: getImage('cat-cerrajeria').imageUrl, imageHint: getImage('cat-cerrajeria').imageHint },
     { id: 23, name: 'Climatización', icon: Fan, description: 'Aires acondicionados, estufas y radiadores.', imageUrl: getImage('cat-climatizacion-2').imageUrl, imageHint: getImage('cat-climatizacion-2').imageHint },
-    { id: 65, name: 'Vidriería', icon: GlassWater, description: 'Reemplazo de vidrios, espejos y ventanas.', imageUrl: getImage('cat-vidrieria').imageUrl, imageHint: getImage('cat-vidrieria').imageHint },
+    { id: 65, name: 'Vidriería', icon: GlassWater, description: 'Reemplazo de vidrios, espejos y ventanas.', imageUrl: getImage('cat-vidrieria-2').imageUrl, imageHint: getImage('cat-vidrieria-2').imageHint },
     { id: 66, name: 'Control de Plagas', icon: Bug, description: 'Fumigación y control de plagas.', imageUrl: getImage('cat-plagas').imageUrl, imageHint: getImage('cat-plagas').imageHint },
 ];
 
