@@ -218,9 +218,9 @@ export const BANNERS: Banner[] = [
   },
   {
     id: 3,
-    title: 'Dale vida a tu jardín',
+    title: 'dale vida a tu jardín',
     description:
-      'Expertos en paisajismo y mantenimiento de espacios verdes.',
+      'expertos en paisajismo y mantenimiento de espacios verdes.',
     imageUrl: getImage('work-6').imageUrl,
     imageHint: getImage('work-6').imageHint,
     buttonText: 'Contratar Jardineros',
@@ -267,6 +267,7 @@ export const CLIENTS: Client[] = [
     
 
     
+
 
 
 
