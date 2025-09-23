@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Star, MessageSquare, DollarSign } from 'lucide-react';
 import type { Professional } from '@/lib/types';
 import {
@@ -53,12 +54,16 @@ export default function ProfessionalCard({
     <>
       <Card className="flex flex-col md:flex-row items-start w-full overflow-hidden transition-shadow hover:shadow-md">
         <div className="flex-shrink-0 p-6 flex flex-col items-center text-center md:w-1/4">
-          <Avatar className="w-20 h-20 border-4 border-background shadow-sm">
-              <AvatarImage
+          <Avatar className="w-20 h-20 border-4 border-background shadow-sm relative">
+              {professional.photoUrl && (
+                <Image
                   src={professional.photoUrl}
                   alt={professional.name}
+                  fill
+                  className="object-cover"
                   data-ai-hint={professional.photoHint}
                   />
+              )}
               <AvatarFallback>{professional.name.charAt(0)}</AvatarFallback>
           </Avatar>
         
