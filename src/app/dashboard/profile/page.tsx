@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, {useRef, useState, useEffect} from 'react';
@@ -246,16 +247,16 @@ export default function ProfilePage() {
                 <div className="flex flex-col sm:flex-row items-start gap-6">
                   <div className="relative group">
                     <Avatar 
-                        className={`w-36 h-36 border-4 border-background shadow-md ${isEditing ? 'cursor-pointer' : ''}`}
+                        className={`w-36 h-36 border-4 border-background shadow-md rounded-md ${isEditing ? 'cursor-pointer' : ''}`}
                         onClick={handleAvatarClick}
                     >
                         <AvatarImage src={professional.photoUrl} alt={professional.name} />
-                        <AvatarFallback className="text-4xl">
+                        <AvatarFallback className="text-4xl rounded-md">
                             {professional.name ? professional.name.charAt(0) : '?'}
                         </AvatarFallback>
                     </Avatar>
                      {isEditing && (
-                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity" onClick={handleAvatarClick}>
+                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-md opacity-0 group-hover:opacity-100 transition-opacity" onClick={handleAvatarClick}>
                             <Upload className="h-8 w-8 text-white"/>
                         </div>
                     )}
