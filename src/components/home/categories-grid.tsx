@@ -11,6 +11,7 @@ import {
 import { CATEGORIES } from '@/lib/data';
 import type { Category } from '@/lib/types';
 import ProfessionalsModal from '../professionals/professionals-modal';
+import Link from 'next/link';
 
 const TOP_CATEGORIES = [
   'Plomería',
@@ -58,6 +59,11 @@ export default function CategoriesGrid() {
               </CardContent>
             </Card>
           ))}
+        </div>
+         <div className="mt-6 text-right">
+            <Link href="/servicios" className="text-sm font-medium text-primary hover:underline">
+                Ver todos
+            </Link>
         </div>
       </div>
       <ProfessionalsModal 
