@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { placeholderImages } from '@/lib/placeholder-images';
 import {
   Carousel,
   CarouselContent,
@@ -17,7 +17,7 @@ import { useRouter } from 'next/navigation';
 import { suggestTradesFromPrompt } from '@/ai/flows/suggest-trades-from-prompt';
 import { Card, CardContent } from '../ui/card';
 
-const heroImages = PlaceHolderImages.filter(img =>
+const heroImages = placeholderImages.filter(img =>
   img.id.startsWith('hero-background-')
 );
 

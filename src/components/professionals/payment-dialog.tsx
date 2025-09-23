@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { placeholderImages } from '@/lib/placeholder-images';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Separator } from '../ui/separator';
@@ -25,7 +25,7 @@ interface PaymentDialogProps {
 }
 
 const getImage = (id: string) =>
-  PlaceHolderImages.find((img) => img.id === id) || {
+  placeholderImages.find((img) => img.id === id) || {
     imageUrl: '',
     imageHint: '',
     description: '',

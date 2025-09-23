@@ -1,4 +1,4 @@
-import { placeholderImages } from './placeholder-images.json';
+import { placeholderImages as allImages } from './placeholder-images.json';
 
 export type ImagePlaceholder = {
   id: string;
@@ -7,4 +7,4 @@ export type ImagePlaceholder = {
   imageHint: string;
 };
 
-export const PlaceHolderImages: ImagePlaceholder[] = placeholderImages;
+export const placeholderImages: ImagePlaceholder[] = allImages;

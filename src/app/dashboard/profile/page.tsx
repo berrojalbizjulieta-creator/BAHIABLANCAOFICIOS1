@@ -43,7 +43,7 @@ import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {useToast} from '@/hooks/use-toast';
 import {Switch} from '@/components/ui/switch';
 import VerificationTab from '@/components/professionals/verification-tab';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { placeholderImages } from '@/lib/placeholder-images';
 import {
   Carousel,
   CarouselContent,
@@ -87,7 +87,7 @@ function StarRating({
 }
 
 const getImage = (id: string) =>
-  PlaceHolderImages.find((img) => img.id === id) || {
+  placeholderImages.find((img) => img.id === id) || {
     imageUrl: '',
     imageHint: '',
   };
@@ -105,7 +105,7 @@ const initialProfessionalData: Professional = {
     isVerified: false,
 }
 
-const workPhotos = PlaceHolderImages.filter(p => p.id.startsWith('work-'));
+const workPhotos = placeholderImages.filter(p => p.id.startsWith('work-'));
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(true);

@@ -23,10 +23,10 @@ import {
   Brush,
 } from 'lucide-react';
 import type { Category, Professional, Banner } from '@/lib/types';
-import { PlaceHolderImages } from './placeholder-images';
+import { placeholderImages } from './placeholder-images';
 
 const getImage = (id: string) =>
-  PlaceHolderImages.find((img) => img.id === id) || {
+  placeholderImages.find((img) => img.id === id) || {
     imageUrl: '',
     imageHint: '',
   };

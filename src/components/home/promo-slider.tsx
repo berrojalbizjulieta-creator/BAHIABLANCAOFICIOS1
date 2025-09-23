@@ -11,10 +11,10 @@ import {
 } from '@/components/ui/carousel';
 import { Button } from '../ui/button';
 import Link from 'next/link';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { placeholderImages } from '@/lib/placeholder-images';
 
 const getImage = (id: string) =>
-  PlaceHolderImages.find((img) => img.id === id) || {
+  placeholderImages.find((img) => img.id === id) || {
     imageUrl: '',
     imageHint: '',
   };
