@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { ShieldCheck, CheckCircle } from 'lucide-react';
+import { ShieldCheck, CheckCircle, Clock } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
 interface VerificationTabProps {
@@ -25,6 +25,8 @@ interface VerificationTabProps {
 export default function VerificationTab({ isVerified, onVerify }: VerificationTabProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,7 +42,8 @@ export default function VerificationTab({ isVerified, onVerify }: VerificationTa
       title: 'Solicitud Enviada',
       description: 'Hemos recibido tus documentos. Revisaremos tu información y te notificaremos cuando tu cuenta sea verificada.',
     });
-    onVerify(); // Optimistically update the UI
+    // onVerify(); // We won't optimistically update anymore, we'll show a pending state.
+    setIsPending(true);
     setIsSubmitting(false);
   };
 
@@ -59,6 +62,23 @@ export default function VerificationTab({ isVerified, onVerify }: VerificationTa
         </Card>
       )
   }
+
+  if (isPending) {
+     return (
+        <Card className="shadow-lg bg-blue-50 border-blue-200">
+            <CardHeader className="text-center">
+                 <div className="mx-auto bg-blue-100 rounded-full p-3 w-fit">
+                    <Clock className="w-12 h-12 text-blue-600" />
+                </div>
+                <CardTitle className="text-blue-800 !mt-4">Solicitud en Revisión</CardTitle>
+                <CardDescription className="text-blue-700">
+                    Hemos recibido tus documentos y los estamos revisando. Te notificaremos por email cuando el proceso haya finalizado. Esto suele tardar entre 24 y 48 horas hábiles.
+                </CardDescription>
+            </CardHeader>
+        </Card>
+      )
+  }
+
 
   return (
     <Card className="shadow-lg">
