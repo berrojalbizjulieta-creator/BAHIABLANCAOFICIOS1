@@ -5,8 +5,19 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons/logo';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu } from 'lucide-react';
+import { LayoutDashboard, LogOut, Menu } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { useRouter } from 'next/navigation';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 const navLinks = [
   { href: '/', label: 'Inicio' },
@@ -18,22 +29,43 @@ const navLinks = [
 export function Header() {
   const { user } = useAdminAuth();
   const [isClient, setIsClient] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push('/');
+  };
+
   const renderAuthButtons = () => {
     if (!isClient) {
-      // Render a placeholder on the server to prevent hydration mismatch.
-      return <div className="hidden md:flex items-center gap-3 h-9 w-44"></div>;
+      return <div className="h-9 w-44"></div>;
     }
 
     if (user) {
       return (
-        <Button variant="outline" size="sm" asChild>
-          <Link href="/dashboard">Mi Panel</Link>
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'Usuario'} />
+                <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard"><LayoutDashboard className="mr-2"/> Mi Panel</Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout} className="text-red-500">
+             <LogOut className="mr-2"/> Cerrar Sesión
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       );
     }
 
@@ -56,9 +88,12 @@ export function Header() {
 
     if (user) {
       return (
-         <Button variant="outline" asChild>
-            <Link href="/dashboard">Mi Panel</Link>
-        </Button>
+        <div className="flex flex-col gap-3">
+            <Button variant="outline" asChild>
+                <Link href="/dashboard">Mi Panel</Link>
+            </Button>
+            <Button variant="destructive" onClick={handleLogout}>Cerrar Sesión</Button>
+        </div>
       );
     }
 
