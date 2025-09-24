@@ -22,13 +22,10 @@ export default function AboutUsPage() {
             <Card className="max-w-3xl mt-4 shadow-lg">
                 <CardContent className="p-8 text-left text-muted-foreground md:text-lg space-y-6">
                    <p>
-                    Somos Agustín y Julieta, una pareja que llegó a Bahía Blanca con nuestros estudios y terminó encontrando aquí un lugar al que llamar hogar. Con el tiempo nos dimos cuenta de algo que nos pasa a todos: cuando necesitamos un servicio, muchas veces no sabemos a quién acudir, y encontrar un profesional confiable puede ser complicado.
+                    Bahía Blanca Oficios es un espacio creado para conectar a vecinos con profesionales de confianza. La plataforma permite que cada especialista muestre con claridad quién es y qué hace, mientras que los usuarios pueden encontrar rápidamente a la persona indicada para cada necesidad.
                     </p>
                     <p>
-                    Por eso creamos <strong>Bahia Blanca Oficios</strong>: un espacio pensado para que los profesionales puedan presentarse y mostrar con claridad quiénes son y qué hacen, y para que los vecinos puedan encontrar rápidamente a la persona indicada para cada necesidad. Cada perfil incluye reseñas de otros vecinos, para que puedas conocer la experiencia de quienes ya confiaron en ese profesional y tomar decisiones con seguridad.
-                    </p>
-                    <p>
-                    Queremos que esta página sea un puente de confianza: un lugar donde la información sea clara, los profesionales sean visibles y los vecinos puedan tomar decisiones seguras. Bahia Blanca Oficios nació para acercar personas y servicios, y para que todos en la ciudad sepan dónde encontrar lo que buscan, sin vueltas.
+                    Cada perfil incluye reseñas verificadas de otros vecinos, ofreciendo transparencia y seguridad al momento de elegir. Nuestro objetivo es ser un puente de confianza: un lugar donde la información sea clara, los profesionales sean visibles y las decisiones más simples. Bahía Blanca Oficios nació para acercar personas y servicios, sin vueltas.
                     </p>
                 </CardContent>
             </Card>
