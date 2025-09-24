@@ -235,8 +235,8 @@ export const BANNERS: Banner[] = [
     description: 'Cortá el pasto, poné luces y armá tu patio',
     imageUrl: 'https://i.pinimg.com/1200x/ce/30/e6/ce30e6fa6063da846fedd81b4d6d5567.jpg',
     imageHint: 'garden tools',
-    buttonText: 'Buscar Técnicos',
-    buttonLink: '/servicios/reparaciones-y-servicios-tecnicos',
+    buttonText: 'Explorar Ideas',
+    buttonLink: '/jardin-y-exteriores',
   },
   {
     id: 3,
@@ -328,3 +328,4 @@ export const AD_BANNERS = [
 
 
     
+
