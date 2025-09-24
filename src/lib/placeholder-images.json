@@ -8,9 +8,9 @@
     },
     {
       "id": "essential-services-house",
-      "description": "A close up of the corner of a house.",
-      "imageUrl": "https://i.pinimg.com/1200x/c1/b2/89/c1b289c375b420042453c15fe6f6c91a.jpg",
-      "imageHint": "house corner"
+      "description": "Tools hanging on a wall.",
+      "imageUrl": "https://i.pinimg.com/736x/f9/3e/d5/f93ed5f313c8b154b89d2b456aad8160.jpg",
+      "imageHint": "tools wall"
     },
     {
       "id": "app-promo-mockup",
@@ -51,7 +51,7 @@
     {
       "id": "prof-4",
       "description": "Portrait of a male carpenter.",
-      "imageUrl": "https://images.unsplash.com/photo-1607031542107-f6f46b5d54e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODI4MTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1607031542107-f6f46b5d54e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODI4MTZ8MA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "man portrait"
     },
     {
