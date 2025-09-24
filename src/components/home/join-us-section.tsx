@@ -17,11 +17,11 @@ export default function JoinUsSection() {
             {joinIllustration && (
               <Image
                 src="https://i.pinimg.com/1200x/c1/f3/f1/c1f3f1e91372a82988138761e389e9f3.jpg"
-                alt="Ilustración de profesionales trabajando"
+                alt="Agustín y Julieta"
                 width={450}
                 height={450}
-                className="rounded-lg object-cover"
-                data-ai-hint="people working illustration"
+                className="rounded-full object-cover border-8 border-background shadow-xl"
+                data-ai-hint="couple portrait"
               />
             )}
           </div>

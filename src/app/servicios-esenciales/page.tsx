@@ -29,7 +29,7 @@ const improvementCategories = [
 ];
 
 const getCategoryByName = (name: string) => CATEGORIES.find(c => c.name === name);
-const essentialServicesHouseImage = placeholderImages.find(p => p.id === 'essential-services-house');
+const heroBackground = placeholderImages.find(p => p.id === 'hero-background-parque-de-mayo');
 
 const renderCategoryCard = (categoryName: string) => {
   const category = getCategoryByName(categoryName);
@@ -69,36 +69,34 @@ export default function EssentialServicesPage() {
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
       
-      <div className="relative isolate overflow-hidden bg-background py-16 sm:py-24 rounded-2xl mb-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-2">
-            <div className="max-w-xl lg:max-w-lg">
-               <div className='bg-primary/10 text-primary w-fit p-3 rounded-full mb-4'>
-                <Home className='w-8 h-8'/>
-              </div>
-              <h1 className="text-4xl font-bold tracking-tighter text-foreground sm:text-5xl font-headline">
-                Servicios esenciales para el hogar.
-              </h1>
-              <p className="mt-6 text-lg leading-8 text-muted-foreground">
-                Ya sea que tengas tu propia casa o estés alquilando, siempre aparece alguna urgencia. ¿Se te llueve el techo? ¿Saltó la térmica? ¿La calefaccion no arranca? Quedate tranquilo, estás en el lugar justo. Acá encontrás al profesional que necesitás para cualquier arreglo del hogar.
-              </p>
-              <div className="mt-8 flex items-center gap-x-6">
-                <Button asChild>
-                  <Link href="/servicios">Contrata un profesional</Link>
-                </Button>
-              </div>
-            </div>
-            {essentialServicesHouseImage && (
-              <Image
-                src={essentialServicesHouseImage.imageUrl}
-                alt={essentialServicesHouseImage.description}
-                width={2432}
-                height={1442}
-                className="w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10"
-              />
-            )}
+      <div className="relative overflow-hidden rounded-2xl mb-16 shadow-lg">
+          {heroBackground && (
+            <Image
+                src={heroBackground.imageUrl}
+                alt={heroBackground.description}
+                fill
+                className="object-cover w-full h-full filter blur-sm scale-105"
+            />
+          )}
+          <div className="absolute inset-0 bg-black/50"></div>
+          <div className="relative z-10 flex items-center justify-center p-8 md:p-16">
+              <div className="max-w-3xl text-center text-white bg-black/30 backdrop-blur-sm p-8 rounded-xl">
+                <div className='bg-primary/20 text-primary w-fit p-3 rounded-full mb-4 mx-auto'>
+                    <Home className='w-8 h-8 text-white'/>
+                </div>
+                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">
+                    Servicios esenciales para el hogar.
+                </h1>
+                <p className="mt-6 text-lg leading-8 text-white/90">
+                    Ya sea que tengas tu propia casa o estés alquilando, siempre aparece alguna urgencia. ¿Se te llueve el techo? ¿Saltó la térmica? ¿La calefaccion no arranca? Quedate tranquilo, estás en el lugar justo. Acá encontrás al profesional que necesitás para cualquier arreglo del hogar.
+                </p>
+                <div className="mt-8 flex justify-center items-center gap-x-6">
+                    <Button asChild size="lg">
+                    <Link href="/servicios">Contrata un profesional</Link>
+                    </Button>
+                </div>
+             </div>
           </div>
-        </div>
       </div>
 
 
