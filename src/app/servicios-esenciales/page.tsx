@@ -1,10 +1,12 @@
-
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CATEGORIES } from '@/lib/data';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { placeholderImages } from '@/lib/placeholder-images';
+import { Home } from 'lucide-react';
 
 const maintenanceCategories = [
   'Plomería',
@@ -26,6 +28,7 @@ const improvementCategories = [
 ];
 
 const getCategoryByName = (name: string) => CATEGORIES.find(c => c.name === name);
+const essentialServicesHouseImage = placeholderImages.find(p => p.id === 'essential-services-house');
 
 const renderCategoryCard = (categoryName: string) => {
   const category = getCategoryByName(categoryName);
@@ -64,14 +67,36 @@ const renderCategoryCard = (categoryName: string) => {
 export default function EssentialServicesPage() {
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
-      <div className="text-left mb-12">
-        <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">
-          Servicios Esenciales
-        </h1>
-        <p className="mt-3 max-w-2xl text-muted-foreground md:text-lg">
-          Encuentra profesionales de confianza para cada tarea, desde reparaciones urgentes hasta mejoras para tu hogar.
-        </p>
+      
+      <div className="grid md:grid-cols-2 gap-8 items-center mb-16">
+        <div className='text-left'>
+            <div className='bg-primary/10 text-primary w-fit p-3 rounded-full mb-4'>
+                <Home className='w-8 h-8'/>
+            </div>
+            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">
+             Servicios esenciales para el hogar.
+            </h1>
+            <p className="mt-4 max-w-xl text-muted-foreground md:text-lg">
+                Cuando eres propietario de una vivienda, siempre surge una urgencia. ¿Necesitas reparar el techo? ¿Tienes una emergencia eléctrica? ¿Tu caldera no funciona? No te preocupes, estás en el lugar indicado. Encuentra aquí un profesional para cualquier reparación del hogar.
+            </p>
+            <Button className='mt-6' asChild>
+                <Link href='/servicios'>Contrata un profesional</Link>
+            </Button>
+        </div>
+        <div className="flex items-center justify-center">
+          {essentialServicesHouseImage && (
+            <Image
+              src={essentialServicesHouseImage.imageUrl}
+              alt={essentialServicesHouseImage.description}
+              width={500}
+              height={500}
+              className="object-contain"
+              data-ai-hint={essentialServicesHouseImage.imageHint}
+            />
+          )}
+        </div>
       </div>
+
 
       <div className="space-y-16">
         <section>
