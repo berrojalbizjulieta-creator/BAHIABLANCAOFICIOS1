@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -77,7 +78,7 @@ export default function EssentialServicesPage() {
              Servicios esenciales para el hogar.
             </h1>
             <p className="mt-4 max-w-xl text-muted-foreground md:text-lg">
-                Cuando eres propietario de una vivienda, siempre surge una urgencia. ¿Necesitas reparar el techo? ¿Tienes una emergencia eléctrica? ¿Tu caldera no funciona? No te preocupes, estás en el lugar indicado. Encuentra aquí un profesional para cualquier reparación del hogar.
+                Ya sea que tengas tu propia casa o estés alquilando, siempre aparece alguna urgencia. ¿Se te llueve el techo? ¿Saltó la térmica? ¿La calefaccion no arranca? Quedate tranquilo, estás en el lugar justo. Acá encontrás al profesional que necesitás para cualquier arreglo del hogar.
             </p>
             <Button className='mt-6' asChild>
                 <Link href='/servicios'>Contrata un profesional</Link>
