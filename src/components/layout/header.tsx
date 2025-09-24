@@ -16,7 +16,7 @@ const navLinks = [
 ];
 
 export function Header() {
-  const { user, loading } = useAdminAuth();
+  const { user } = useAdminAuth();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -24,10 +24,9 @@ export function Header() {
   }, []);
 
   const renderAuthButtons = () => {
-    if (!isClient || loading) {
-      // Render a placeholder or nothing on the server and during initial client load
-      // to prevent hydration mismatch.
-      return <div className="h-9 w-36"></div>;
+    if (!isClient) {
+      // Render a placeholder on the server to prevent hydration mismatch.
+      return <div className="hidden md:flex items-center gap-3 h-9 w-44"></div>;
     }
 
     if (user) {
@@ -51,7 +50,7 @@ export function Header() {
   };
 
   const renderMobileAuthContent = () => {
-    if (!isClient || loading) {
+    if (!isClient) {
       return null;
     }
 
@@ -64,14 +63,14 @@ export function Header() {
     }
 
     return (
-      <>
+      <div className="flex flex-col gap-3">
         <Button variant="outline" asChild>
           <Link href="/login">Iniciar Sesión</Link>
         </Button>
         <Button asChild>
           <Link href="/signup">Registrarse</Link>
         </Button>
-      </>
+      </div>
     );
   };
 
@@ -123,7 +122,7 @@ export function Header() {
                     </Link>
                   ))}
                 </nav>
-                <div className="mt-auto border-t pt-6 flex flex-col gap-3">
+                <div className="mt-auto border-t pt-6">
                    {renderMobileAuthContent()}
                 </div>
               </div>
