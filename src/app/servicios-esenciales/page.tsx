@@ -7,7 +7,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { placeholderImages } from '@/lib/placeholder-images';
-import { Home } from 'lucide-react';
 
 const maintenanceCategories = [
   'Plomería',
@@ -29,7 +28,7 @@ const improvementCategories = [
 ];
 
 const getCategoryByName = (name: string) => CATEGORIES.find(c => c.name === name);
-const heroBackground = placeholderImages.find(p => p.id === 'hero-background-parque-de-mayo');
+const essentialServicesImage = placeholderImages.find(p => p.id === 'essential-services-house');
 
 const renderCategoryCard = (categoryName: string) => {
   const category = getCategoryByName(categoryName);
@@ -68,37 +67,33 @@ const renderCategoryCard = (categoryName: string) => {
 export default function EssentialServicesPage() {
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
-      
-      <div className="relative overflow-hidden rounded-2xl mb-16 shadow-lg">
-          {heroBackground && (
-            <Image
-                src={heroBackground.imageUrl}
-                alt={heroBackground.description}
-                fill
-                className="object-cover w-full h-full filter blur-sm scale-105"
-            />
-          )}
-          <div className="absolute inset-0 bg-black/50"></div>
-          <div className="relative z-10 flex items-center justify-center p-8 md:p-16">
-              <div className="max-w-3xl text-center text-white bg-black/30 backdrop-blur-sm p-8 rounded-xl">
-                <div className='bg-primary/20 text-primary w-fit p-3 rounded-full mb-4 mx-auto'>
-                    <Home className='w-8 h-8 text-white'/>
-                </div>
-                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">
-                    Servicios esenciales para el hogar.
-                </h1>
-                <p className="mt-6 text-lg leading-8 text-white/90">
-                    Ya sea que tengas tu propia casa o estés alquilando, siempre aparece alguna urgencia. ¿Se te llueve el techo? ¿Saltó la térmica? ¿La calefaccion no arranca? Quedate tranquilo, estás en el lugar justo. Acá encontrás al profesional que necesitás para cualquier arreglo del hogar.
-                </p>
-                <div className="mt-8 flex justify-center items-center gap-x-6">
-                    <Button asChild size="lg">
-                    <Link href="/servicios">Contrata un profesional</Link>
-                    </Button>
-                </div>
-             </div>
+      <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
+          <div className="text-left">
+            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">
+                Servicios esenciales para el hogar.
+            </h1>
+            <p className="mt-6 text-lg leading-8 text-muted-foreground">
+                Ya sea que tengas tu propia casa o estés alquilando, siempre aparece alguna urgencia. ¿Se te llueve el techo? ¿Saltó la térmica? ¿La calefaccion no arranca? Quedate tranquilo, estás en el lugar justo. Acá encontrás al profesional que necesitás para cualquier arreglo del hogar.
+            </p>
+            <div className="mt-8">
+                <Button asChild size="lg">
+                <Link href="/servicios">Contrata un profesional</Link>
+                </Button>
+            </div>
+          </div>
+          <div className="flex justify-center">
+            {essentialServicesImage && (
+              <Image
+                src={essentialServicesImage.imageUrl}
+                alt={essentialServicesImage.description}
+                width={450}
+                height={450}
+                className="rounded-lg object-cover shadow-xl"
+                data-ai-hint={essentialServicesImage.imageHint}
+              />
+            )}
           </div>
       </div>
-
 
       <div className="space-y-16">
         <section>
