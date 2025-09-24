@@ -18,11 +18,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Skeleton } from '../ui/skeleton';
 
 const navLinks = [
   { href: '/', label: 'Inicio' },
   { href: '/servicios', label: 'Servicios' },
-  { href: '/#about', label: 'Sobre Nosotros' },
+  { href: '/sobre-nosotros', label: 'Sobre Nosotros', target: '_blank' },
   { href: '/contacto', label: 'Contacto' },
 ];
 
@@ -42,7 +43,12 @@ export function Header() {
 
   const renderAuthButtons = () => {
     if (!isClient) {
-      return <div className="h-9 w-44"></div>;
+      return (
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-9 w-24" />
+          <Skeleton className="h-9 w-24" />
+        </div>
+      );
     }
 
     if (user) {
@@ -122,6 +128,8 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
+              target={link.target}
+              rel={link.target === '_blank' ? 'noopener noreferrer' : undefined}
               className="text-foreground/60 transition-colors hover:text-foreground/80"
             >
               {link.label}
@@ -151,6 +159,8 @@ export function Header() {
                     <Link
                       key={link.href}
                       href={link.href}
+                      target={link.target}
+                      rel={link.target === '_blank' ? 'noopener noreferrer' : undefined}
                       className="text-foreground/80 transition-colors hover:text-foreground"
                     >
                       {link.label}

@@ -76,7 +76,9 @@ export function Footer() {
               <p className="font-bold text-foreground">Nosotros</p>
               <nav className="mt-4 flex flex-col space-y-2 text-sm">
                 <Link
-                  href="/#about"
+                  href="/sobre-nosotros"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Sobre OficiosBB
