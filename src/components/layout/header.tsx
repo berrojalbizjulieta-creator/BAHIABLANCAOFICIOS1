@@ -24,18 +24,17 @@ export function Header() {
   }, []);
 
   const renderAuthButtons = () => {
-    if (loading || !isClient) {
-      return null; // Render nothing on server or while loading
+    if (!isClient || loading) {
+      // Render a placeholder or nothing on the server and during initial client load
+      // to prevent hydration mismatch.
+      return <div className="h-9 w-36"></div>;
     }
 
     if (user) {
       return (
-        <Link
-          href="/dashboard"
-          className="text-foreground/60 transition-colors hover:text-foreground/80 hidden md:block"
-        >
-          Mi Panel
-        </Link>
+        <Button variant="outline" size="sm" asChild>
+          <Link href="/dashboard">Mi Panel</Link>
+        </Button>
       );
     }
 
@@ -50,32 +49,29 @@ export function Header() {
       </>
     );
   };
-  
-    const renderMobileAuthContent = () => {
-    if (loading || !isClient) {
+
+  const renderMobileAuthContent = () => {
+    if (!isClient || loading) {
       return null;
     }
 
     if (user) {
       return (
-        <Link
-          href="/dashboard"
-          className="text-foreground/80 transition-colors hover:text-foreground"
-        >
-          Mi Panel
-        </Link>
+         <Button variant="outline" asChild>
+            <Link href="/dashboard">Mi Panel</Link>
+        </Button>
       );
     }
 
     return (
-       <>
+      <>
         <Button variant="outline" asChild>
-            <Link href="/login">Iniciar Sesión</Link>
+          <Link href="/login">Iniciar Sesión</Link>
         </Button>
         <Button asChild>
-            <Link href="/signup">Registrarse</Link>
+          <Link href="/signup">Registrarse</Link>
         </Button>
-       </>
+      </>
     );
   };
 
@@ -97,14 +93,6 @@ export function Header() {
               {link.label}
             </Link>
           ))}
-          {isClient && user && (
-             <Link
-              href="/dashboard"
-              className="text-foreground/60 transition-colors hover:text-foreground/80"
-            >
-              Mi Panel
-            </Link>
-          )}
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
@@ -134,19 +122,9 @@ export function Header() {
                       {link.label}
                     </Link>
                   ))}
-                  {renderMobileAuthContent()}
                 </nav>
                 <div className="mt-auto border-t pt-6 flex flex-col gap-3">
-                   {isClient && !user && !loading && (
-                    <>
-                      <Button variant="outline" asChild>
-                        <Link href="/login">Iniciar Sesión</Link>
-                      </Button>
-                      <Button asChild>
-                        <Link href="/signup">Registrarse</Link>
-                      </Button>
-                    </>
-                  )}
+                   {renderMobileAuthContent()}
                 </div>
               </div>
             </SheetContent>
