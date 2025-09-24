@@ -1,16 +1,32 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { CATEGORIES, PROFESSIONALS } from '@/lib/data';
+import { CATEGORIES } from '@/lib/data';
 import ProfessionalCard from '@/components/professionals/professional-card';
 import { Button } from '@/components/ui/button';
-import { ListFilter } from 'lucide-react';
+import { ListFilter, Loader2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useEffect, useState } from 'react';
+import type { Professional } from '@/lib/types';
+import { db } from '@/lib/firebase';
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  limit,
+  startAfter,
+  getDocs,
+  DocumentData,
+  QueryDocumentSnapshot,
+} from 'firebase/firestore';
+
+const PAGE_SIZE = 5;
 
 export default function CategoryPage() {
   const params = useParams();
@@ -18,11 +34,91 @@ export default function CategoryPage() {
     .replace(/-/g, ' ')
     .replace(/\b\w/g, l => l.toUpperCase()) // Capitalize words
     .replace('Y', 'y');
-
+  
+  const [professionals, setProfessionals] = useState<Professional[]>([]);
+  const [lastVisible, setLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
 
   const category = CATEGORIES.find(
     (c) => c.name.toLowerCase() === categoryName.toLowerCase()
   );
+
+  const fetchProfessionals = async () => {
+    if (!category) return;
+    setLoading(true);
+
+    try {
+      let q;
+      const professionalsRef = collection(db, "professionals");
+
+      if (lastVisible) {
+        q = query(
+          professionalsRef,
+          where('categoryId', '==', category.id),
+          where('isSubscriptionActive', '==', true),
+          orderBy('name'),
+          startAfter(lastVisible),
+          limit(PAGE_SIZE)
+        );
+      } else {
+        q = query(
+          professionalsRef,
+          where('categoryId', '==', category.id),
+          where('isSubscriptionActive', '==', true),
+          orderBy('name'),
+          limit(PAGE_SIZE)
+        );
+      }
+
+      const snapshot = await getDocs(q);
+
+      if (snapshot.empty) {
+        setHasMore(false);
+        return;
+      }
+      
+      const newProfessionals = snapshot.docs.map(doc => {
+          const data = doc.data();
+          // Convert Firestore Timestamps to JS Dates
+          const registrationDate = data.registrationDate?.toDate ? data.registrationDate.toDate() : new Date();
+          const lastPaymentDate = data.lastPaymentDate?.toDate ? data.lastPaymentDate.toDate() : undefined;
+          
+          return {
+            id: doc.id,
+            ...data,
+            registrationDate,
+            lastPaymentDate
+          } as Professional;
+      });
+
+      setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
+      setProfessionals(prev => [...prev, ...newProfessionals]);
+
+      if (snapshot.docs.length < PAGE_SIZE) {
+          setHasMore(false);
+      }
+
+    } catch (error) {
+        console.error("Error fetching professionals: ", error);
+    } finally {
+        setLoading(false);
+    }
+  };
+  
+   useEffect(() => {
+    // Reset state when category changes
+    setProfessionals([]);
+    setLastVisible(null);
+    setHasMore(true);
+    setLoading(true);
+
+    if (category) {
+      fetchProfessionals();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category]);
+
 
   if (!category) {
     return (
@@ -34,10 +130,6 @@ export default function CategoryPage() {
       </div>
     );
   }
-
-  const filteredProfessionals = PROFESSIONALS.filter(
-    (p) => p.categoryId === category.id && p.isSubscriptionActive
-  );
 
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
@@ -66,9 +158,9 @@ export default function CategoryPage() {
         </DropdownMenu>
       </div>
       
-       {filteredProfessionals.length > 0 ? (
+       {professionals.length > 0 ? (
         <div className="space-y-6">
-          {filteredProfessionals.map((professional) => (
+          {professionals.map((professional) => (
             <ProfessionalCard
               key={professional.id}
               professional={professional}
@@ -76,14 +168,31 @@ export default function CategoryPage() {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-lg text-center">
-          <p className="text-lg font-medium text-muted-foreground">
-            No hay profesionales disponibles en esta categoría por el
-            momento.
-          </p>
-           <p className="text-sm text-muted-foreground mt-2">Vuelve a intentarlo más tarde o explora otras categorías.</p>
-        </div>
+        !loading && !hasMore && (
+            <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-lg text-center">
+                <p className="text-lg font-medium text-muted-foreground">
+                    No hay profesionales disponibles en esta categoría por el
+                    momento.
+                </p>
+                <p className="text-sm text-muted-foreground mt-2">Vuelve a intentarlo más tarde o explora otras categorías.</p>
+            </div>
+        )
       )}
+
+      <div className="mt-10 text-center">
+          {loading && (
+             <div className="flex items-center justify-center">
+                <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                <span>Cargando...</span>
+            </div>
+          )}
+          {!loading && hasMore && (
+            <Button onClick={fetchProfessionals}>Cargar más</Button>
+          )}
+          {!hasMore && professionals.length > 0 && (
+            <p className="text-muted-foreground">No hay más profesionales para mostrar.</p>
+          )}
+      </div>
 
     </div>
   );

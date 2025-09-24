@@ -17,7 +17,7 @@ export interface WorkPhoto {
 }
 
 export interface Professional {
-  id: number;
+  id: string | number; // Can be string from firestore doc id
   name: string;
   description?: string;
   phone?: string;
