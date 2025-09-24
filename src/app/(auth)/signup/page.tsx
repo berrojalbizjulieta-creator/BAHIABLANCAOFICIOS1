@@ -99,11 +99,14 @@ export default function SignupPage() {
       if (isProfessional) {
         const professionalData = data as ProfessionalFormValues;
         const professionalDetails = {
+          name: professionalData.fullName,
+          email: professionalData.email,
           description: '',
           specialties: [],
           avgRating: 0,
           categoryId: Number(professionalData.category),
           isVerified: false,
+          isSubscriptionActive: false, // For easier querying
           subscription: {
             tier: 'standard',
             isSubscriptionActive: false,

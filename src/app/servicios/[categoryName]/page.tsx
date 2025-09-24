@@ -44,56 +44,50 @@ export default function CategoryPage() {
     (c) => c.name.toLowerCase() === categoryName.toLowerCase()
   );
 
-  const fetchProfessionals = async () => {
+  const fetchProfessionals = async (loadMore = false) => {
     if (!category) return;
     setLoading(true);
 
     try {
-      let q;
-      const professionalsRef = collection(db, "professionals");
+      const professionalsRef = collection(db, "professionalsDetails");
+      
+      const constraints = [
+          where('categoryId', '==', category.id),
+          where('isSubscriptionActive', '==', true), // This is the key change for querying
+          orderBy('name'),
+          limit(PAGE_SIZE)
+      ];
 
-      if (lastVisible) {
-        q = query(
-          professionalsRef,
-          where('categoryId', '==', category.id),
-          where('isSubscriptionActive', '==', true),
-          orderBy('name'),
-          startAfter(lastVisible),
-          limit(PAGE_SIZE)
-        );
-      } else {
-        q = query(
-          professionalsRef,
-          where('categoryId', '==', category.id),
-          where('isSubscriptionActive', '==', true),
-          orderBy('name'),
-          limit(PAGE_SIZE)
-        );
+      if (loadMore && lastVisible) {
+          constraints.push(startAfter(lastVisible));
       }
 
+      const q = query(professionalsRef, ...constraints);
       const snapshot = await getDocs(q);
 
       if (snapshot.empty) {
         setHasMore(false);
+        if (!loadMore) {
+            setProfessionals([]);
+        }
         return;
       }
       
       const newProfessionals = snapshot.docs.map(doc => {
           const data = doc.data();
-          // Convert Firestore Timestamps to JS Dates
           const registrationDate = data.registrationDate?.toDate ? data.registrationDate.toDate() : new Date();
-          const lastPaymentDate = data.lastPaymentDate?.toDate ? data.lastPaymentDate.toDate() : undefined;
+          const lastPaymentDate = data.subscription?.lastPaymentDate?.toDate ? data.subscription.lastPaymentDate.toDate() : undefined;
           
           return {
             id: doc.id,
             ...data,
             registrationDate,
-            lastPaymentDate
+            lastPaymentDate,
           } as Professional;
       });
 
       setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
-      setProfessionals(prev => [...prev, ...newProfessionals]);
+      setProfessionals(prev => loadMore ? [...prev, ...newProfessionals] : newProfessionals);
 
       if (snapshot.docs.length < PAGE_SIZE) {
           setHasMore(false);
@@ -101,20 +95,20 @@ export default function CategoryPage() {
 
     } catch (error) {
         console.error("Error fetching professionals: ", error);
+        setHasMore(false);
     } finally {
         setLoading(false);
     }
   };
   
    useEffect(() => {
-    // Reset state when category changes
     setProfessionals([]);
     setLastVisible(null);
     setHasMore(true);
     setLoading(true);
 
     if (category) {
-      fetchProfessionals();
+      fetchProfessionals(false);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category]);
@@ -158,7 +152,12 @@ export default function CategoryPage() {
         </DropdownMenu>
       </div>
       
-       {professionals.length > 0 ? (
+       {loading && professionals.length === 0 ? (
+          <div className="flex items-center justify-center h-64">
+            <Loader2 className="mr-2 h-8 w-8 animate-spin" />
+            <span>Cargando profesionales...</span>
+          </div>
+       ) : professionals.length > 0 ? (
         <div className="space-y-6">
           {professionals.map((professional) => (
             <ProfessionalCard
@@ -168,7 +167,7 @@ export default function CategoryPage() {
           ))}
         </div>
       ) : (
-        !loading && !hasMore && (
+        !loading && (
             <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-lg text-center">
                 <p className="text-lg font-medium text-muted-foreground">
                     No hay profesionales disponibles en esta categoría por el
@@ -180,14 +179,14 @@ export default function CategoryPage() {
       )}
 
       <div className="mt-10 text-center">
-          {loading && (
+          {loading && professionals.length > 0 && (
              <div className="flex items-center justify-center">
                 <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-                <span>Cargando...</span>
+                <span>Cargando más...</span>
             </div>
           )}
           {!loading && hasMore && (
-            <Button onClick={fetchProfessionals}>Cargar más</Button>
+            <Button onClick={() => fetchProfessionals(true)}>Cargar más</Button>
           )}
           {!hasMore && professionals.length > 0 && (
             <p className="text-muted-foreground">No hay más profesionales para mostrar.</p>
