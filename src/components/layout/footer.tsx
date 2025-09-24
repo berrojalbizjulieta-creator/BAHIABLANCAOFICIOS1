@@ -52,19 +52,19 @@ export function Footer() {
                   Plomería
                 </Link>
                 <Link
-                  href="/servicios/electricidad"
+                  href="/servicios/electricista"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Electricidad
                 </Link>
                 <Link
-                  href="/servicios/pintura"
+                  href="/servicios/pintores"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Pintura
                 </Link>
                 <Link
-                  href="/servicios/jardineria-y-paisajismo"
+                  href="/servicios/jardineria"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Jardinería

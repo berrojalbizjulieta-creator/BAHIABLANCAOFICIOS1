@@ -1,22 +1,84 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons/logo';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Wrench } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 
 const navLinks = [
   { href: '/', label: 'Inicio' },
-  { href: '/#services', label: 'Servicios' },
+  { href: '/servicios', label: 'Servicios' },
   { href: '/#about', label: 'Sobre Nosotros' },
   { href: '/contacto', label: 'Contacto' },
 ];
 
 export function Header() {
   const { user, loading } = useAdminAuth();
-  const isAdmin = user?.email === 'agustinarturogiardino@gmail.com';
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const renderAuthButtons = () => {
+    if (loading || !isClient) {
+      return null; // Render nothing on server or while loading
+    }
+
+    if (user) {
+      return (
+        <Link
+          href="/dashboard"
+          className="text-foreground/60 transition-colors hover:text-foreground/80 hidden md:block"
+        >
+          Mi Panel
+        </Link>
+      );
+    }
+
+    return (
+      <>
+        <Button variant="ghost" size="sm" asChild>
+          <Link href="/login">Iniciar Sesión</Link>
+        </Button>
+        <Button size="sm" asChild>
+          <Link href="/signup">Registrarse</Link>
+        </Button>
+      </>
+    );
+  };
+  
+    const renderMobileAuthContent = () => {
+    if (loading || !isClient) {
+      return null;
+    }
+
+    if (user) {
+      return (
+        <Link
+          href="/dashboard"
+          className="text-foreground/80 transition-colors hover:text-foreground"
+        >
+          Mi Panel
+        </Link>
+      );
+    }
+
+    return (
+       <>
+        <Button variant="outline" asChild>
+            <Link href="/login">Iniciar Sesión</Link>
+        </Button>
+        <Button asChild>
+            <Link href="/signup">Registrarse</Link>
+        </Button>
+       </>
+    );
+  };
+
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 supports-[backdrop-filter]:bg-background/60">
@@ -35,7 +97,7 @@ export function Header() {
               {link.label}
             </Link>
           ))}
-          {user && (
+          {isClient && user && (
              <Link
               href="/dashboard"
               className="text-foreground/60 transition-colors hover:text-foreground/80"
@@ -46,16 +108,7 @@ export function Header() {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
-          {!user && (
-            <>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/login">Iniciar Sesión</Link>
-              </Button>
-              <Button size="sm" asChild>
-                <Link href="/signup">Registrarse</Link>
-              </Button>
-            </>
-          )}
+          {renderAuthButtons()}
         </div>
 
         <div className="md:hidden">
@@ -81,17 +134,10 @@ export function Header() {
                       {link.label}
                     </Link>
                   ))}
-                  {user && (
-                     <Link
-                        href="/dashboard"
-                        className="text-foreground/80 transition-colors hover:text-foreground"
-                      >
-                        Mi Panel
-                      </Link>
-                  )}
+                  {renderMobileAuthContent()}
                 </nav>
                 <div className="mt-auto border-t pt-6 flex flex-col gap-3">
-                   {!user && (
+                   {isClient && !user && !loading && (
                     <>
                       <Button variant="outline" asChild>
                         <Link href="/login">Iniciar Sesión</Link>
