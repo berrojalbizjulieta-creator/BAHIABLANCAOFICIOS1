@@ -34,7 +34,7 @@ export default function CategoryPage() {
   );
 
   const allProfessionalsInCategory = category 
-    ? PROFESSIONALS.filter(p => p.categoryId === category.id && p.isSubscriptionActive)
+    ? PROFESSIONALS.filter(p => p.categoryId === category.id)
     : [];
 
   const fetchProfessionals = (currentPage: number) => {

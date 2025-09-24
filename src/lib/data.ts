@@ -73,7 +73,7 @@ export const PROFESSIONALS: Professional[] = [
     avgRating: 4.8,
     categoryId: 11,
     priceInfo: 'Hora de trabajo desde $2500 ARS. Presupuestos sin cargo.',
-    isSubscriptionActive: false,
+    isSubscriptionActive: true,
     subscriptionTier: 'standard',
     registrationDate: subMonths(new Date(), 2),
     lastPaymentDate: subMonths(new Date(), 2),
@@ -328,4 +328,5 @@ export const AD_BANNERS = [
 
 
     
+
 
