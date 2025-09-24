@@ -23,12 +23,12 @@ import { Skeleton } from '../ui/skeleton';
 const navLinks = [
   { href: '/', label: 'Inicio' },
   { href: '/servicios', label: 'Servicios' },
-  { href: '/sobre-nosotros', label: 'Sobre Nosotros', target: '_blank' },
+  { href: '/sobre-nosotros', label: 'Sobre Nosotros' },
   { href: '/contacto', label: 'Contacto' },
 ];
 
 export function Header() {
-  const { user } = useAdminAuth();
+  const { user, loading } = useAdminAuth();
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();
 
@@ -43,7 +43,7 @@ export function Header() {
 
   const renderAuthButtons = () => {
     if (!isClient) {
-      return (
+       return (
         <div className="flex items-center gap-3">
           <Skeleton className="h-9 w-24" />
           <Skeleton className="h-9 w-24" />
