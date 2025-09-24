@@ -1,7 +1,8 @@
+
 'use client';
 
 import { useParams } from 'next/navigation';
-import { CATEGORIES } from '@/lib/data';
+import { CATEGORIES, PROFESSIONALS } from '@/lib/data';
 import ProfessionalCard from '@/components/professionals/professional-card';
 import { Button } from '@/components/ui/button';
 import { ListFilter, Loader2 } from 'lucide-react';
@@ -13,18 +14,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useEffect, useState } from 'react';
 import type { Professional } from '@/lib/types';
-import { db } from '@/lib/firebase';
-import {
-  collection,
-  query,
-  where,
-  orderBy,
-  limit,
-  startAfter,
-  getDocs,
-  DocumentData,
-  QueryDocumentSnapshot,
-} from 'firebase/firestore';
 
 const PAGE_SIZE = 5;
 
@@ -36,7 +25,7 @@ export default function CategoryPage() {
     .replace('Y', 'y');
   
   const [professionals, setProfessionals] = useState<Professional[]>([]);
-  const [lastVisible, setLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
 
@@ -44,75 +33,40 @@ export default function CategoryPage() {
     (c) => c.name.toLowerCase() === categoryName.toLowerCase()
   );
 
-  const fetchProfessionals = async (loadMore = false) => {
-    if (!category) return;
+  const allProfessionalsInCategory = category 
+    ? PROFESSIONALS.filter(p => p.categoryId === category.id && p.isSubscriptionActive)
+    : [];
+
+  const fetchProfessionals = (currentPage: number) => {
     setLoading(true);
+    
+    // Simulate fetching data from a source
+    setTimeout(() => {
+        const newProfessionals = allProfessionalsInCategory.slice(0, currentPage * PAGE_SIZE);
+        setProfessionals(newProfessionals);
 
-    try {
-      const professionalsRef = collection(db, "professionalsDetails");
-      
-      const constraints = [
-          where('categoryId', '==', category.id),
-          where('isSubscriptionActive', '==', true), // This is the key change for querying
-          orderBy('name'),
-          limit(PAGE_SIZE)
-      ];
-
-      if (loadMore && lastVisible) {
-          constraints.push(startAfter(lastVisible));
-      }
-
-      const q = query(professionalsRef, ...constraints);
-      const snapshot = await getDocs(q);
-
-      if (snapshot.empty) {
-        setHasMore(false);
-        if (!loadMore) {
-            setProfessionals([]);
+        if (newProfessionals.length >= allProfessionalsInCategory.length) {
+            setHasMore(false);
+        } else {
+            setHasMore(true);
         }
-        return;
-      }
-      
-      const newProfessionals = snapshot.docs.map(doc => {
-          const data = doc.data();
-          const registrationDate = data.registrationDate?.toDate ? data.registrationDate.toDate() : new Date();
-          const lastPaymentDate = data.subscription?.lastPaymentDate?.toDate ? data.subscription.lastPaymentDate.toDate() : undefined;
-          
-          return {
-            id: doc.id,
-            ...data,
-            registrationDate,
-            lastPaymentDate,
-          } as Professional;
-      });
-
-      setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
-      setProfessionals(prev => loadMore ? [...prev, ...newProfessionals] : newProfessionals);
-
-      if (snapshot.docs.length < PAGE_SIZE) {
-          setHasMore(false);
-      }
-
-    } catch (error) {
-        console.error("Error fetching professionals: ", error);
-        setHasMore(false);
-    } finally {
         setLoading(false);
-    }
+    }, 500); // Simulate network delay
   };
   
    useEffect(() => {
-    setProfessionals([]);
-    setLastVisible(null);
-    setHasMore(true);
     setLoading(true);
-
-    if (category) {
-      fetchProfessionals(false);
-    }
+    setPage(1);
+    fetchProfessionals(1);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category]);
 
+
+  const handleLoadMore = () => {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchProfessionals(nextPage);
+  }
 
   if (!category) {
     return (
@@ -186,7 +140,7 @@ export default function CategoryPage() {
             </div>
           )}
           {!loading && hasMore && (
-            <Button onClick={() => fetchProfessionals(true)}>Cargar más</Button>
+            <Button onClick={handleLoadMore}>Cargar más</Button>
           )}
           {!hasMore && professionals.length > 0 && (
             <p className="text-muted-foreground">No hay más profesionales para mostrar.</p>
