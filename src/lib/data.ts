@@ -286,6 +286,26 @@ export const CLIENTS: Client[] = [
     }
 ]
 
+export const AD_BANNERS = [
+  {
+    id: 1,
+    imageUrl: 'https://picsum.photos/seed/ad1/1200/400',
+    alt: 'Publicidad de herramientas',
+    imageHint: 'construction tools',
+  },
+  {
+    id: 2,
+    imageUrl: 'https://picsum.photos/seed/ad2/1200/400',
+    alt: 'Publicidad de materiales de construcción',
+    imageHint: 'building materials',
+  },
+  {
+    id: 3,
+    imageUrl: 'https://picsum.photos/seed/ad3/1200/400',
+    alt: 'Publicidad de productos de limpieza',
+    imageHint: 'cleaning supplies',
+  },
+];
     
 
     

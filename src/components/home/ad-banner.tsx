@@ -8,27 +8,7 @@ import {
 } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
 import { Card } from '../ui/card';
-
-const adBanners = [
-  {
-    id: 1,
-    imageUrl: 'https://picsum.photos/seed/ad1/1200/400',
-    alt: 'Publicidad de herramientas',
-    imageHint: 'construction tools',
-  },
-  {
-    id: 2,
-    imageUrl: 'https://picsum.photos/seed/ad2/1200/400',
-    alt: 'Publicidad de materiales de construcción',
-    imageHint: 'building materials',
-  },
-  {
-    id: 3,
-    imageUrl: 'https://picsum.photos/seed/ad3/1200/400',
-    alt: 'Publicidad de productos de limpieza',
-    imageHint: 'cleaning supplies',
-  },
-];
+import { AD_BANNERS } from '@/lib/data';
 
 export default function AdBanner() {
   return (
@@ -47,7 +27,7 @@ export default function AdBanner() {
           }}
         >
           <CarouselContent>
-            {adBanners.map(banner => (
+            {AD_BANNERS.map(banner => (
               <CarouselItem key={banner.id}>
                 <Card className="overflow-hidden">
                   <div className="relative aspect-[3/1] w-full">
