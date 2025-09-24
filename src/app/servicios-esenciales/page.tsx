@@ -69,32 +69,35 @@ export default function EssentialServicesPage() {
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
       
-      <div className="grid md:grid-cols-2 gap-8 items-center mb-16">
-        <div className='text-left'>
-            <div className='bg-primary/10 text-primary w-fit p-3 rounded-full mb-4'>
+      <div className="relative isolate overflow-hidden bg-background py-16 sm:py-24 rounded-2xl mb-16">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-2">
+            <div className="max-w-xl lg:max-w-lg">
+               <div className='bg-primary/10 text-primary w-fit p-3 rounded-full mb-4'>
                 <Home className='w-8 h-8'/>
-            </div>
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">
-             Servicios esenciales para el hogar.
-            </h1>
-            <p className="mt-4 max-w-xl text-muted-foreground md:text-lg">
+              </div>
+              <h1 className="text-4xl font-bold tracking-tighter text-foreground sm:text-5xl font-headline">
+                Servicios esenciales para el hogar.
+              </h1>
+              <p className="mt-6 text-lg leading-8 text-muted-foreground">
                 Ya sea que tengas tu propia casa o estés alquilando, siempre aparece alguna urgencia. ¿Se te llueve el techo? ¿Saltó la térmica? ¿La calefaccion no arranca? Quedate tranquilo, estás en el lugar justo. Acá encontrás al profesional que necesitás para cualquier arreglo del hogar.
-            </p>
-            <Button className='mt-6' asChild>
-                <Link href='/servicios'>Contrata un profesional</Link>
-            </Button>
-        </div>
-        <div className="flex items-center justify-center">
-          {essentialServicesHouseImage && (
-            <Image
-              src={essentialServicesHouseImage.imageUrl}
-              alt={essentialServicesHouseImage.description}
-              width={500}
-              height={500}
-              className="object-contain"
-              data-ai-hint={essentialServicesHouseImage.imageHint}
-            />
-          )}
+              </p>
+              <div className="mt-8 flex items-center gap-x-6">
+                <Button asChild>
+                  <Link href="/servicios">Contrata un profesional</Link>
+                </Button>
+              </div>
+            </div>
+            {essentialServicesHouseImage && (
+              <Image
+                src={essentialServicesHouseImage.imageUrl}
+                alt={essentialServicesHouseImage.description}
+                width={2432}
+                height={1442}
+                className="w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10"
+              />
+            )}
+          </div>
         </div>
       </div>
 
