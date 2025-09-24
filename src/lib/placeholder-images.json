@@ -9,7 +9,7 @@
     {
       "id": "app-promo-mockup",
       "description": "A mockup of a phone showing a services app interface, with a slight angle.",
-      "imageUrl": "https://images.unsplash.com/photo-1631016800670-e8245c0833d4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaG9uZSUyMGFwcCUyMG1vY2t1cHxlbnwwfHx8fDE3NTg2Nzg5MDB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1669850850090-54237ab4a4a3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxwaG9uZSUyMGFwcCUyMG1vY2t1cHxlbnwwfHx8fDE3NTg2Nzg5MDB8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "phone app mockup"
     },
     {
@@ -39,13 +39,13 @@
     {
       "id": "prof-3",
       "description": "Portrait of a painter in work clothes.",
-      "imageUrl": "https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODUxMDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODUxMDl8MA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "person portrait"
     },
     {
       "id": "prof-4",
       "description": "Portrait of a male carpenter.",
-      "imageUrl": "https://images.unsplash.com/photo-1607031542107-f6f46b5d54e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODI4MTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1607031542107-f6f46b5d54e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODI4MTZ8MA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "man portrait"
     },
     {
@@ -122,7 +122,7 @@
     },
     {
       "id": "cat-climatizacion-2",
-      "imageUrl": "https://i.pinimg.com/564x/44/22/50/4422507c558a361546b5a329013c75d3.jpg",
+      "imageUrl": "https://i.pinimg.com/736x/6b/b8/73/6bb873e2352668043848ba3308c9c436.jpg",
       "imageHint": "air conditioner",
       "description": "A modern air conditioner unit on a wall."
     },
