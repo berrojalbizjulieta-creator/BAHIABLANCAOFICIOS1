@@ -75,7 +75,7 @@
     {
       "id": "work-1",
       "description": "A newly renovated modern kitchen.",
-      "imageUrl": "https://images.unsplash.com/photo-1609280069678-ab9ef26a0b05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxyZW5vdmF0ZWQlMjBraXRjaGVufGVufDB8fHx8MTc1ODYwMTYyMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1609280069678-ab9ef26a0b05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxyZW5vdmF0ZWQlMjBraXRjaGVufGVufDB8fHx8MTc1ODYwMTYyMXww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "renovated kitchen"
     },
     {
@@ -212,7 +212,7 @@
     },
     {
       "id": "cat-jardineria",
-      "imageUrl": "https://production-next-images-cdn.thumbtack.com/i/502694994246991873/width/320.webp",
+      "imageUrl": "https://i.pinimg.com/736x/4a/1c/c4/4a1cc47cdad41e1eedc6a5d3ef7ecc88.jpg",
       "imageHint": "gardening",
       "description": "A person gardening."
     },
