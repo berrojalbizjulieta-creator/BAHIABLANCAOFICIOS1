@@ -9,7 +9,7 @@ export default function AboutUsPage() {
         <div className="flex flex-col items-center text-center">
             <div className="mb-8">
                  <Image
-                    src="https://i.pinimg.com/736x/b3/2b/36/b32b361aedb925d6466ee888ccaa6316.jpg"
+                    src="https://i.pinimg.com/736x/db/f0/57/dbf0577b8b35d18acf0d51b9207b5a70.jpg"
                     alt="Agustín y Julieta"
                     width={150}
                     height={150}

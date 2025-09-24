@@ -17,7 +17,7 @@ export default function JoinUsSection() {
           <div className="flex justify-center">
             {joinIllustration && (
               <Image
-                src="https://i.pinimg.com/736x/b3/2b/36/b32b361aedb925d6466ee888ccaa6316.jpg"
+                src="https://i.pinimg.com/736x/db/f0/57/dbf0577b8b35d18acf0d51b9207b5a70.jpg"
                 alt="Agustín y Julieta"
                 width={450}
                 height={450}
