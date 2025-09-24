@@ -98,10 +98,10 @@ export default function OutdoorServicesPage() {
     <div className="container mx-auto px-4 py-12 md:px-6">
       <div className="text-left mb-16 max-w-4xl">
           <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">
-             Tu jardín, tu paraíso.
+             Tu jardín, tu lugar.
           </h1>
           <p className="mt-6 text-lg leading-8 text-muted-foreground">
-            Desde el césped hasta las hojas, encontrá todo lo que necesitás para que tu espacio exterior se vea increíble. Contratá profesionales para mantenimiento, reparaciones y proyectos de jardinería.
+            Desde el pasto hasta las plantas, encontrá todo lo que necesitás para que tu espacio exterior luzca impecable. Pedí profesionales para mantenimiento, arreglos o proyectos de jardinería.
           </p>
       </div>
 
