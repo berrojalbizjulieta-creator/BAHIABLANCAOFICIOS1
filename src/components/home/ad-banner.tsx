@@ -30,9 +30,15 @@ export default function AdBanner() {
       try {
         const querySnapshot = await getDocs(collection(db, 'adBanners'));
         const bannersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AdBanner));
-        setBanners(bannersData);
+        
+        if (bannersData.length > 0) {
+            setBanners(bannersData);
+        } else {
+            // Fallback to static data if firestore is empty
+            setBanners(AD_BANNERS);
+        }
       } catch (error) {
-        console.error("Error fetching banners: ", error);
+        console.error("Error fetching banners from Firestore, falling back to static data: ", error);
         // Fallback to static data in case of error
         setBanners(AD_BANNERS);
       } finally {
@@ -54,7 +60,7 @@ export default function AdBanner() {
   }
 
   if (banners.length === 0) {
-      return null; // Don't render anything if there are no banners
+      return null; // Don't render anything if there are no banners at all
   }
 
   return (
@@ -83,6 +89,7 @@ export default function AdBanner() {
                       fill
                       className="object-cover"
                       data-ai-hint={banner.imageHint}
+                      priority={false} // Avoid priority loading for carousel images
                     />
                   </div>
                 </Card>
