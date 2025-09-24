@@ -46,7 +46,7 @@ export function Header() {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
-          {!loading && !user && (
+          {!user && (
             <>
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/login">Iniciar Sesión</Link>
@@ -91,7 +91,7 @@ export function Header() {
                   )}
                 </nav>
                 <div className="mt-auto border-t pt-6 flex flex-col gap-3">
-                   {!loading && !user && (
+                   {!user && (
                     <>
                       <Button variant="outline" asChild>
                         <Link href="/login">Iniciar Sesión</Link>
