@@ -9,8 +9,8 @@
     {
       "id": "app-promo-mockup",
       "description": "A mockup of a phone showing a services app interface, with a slight angle.",
-      "imageUrl": "/phone-mockup.png",
-      "imageHint": "phone app"
+      "imageUrl": "https://images.unsplash.com/photo-1623323287571-1401c5ac5142?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwaG9uZSUyMGFwcCUyMG1vY2t1cHxlbnwwfHx8fDE3NTg2Nzg5MDB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "phone app mockup"
     },
     {
       "id": "white-tile-background",
