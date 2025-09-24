@@ -67,31 +67,17 @@ const renderCategoryCard = (categoryName: string) => {
 export default function EssentialServicesPage() {
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
-      <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
-          <div className="text-left">
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">
-                Servicios esenciales para el hogar.
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-muted-foreground">
-                Ya sea que tengas tu propia casa o estés alquilando, siempre aparece alguna urgencia. ¿Se te llueve el techo? ¿Saltó la térmica? ¿La calefaccion no arranca? Quedate tranquilo, estás en el lugar justo. Acá encontrás al profesional que necesitás para cualquier arreglo del hogar.
-            </p>
-            <div className="mt-8">
-                <Button asChild size="lg">
-                <Link href="/servicios">Contrata un profesional</Link>
-                </Button>
-            </div>
-          </div>
-          <div className="flex justify-center">
-            {essentialServicesImage && (
-              <Image
-                src={essentialServicesImage.imageUrl}
-                alt={essentialServicesImage.description}
-                width={450}
-                height={450}
-                className="rounded-lg object-cover shadow-xl"
-                data-ai-hint={essentialServicesImage.imageHint}
-              />
-            )}
+      <div className="text-center mb-16 max-w-4xl mx-auto">
+          <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">
+              Servicios esenciales para el hogar.
+          </h1>
+          <p className="mt-6 text-lg leading-8 text-muted-foreground">
+              Ya sea que tengas tu propia casa o estés alquilando, siempre aparece alguna urgencia. ¿Se te llueve el techo? ¿Saltó la térmica? ¿La calefaccion no arranca? Quedate tranquilo, estás en el lugar justo. Acá encontrás al profesional que necesitás para cualquier arreglo del hogar.
+          </p>
+          <div className="mt-8">
+              <Button asChild size="lg">
+              <Link href="/servicios">Contrata un profesional</Link>
+              </Button>
           </div>
       </div>
 
