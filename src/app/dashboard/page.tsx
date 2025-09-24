@@ -23,6 +23,7 @@ import { Overview } from '@/components/admin/overview';
 import { DollarSign, Users, Briefcase, UserPlus } from 'lucide-react';
 import ProfessionalsTable from '@/components/admin/professionals-table';
 import VerificationRequests from '@/components/admin/verification-requests';
+import AdManagement from '@/components/admin/ad-management';
 
 function AdminDashboard() {
     return (
@@ -36,6 +37,7 @@ function AdminDashboard() {
             <TabsTrigger value="overview">Resumen</TabsTrigger>
             <TabsTrigger value="professionals">Profesionales</TabsTrigger>
             <TabsTrigger value="verifications">Verificaciones</TabsTrigger>
+            <TabsTrigger value="ads">Publicidad</TabsTrigger>
             <TabsTrigger value="analytics" disabled>
               Analytics (Próximamente)
             </TabsTrigger>
@@ -129,6 +131,10 @@ function AdminDashboard() {
           
           <TabsContent value="verifications" className="space-y-4">
               <VerificationRequests />
+          </TabsContent>
+
+          <TabsContent value="ads" className="space-y-4">
+            <AdManagement />
           </TabsContent>
 
         </Tabs>
