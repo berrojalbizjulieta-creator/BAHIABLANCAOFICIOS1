@@ -128,7 +128,7 @@ export default function SignupPage() {
       if (isProfessional) {
         router.push('/dashboard/profile');
       } else {
-        router.push('/');
+        router.push('/dashboard');
       }
 
     } catch (error: any) {
