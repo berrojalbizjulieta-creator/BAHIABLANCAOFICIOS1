@@ -117,6 +117,7 @@ export default function ClientDashboard({ user }: ClientDashboardProps) {
             <div className="relative group w-24 h-24 mx-auto">
               <Avatar
                 className="w-24 h-24 mx-auto mb-4 border-2 border-primary"
+                onClick={handleAvatarClick}
               >
                 <AvatarImage src={photoURL || undefined} alt={displayName || 'Usuario'} />
                 <AvatarFallback>{displayName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}</AvatarFallback>
@@ -161,7 +162,7 @@ export default function ClientDashboard({ user }: ClientDashboardProps) {
               Desde aquí podrás gestionar tus solicitudes y ver tus profesionales contactados próximamente.
             </p>
             <Button asChild>
-              <Link href="/servicios">Buscar un Profesional</Link>
+              <Link href="/">Buscar un Profesional</Link>
             </Button>
           </CardContent>
           {isEditing && (
