@@ -19,7 +19,8 @@ export default function ServicesPage() {
     if (newSearch !== searchTerm) {
       setSearchTerm(newSearch);
     }
-  }, [searchParams, searchTerm]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
 
   const filteredCategories = CATEGORIES.filter((category) =>
