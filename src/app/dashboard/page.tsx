@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import ClientDashboard from '@/components/dashboard/client-dashboard'; // Import the new component
 
 import { Button } from '@/components/ui/button';
 import {
@@ -146,7 +147,7 @@ function AdminDashboard() {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { isAdmin, isProfessional, loading } = useAdminAuth();
+  const { user, isAdmin, isProfessional, loading } = useAdminAuth();
   
   useEffect(() => {
     if (!loading) {
@@ -154,12 +155,13 @@ export default function DashboardPage() {
         // Admin stays here, AdminDashboard is rendered
       } else if (isProfessional) {
         router.replace('/dashboard/profile');
-      } else {
-        // For clients or non-identified users, redirect to home
-        router.replace('/');
+      } else if (!user) {
+        // If not admin, not professional, and not logged in, go to login
+        router.replace('/login');
       }
+      // If client (is logged in, but not admin or professional), stay and render ClientDashboard
     }
-  }, [loading, isAdmin, isProfessional, router]);
+  }, [loading, user, isAdmin, isProfessional, router]);
 
   if (loading) {
      return (
@@ -176,7 +178,11 @@ export default function DashboardPage() {
       return <AdminDashboard />;
   }
 
-  // This will be briefly visible before redirection for non-admins
+  if (!isProfessional && user) {
+    return <ClientDashboard user={user} />;
+  }
+
+  // This will be briefly visible before redirection for other cases
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
       <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline mb-8">
