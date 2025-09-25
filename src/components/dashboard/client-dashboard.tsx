@@ -41,7 +41,7 @@ export default function ClientDashboard({ user }: ClientDashboardProps) {
   }, [user]);
 
   const handleAvatarClick = () => {
-    if (avatarFileInputRef.current) {
+    if (isEditing && avatarFileInputRef.current) {
       avatarFileInputRef.current.click();
     }
   };
@@ -71,10 +71,13 @@ export default function ClientDashboard({ user }: ClientDashboardProps) {
       }
 
       // 2. Update Firebase Auth user profile
-      await updateProfile(auth.currentUser!, {
-        displayName: displayName,
-        photoURL: finalPhotoURL,
-      });
+      if(auth.currentUser) {
+        await updateProfile(auth.currentUser, {
+            displayName: displayName,
+            photoURL: finalPhotoURL,
+        });
+      }
+
 
       // 3. Update user document in Firestore
       const userDocRef = doc(db, 'users', user.uid);
@@ -113,18 +116,19 @@ export default function ClientDashboard({ user }: ClientDashboardProps) {
           <CardHeader className="text-center relative">
             <div className="relative group w-24 h-24 mx-auto">
               <Avatar
-                className="w-24 h-24 mx-auto mb-4 border-2 border-primary cursor-pointer"
-                onClick={handleAvatarClick}
+                className="w-24 h-24 mx-auto mb-4 border-2 border-primary"
               >
                 <AvatarImage src={photoURL || undefined} alt={displayName || 'Usuario'} />
-                <AvatarFallback>{displayName?.[0].toUpperCase() || user.email?.[0].toUpperCase()}</AvatarFallback>
+                <AvatarFallback>{displayName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}</AvatarFallback>
               </Avatar>
-              <div 
-                className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                onClick={handleAvatarClick}
-              >
-                <Upload className="h-8 w-8 text-white" />
-              </div>
+                {isEditing && (
+                    <div 
+                        className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                        onClick={handleAvatarClick}
+                    >
+                        <Upload className="h-8 w-8 text-white" />
+                    </div>
+                )}
             </div>
             <input
               type="file"
