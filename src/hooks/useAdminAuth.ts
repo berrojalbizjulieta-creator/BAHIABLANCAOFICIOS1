@@ -17,10 +17,10 @@ export function useAdminAuth() {
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
-      if (user) {
-        const adminStatus = esAdmin(user.email ?? undefined);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        const adminStatus = esAdmin(currentUser.email ?? undefined);
         setIsAdmin(adminStatus);
         
         // If user is admin, we don't need to check firestore for professional role
@@ -31,7 +31,7 @@ export function useAdminAuth() {
         }
 
         try {
-            const userDocRef = doc(db, 'users', user.uid);
+            const userDocRef = doc(db, 'users', currentUser.uid);
             const userDocSnap = await getDoc(userDocRef);
 
             if (userDocSnap.exists()) {
