@@ -25,6 +25,7 @@ import {
   PartyPopper,
   Phone,
   Sparkles as PremiumIcon,
+  XCircle,
 } from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {
@@ -105,7 +106,7 @@ const initialProfessionalData: Professional = {
     photoHint: "",
     specialties: [],
     avgRating: 0,
-    categoryId: 0,
+    categoryIds: [],
     testimonials: [],
     workPhotos: placeholderImages.filter(p => p.id.startsWith('work-')),
     isVerified: false,
@@ -141,7 +142,30 @@ export default function ProfilePage() {
     return <div>Profesional no encontrado.</div>;
   }
   
-  const selectedCategory = CATEGORIES.find(c => c.id === professional.categoryId);
+  const handleCategoryChange = (index: number, newCategoryId: string) => {
+    setProfessional(prev => {
+        if (!prev) return null;
+        const newCategoryIds = [...prev.categoryIds];
+        newCategoryIds[index] = Number(newCategoryId);
+        return { ...prev, categoryIds: newCategoryIds };
+    });
+  };
+
+  const addCategory = () => {
+    setProfessional(prev => {
+        if (!prev || prev.categoryIds.length >= 3) return prev;
+        // Add a placeholder (e.g., 0) for the new category to be selected
+        return { ...prev, categoryIds: [...prev.categoryIds, 0] };
+    });
+  };
+
+  const removeCategory = (index: number) => {
+    setProfessional(prev => {
+        if (!prev) return null;
+        const newCategoryIds = prev.categoryIds.filter((_, i) => i !== index);
+        return { ...prev, categoryIds: newCategoryIds };
+    });
+  };
 
   const handleInputChange = (field: keyof Professional, value: string | number | boolean) => {
     setProfessional(prev => (prev ? {...prev, [field]: value} : null));
@@ -322,33 +346,51 @@ export default function ProfilePage() {
                             </Badge>
                         )}
                     </div>
-                     <div className="mt-2 text-sm">
+                     <div className="mt-2 text-sm space-y-2">
                       {isEditing ? (
-                        <div className="flex items-center gap-2">
-                          <Briefcase className="w-4 h-4 text-muted-foreground" />
-                           <Select 
-                              value={String(professional.categoryId)}
-                              onValueChange={(value) => handleInputChange('categoryId', Number(value))}
-                           >
-                              <SelectTrigger className="w-fit h-auto p-1 border-dashed">
-                                <SelectValue placeholder="Selecciona tu rubro" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {CATEGORIES.map((category) => (
-                                  <SelectItem key={category.id} value={String(category.id)}>
-                                    {category.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                        </div>
+                         <div className="space-y-2">
+                            {professional.categoryIds.map((catId, index) => (
+                                <div key={index} className="flex items-center gap-2">
+                                     <Briefcase className="w-4 h-4 text-muted-foreground" />
+                                     <Select 
+                                        value={String(catId)}
+                                        onValueChange={(value) => handleCategoryChange(index, value)}
+                                     >
+                                        <SelectTrigger className="w-fit h-auto p-1 border-dashed">
+                                          <SelectValue placeholder={`Oficio ${index + 1}`} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {CATEGORIES.map((category) => (
+                                            <SelectItem 
+                                                key={category.id} 
+                                                value={String(category.id)}
+                                                disabled={professional.categoryIds.includes(category.id) && professional.categoryIds[index] !== category.id}
+                                            >
+                                              {category.name}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                      {index > 0 && (
+                                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeCategory(index)}>
+                                            <XCircle className="w-4 h-4 text-red-500" />
+                                        </Button>
+                                      )}
+                                </div>
+                            ))}
+                            {professional.categoryIds.length < 3 && (
+                                <Button variant="link" size="sm" onClick={addCategory} className="p-0 h-auto">
+                                    <PlusCircle className="mr-2" /> Añadir otro oficio
+                                </Button>
+                            )}
+                         </div>
                       ) : (
-                        selectedCategory && (
-                           <div className="flex items-center gap-2 text-muted-foreground">
-                            <Briefcase className="w-4 h-4" /> 
-                            <span>{selectedCategory.name}</span>
-                          </div>
-                        )
+                        <div className="flex flex-wrap gap-2">
+                            {professional.categoryIds.map(catId => {
+                                const category = CATEGORIES.find(c => c.id === catId);
+                                return category ? <Badge key={catId} variant="secondary">{category.name}</Badge> : null;
+                            })}
+                        </div>
                       )}
                     </div>
                     <div className="mt-2">

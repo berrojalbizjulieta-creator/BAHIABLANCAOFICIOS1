@@ -30,7 +30,7 @@
       "description": "Plomero con más de 10 años de experiencia...",
       "specialties": ["Reparación de Fugas", "Instalación de Grifería"],
       "avgRating": 4.8,
-      "categoryId": 11,
+      "categoryIds": [11, 12],
       "isVerified": false,
       "priceInfo": "Hora de trabajo desde $2500 ARS. Presupuestos sin cargo.",
       "subscription": {

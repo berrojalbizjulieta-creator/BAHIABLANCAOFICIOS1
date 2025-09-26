@@ -197,15 +197,11 @@ export default function PublicProfilePage() {
   if (!professional) {
     return <div className="container py-12 text-center">Profesional no encontrado.</div>;
   }
-
-  const selectedCategory = CATEGORIES.find(
-    c => c.id === professional.categoryId
-  );
   
-  const getWhatsAppLink = (phone?: string) => {
+  const getWhatsAppLink = (phone?: string, categoryName?: string) => {
     if (!phone) return '#';
     const cleanedPhone = phone.replace(/[^0-9]/g, '');
-    const message = encodeURIComponent(`Hola ${professional.name}, te contacto desde BahiaBlancaOficios por tus servicios de ${selectedCategory?.name}.`);
+    const message = encodeURIComponent(`Hola ${professional.name}, te contacto desde BahiaBlancaOficios por tus servicios de ${categoryName || 'profesional'}.`);
     return `https://wa.me/${cleanedPhone}?text=${message}`;
   }
 
@@ -241,12 +237,13 @@ export default function PublicProfilePage() {
                           </Badge>
                         )}
                       </div>
-                      {selectedCategory && (
-                        <div className="flex items-center gap-2 text-muted-foreground mt-2 text-sm">
+                      <div className="flex flex-wrap items-center gap-2 text-muted-foreground mt-2 text-sm">
                           <Briefcase className="w-4 h-4" />
-                          <span>{selectedCategory.name}</span>
-                        </div>
-                      )}
+                          {professional.categoryIds.map((catId, index) => {
+                              const category = CATEGORIES.find(c => c.id === catId);
+                              return category ? <span key={catId}>{category.name}{index < professional.categoryIds.length - 1 ? ' • ' : ''}</span> : null;
+                          })}
+                      </div>
                       <div className="mt-2">
                         {professional.testimonials.length > 0 ? (
                           <StarRatingDisplay
@@ -267,7 +264,7 @@ export default function PublicProfilePage() {
                     </div>
                     <div className="flex flex-col sm:flex-row gap-2">
                       <Button asChild>
-                         <a href={getWhatsAppLink(professional.phone)} target="_blank" rel="noopener noreferrer">
+                         <a href={getWhatsAppLink(professional.phone, CATEGORIES.find(c => c.id === professional.categoryIds[0])?.name)} target="_blank" rel="noopener noreferrer">
                             <Phone className="mr-2" /> Whatsapp
                         </a>
                       </Button>

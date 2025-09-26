@@ -26,7 +26,7 @@ export interface Professional {
   photoHint: string;
   specialties: string[];
   avgRating: number;
-  categoryId: number;
+  categoryIds: number[];
   testimonials: Testimonial[];
   workPhotos?: WorkPhoto[];
   isVerified: boolean;

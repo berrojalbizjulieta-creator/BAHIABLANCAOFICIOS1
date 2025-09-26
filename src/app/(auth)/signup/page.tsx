@@ -104,7 +104,7 @@ export default function SignupPage() {
           description: '',
           specialties: [],
           avgRating: 0,
-          categoryId: Number(professionalData.category),
+          categoryIds: [Number(professionalData.category)],
           isVerified: false,
           isSubscriptionActive: false, // For easier querying
           subscription: {

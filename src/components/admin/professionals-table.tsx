@@ -88,7 +88,7 @@ export default function ProfessionalsTable() {
           </TableHeader>
           <TableBody>
             {professionals.map(pro => {
-              const category = CATEGORIES.find(c => c.id === pro.categoryId);
+              const primaryCategory = CATEGORIES.find(c => c.id === pro.categoryIds[0]);
               const paymentIsActive = isPaymentActive(pro.lastPaymentDate);
 
               return (
@@ -97,7 +97,7 @@ export default function ProfessionalsTable() {
                   <div className="font-medium">{pro.name}</div>
                   <div className="text-sm text-muted-foreground">{pro.email}</div>
                 </TableCell>
-                <TableCell>{category?.name || 'No especificado'}</TableCell>
+                <TableCell>{primaryCategory?.name || 'No especificado'}</TableCell>
                 <TableCell>
                   <Badge variant={paymentIsActive ? 'default' : 'destructive'} className={paymentIsActive ? 'bg-green-600' : ''}>
                     {paymentIsActive ? 'Pagado' : 'Pendiente'}
@@ -109,7 +109,7 @@ export default function ProfessionalsTable() {
                 <TableCell>
                   <Switch
                     checked={pro.isActive}
-                    onCheckedChange={value => handleToggleActive(pro.id, value)}
+                    onCheckedChange={value => handleToggleActive(pro.id as number, value)}
                   />
                 </TableCell>
                 <TableCell>
@@ -122,7 +122,7 @@ export default function ProfessionalsTable() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                      <DropdownMenuItem onClick={() => handleMarkAsPaid(pro.id)}>Marcar como pagado</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleMarkAsPaid(pro.id as number)}>Marcar como pagado</DropdownMenuItem>
                       <DropdownMenuItem>Ver Perfil</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

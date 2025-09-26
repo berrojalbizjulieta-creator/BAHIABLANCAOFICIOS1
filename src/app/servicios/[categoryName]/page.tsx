@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useParams } from 'next/navigation';
@@ -37,7 +38,7 @@ export default function CategoryPage() {
   const allProfessionalsInCategory = useMemo(() => {
       if (!category) return [];
       // This now reads from the potentially modified PROFESSIONALS array on each render
-      return PROFESSIONALS.filter(p => p.categoryId === category.id);
+      return PROFESSIONALS.filter(p => p.categoryIds.includes(category.id));
   }, [category]);
 
   const fetchProfessionals = (currentPage: number) => {

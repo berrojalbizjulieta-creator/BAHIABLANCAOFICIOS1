@@ -22,6 +22,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import PaymentDialog from './payment-dialog';
+import { CATEGORIES } from '@/lib/data';
 
 interface ProfessionalCardProps {
   professional: Professional;
@@ -56,6 +57,7 @@ export default function ProfessionalCard({
     const message = encodeURIComponent('Hola, me comunico desde Bahia Blanca Oficios. Estoy interesado en tus servicios.');
     return `https://wa.me/${cleanedPhone}?text=${message}`;
   }
+  const primaryCategory = CATEGORIES.find(c => c.id === professional.categoryIds[0]);
 
   return (
     <>
@@ -75,6 +77,7 @@ export default function ProfessionalCard({
               </CardTitle>
             </Link>
           </CardHeader>
+           <p className="text-sm text-muted-foreground mt-1">{primaryCategory?.name}</p>
           <div className="mt-1">
             <StarRating rating={professional.avgRating} count={professional.testimonials.length} />
           </div>
