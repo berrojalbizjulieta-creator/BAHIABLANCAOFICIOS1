@@ -212,6 +212,81 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
       'Sellar juntas con silicona',
       'Pequeñas "changas"'
     ]
+  },
+  9: { // Fotografía
+    name: 'Fotografía',
+    specialties: [
+      'Eventos sociales',
+      'Sesiones de fotos familiares',
+      'Fotografía de productos',
+      'Fotografía para CV/LinkedIn',
+      'Cobertura de cumpleaños',
+      'Books de 15 años',
+      'Bautismos y comuniones',
+      'Sesiones de embarazo',
+      'Fotografía de mascotas',
+      'Retoque digital'
+    ]
+  },
+  6: { // Eventos
+    name: 'Eventos',
+    specialties: [
+      'DJ para fiestas',
+      'Sonido e iluminación',
+      'Catering y lunch',
+      'Organización de eventos',
+      'Animación infantil',
+      'Alquiler de livings',
+      'Cabina de fotos',
+      'Mozos y camareras',
+      'Decoración con globos',
+      'Shows en vivo'
+    ]
+  },
+  7: { // Clases
+    name: 'Clases',
+    specialties: [
+      'Apoyo escolar',
+      'Clases de Inglés',
+      'Clases de Guitarra',
+      'Clases de Matemática',
+      'Clases de Canto',
+      'Preparación de exámenes',
+      'Clases de computación',
+      'Clases de Portugués',
+      'Ayuda con TPs',
+      'Clases de piano'
+    ]
+  },
+  58: { // Entrenadores
+    name: 'Entrenadores',
+    specialties: [
+      'Personal Trainer',
+      'Clases de Yoga',
+      'Clases de Pilates',
+      'Entrenamiento funcional',
+      'Preparación física',
+      'Rutinas para gimnasio',
+      'Clases de Zumba',
+      'Entrenamiento a domicilio',
+      'Asesoramiento online',
+      'Boxeo recreativo'
+    ]
+  },
+  55: { // Mascotas
+    name: 'Mascotas',
+    specialties: [
+      'Paseo de perros',
+      'Cuidado a domicilio',
+      'Adiestramiento canino',
+      'Peluquería canina',
+      'Traslado de mascotas',
+      'Cuidado de gatos',
+      'Paseos en grupo',
+      'Paseos individuales',
+      'Guardería de día',
+      'Acompañamiento veterinario'
+    ]
   }
 };
 
@@ -357,7 +432,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subMonths(new Date(), 1),
     lastPaymentDate: subDays(new Date(), 20),
     isActive: false,
-    isVerified: false,
+    isVerified: true,
     testimonials: [
       {
         id: 6,
@@ -733,4 +808,5 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
