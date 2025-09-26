@@ -12,7 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import type { Professional } from '@/lib/types';
 
 const PAGE_SIZE = 5;
@@ -27,20 +27,21 @@ export default function CategoryPage() {
   const [professionals, setProfessionals] = useState<Professional[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore]_useState(true);
 
-  const category = CATEGORIES.find(
+  const category = useMemo(() => CATEGORIES.find(
     (c) => c.name.toLowerCase() === categoryName.toLowerCase()
-  );
+  ), [categoryName]);
 
-  const allProfessionalsInCategory = category 
+  const allProfessionalsInCategory = useMemo(() => category 
     ? PROFESSIONALS.filter(p => p.categoryId === category.id)
-    : [];
+    : [], [category]);
 
   const fetchProfessionals = (currentPage: number) => {
     setLoading(true);
     
     // Simulate fetching data from a source
+    // In a real app, this would be an API call with pagination
     setTimeout(() => {
         const newProfessionals = allProfessionalsInCategory.slice(0, currentPage * PAGE_SIZE);
         setProfessionals(newProfessionals);
@@ -59,7 +60,7 @@ export default function CategoryPage() {
     setPage(1);
     fetchProfessionals(1);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category]);
+  }, [allProfessionalsInCategory]); // Rerun when the underlying category data changes
 
 
   const handleLoadMore = () => {

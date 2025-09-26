@@ -57,7 +57,7 @@ import {
 import PaymentDialog from '@/components/professionals/payment-dialog';
 import { subMonths } from 'date-fns';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CATEGORIES } from '@/lib/data';
+import { CATEGORIES, PROFESSIONALS } from '@/lib/data';
 
 
 function StarRating({
@@ -152,13 +152,32 @@ export default function ProfilePage() {
   }
 
   const handleSave = () => {
-    // Here you would typically save the data to your backend
-    console.log("Saving data:", professional, paymentMethods, price);
-    toast({
-        title: "Perfil Actualizado",
-        description: "Tus cambios han sido guardados con éxito."
-    })
-    setIsEditing(false);
+    if (professional) {
+        // In a real app, this would be an API call.
+        // Here, we simulate updating the central data source.
+        const professionalIndex = PROFESSIONALS.findIndex(p => p.id === professional.id);
+        if (professionalIndex !== -1) {
+            PROFESSIONALS[professionalIndex] = { ...PROFESSIONALS[professionalIndex], ...professional };
+        } else {
+            // If it's a new professional (ID 0), add them.
+            // This is a simplified logic for the mock data.
+            const newProfessional = { ...professional, id: PROFESSIONALS.length + 1 };
+            PROFESSIONALS.push(newProfessional);
+            setProfessional(newProfessional); // Update state with the new ID
+        }
+        
+        toast({
+            title: "Perfil Actualizado",
+            description: "Tus cambios han sido guardados con éxito en toda la plataforma."
+        });
+        setIsEditing(false);
+    } else {
+        toast({
+            title: "Error",
+            description: "No se pudieron guardar los cambios.",
+            variant: "destructive"
+        })
+    }
   }
 
   const handlePublish = () => {
@@ -169,16 +188,30 @@ export default function ProfilePage() {
   }
 
   const handlePaymentSuccess = (plan: 'standard' | 'premium') => {
-    // This would be called from the payment dialog on successful payment
-    setLastPaymentDate(new Date());
+    const newLastPaymentDate = new Date();
+    setLastPaymentDate(newLastPaymentDate);
+
     if (professional) {
-      setProfessional({...professional, subscriptionTier: plan});
+        const updatedProfessional = {
+            ...professional,
+            subscriptionTier: plan,
+            isSubscriptionActive: true,
+            lastPaymentDate: newLastPaymentDate,
+        };
+        setProfessional(updatedProfessional);
+
+        // Also update the central data source
+        const professionalIndex = PROFESSIONALS.findIndex(p => p.id === professional.id);
+        if (professionalIndex !== -1) {
+            PROFESSIONALS[professionalIndex] = updatedProfessional;
+        }
+
+        toast({
+            title: "¡Publicación Exitosa!",
+            description: `Tu perfil ahora está visible para nuevos clientes con el plan ${plan === 'premium' ? 'Premium' : 'Estándar'}.`,
+        });
+        setIsEditing(false);
     }
-    toast({
-        title: "¡Publicación Exitosa!",
-        description: `Tu perfil ahora está visible para nuevos clientes con el plan ${plan === 'premium' ? 'Premium' : 'Estándar'}.`,
-    });
-    setIsEditing(false);
   }
 
   const handleAvatarClick = () => {
