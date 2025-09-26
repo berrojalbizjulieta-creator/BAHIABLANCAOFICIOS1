@@ -10,12 +10,14 @@ import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 
 interface JobRequestCardProps {
     request: JobRequest;
 }
 
 export default function JobRequestCard({ request }: JobRequestCardProps) {
+    const { user, isProfessional } = useAdminAuth();
     const [showContact, setShowContact] = useState(false);
 
     const getWhatsAppLink = (phone?: string) => {
@@ -26,13 +28,16 @@ export default function JobRequestCard({ request }: JobRequestCardProps) {
     }
 
     const hasComments = request.comments.length > 0;
-    // This is a placeholder. In a real app, this would check if the current professional user has commented.
-    const currentUserHasCommented = hasComments; 
+    
+    // A professional can apply if they are logged in and it's a professional account
+    const canApply = isProfessional && user;
 
+    // A professional should be able to see the contact info if they have applied.
+    // For now, we simulate this with the local `showContact` state.
+    // A real implementation would check if the professional has already commented or "applied".
     const handleApply = () => {
-        // In a real app, this would open a comment modal.
-        // For now, we'll just toggle the contact visibility directly
-        // to simulate the flow after commenting.
+        // In a real app, this would probably open a comment modal or save an application to the DB.
+        // For now, we'll just toggle the contact visibility directly to simulate the flow.
         setShowContact(true);
     }
 
@@ -78,17 +83,19 @@ export default function JobRequestCard({ request }: JobRequestCardProps) {
                         </div>
                      )}
                      {request.status === 'open' ? (
-                        showContact ? (
-                             <Button asChild>
-                                <a href={getWhatsAppLink(request.whatsapp)} target="_blank" rel="noopener noreferrer">
-                                    <Phone className="mr-2" /> Ver Contacto
-                                </a>
-                            </Button>
-                        ) : (
-                            <Button onClick={handleApply}>
-                               Postularme
-                            </Button>
-                        )
+                        canApply ? (
+                            showContact ? (
+                                <Button asChild>
+                                    <a href={getWhatsAppLink(request.whatsapp)} target="_blank" rel="noopener noreferrer">
+                                        <Phone className="mr-2" /> Ver Contacto
+                                    </a>
+                                </Button>
+                            ) : (
+                                <Button onClick={handleApply}>
+                                    Postularme
+                                </Button>
+                            )
+                        ) : null
                      ): (
                         <Button disabled variant="outline">
                            <Check className="mr-2" />
