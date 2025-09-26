@@ -32,7 +32,7 @@ export default function SpecialtiesDialog({
   selectedSpecialties,
   onSave,
 }: SpecialtiesDialogProps) {
-  const [currentSelection, setCurrentSelection] = useState<string[]>(selectedSpecialties);
+  const [currentSelection, setCurrentSelection] = useState<string[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {

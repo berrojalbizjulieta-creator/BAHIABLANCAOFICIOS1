@@ -218,7 +218,7 @@ export default function ProfilePage() {
   const handleSpecialtiesSave = (newSpecialties: string[]) => {
     // Logic to merge new specialties with existing ones, avoiding duplicates
     if (professional) {
-        const updatedSpecialties = Array.from(new Set([...professional.specialties, ...newSpecialties]));
+        const updatedSpecialties = Array.from(new Set(newSpecialties));
         handleInputChange('specialties', updatedSpecialties);
     }
   };
@@ -310,6 +310,22 @@ export default function ProfilePage() {
         })
     }
   };
+  
+    const handleEditSpecialties = () => {
+        if (professional?.categoryIds.length > 0) {
+            const firstCategoryId = professional.categoryIds[0];
+            if (CATEGORY_SPECIALTIES[firstCategoryId]) {
+                setCurrentCategoryForSpecialties(firstCategoryId);
+                setIsSpecialtiesDialogOpen(true);
+            } else {
+                toast({
+                    title: 'Sin Especialidades',
+                    description: 'La categoría principal seleccionada no tiene especialidades para elegir.',
+                    variant: 'destructive',
+                });
+            }
+        }
+    };
 
 
   return (
@@ -479,7 +495,14 @@ export default function ProfilePage() {
                     
                     {/* Specialties Section */}
                     <div>
-                         <h4 className="font-semibold mb-3">Especialidades</h4>
+                         <div className="flex items-center gap-4 mb-3">
+                            <h4 className="font-semibold">Especialidades</h4>
+                            {isEditing && professional.categoryIds.length > 0 && (
+                                <Button variant="outline" size="sm" onClick={handleEditSpecialties}>
+                                    <Edit className="mr-2 h-3 w-3" /> Editar
+                                </Button>
+                            )}
+                        </div>
                          {professional.specialties.length > 0 ? (
                              <div className="flex flex-wrap gap-2">
                                 {professional.specialties.map(spec => (
