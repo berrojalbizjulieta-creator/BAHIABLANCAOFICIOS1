@@ -14,12 +14,13 @@ import { Button } from '../ui/button';
 import Link from 'next/link';
 import { useRef, useState, useEffect } from 'react';
 import { Input } from '../ui/input';
-import { Edit, Save, X, Upload, Check } from 'lucide-react';
+import { Edit, Save, X, Upload, Check, Search, PlusCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { updateProfile } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { auth, db, storage } from '@/lib/firebase';
+import { Separator } from '../ui/separator';
 
 interface ClientDashboardProps {
   user: User;
@@ -111,7 +112,7 @@ export default function ClientDashboard({ user }: ClientDashboardProps) {
 
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-3xl mx-auto">
         <Card>
           <CardHeader className="text-center relative">
             <div className="relative group w-24 h-24 mx-auto">
@@ -150,23 +151,35 @@ export default function ClientDashboard({ user }: ClientDashboardProps) {
               <CardTitle className="text-2xl font-headline">¡Bienvenido, {displayName || user.email}!</CardTitle>
             )}
 
-            <CardDescription>Este es tu panel de control de cliente.</CardDescription>
+            <CardDescription>Desde acá podés manejar todo. ¿Qué tenés en mente hoy?</CardDescription>
              {!isEditing && (
               <Button variant="ghost" size="icon" className="absolute top-4 right-4" onClick={() => setIsEditing(true)}>
                 <Edit className="h-5 w-5" />
               </Button>
             )}
           </CardHeader>
-          <CardContent className="text-center">
-            <p className="text-muted-foreground mb-6">
-              Desde aquí podrás gestionar tus solicitudes y ver tus profesionales contactados próximamente.
-            </p>
-            <Button asChild>
-              <Link href="/">Buscar un Profesional</Link>
-            </Button>
+          <CardContent className="px-6 pb-6">
+             <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                <div className='flex flex-col items-center text-center p-4 rounded-lg bg-muted/50'>
+                    <Search className='w-10 h-10 text-primary mb-3'/>
+                    <h3 className='font-bold'>Quiero buscar un profesional</h3>
+                    <p className='text-sm text-muted-foreground mt-1 mb-4'>Explorá las categorías y encontrá al experto que necesitás para tu proyecto.</p>
+                    <Button asChild className='mt-auto w-full'>
+                        <Link href="/">Buscar Profesional</Link>
+                    </Button>
+                </div>
+                 <div className='flex flex-col items-center text-center p-4 rounded-lg bg-muted/50'>
+                    <PlusCircle className='w-10 h-10 text-primary mb-3'/>
+                    <h3 className='font-bold'>Quiero encargar un laburo</h3>
+                    <p className='text-sm text-muted-foreground mt-1 mb-4'>Publicá lo que necesitás y dejá que los profesionales te contacten a vos.</p>
+                    <Button asChild className='mt-auto w-full'>
+                        <Link href="/busco-un-profesional">Encargá un Laburo</Link>
+                    </Button>
+                </div>
+             </div>
           </CardContent>
           {isEditing && (
-            <CardFooter className="justify-center gap-4">
+            <CardFooter className="justify-center gap-4 border-t pt-6">
               <Button onClick={handleSave} disabled={isLoading}>
                 {isLoading ? 'Guardando...' : <><Save className="mr-2 h-4 w-4" /> Guardar Cambios</>}
               </Button>
