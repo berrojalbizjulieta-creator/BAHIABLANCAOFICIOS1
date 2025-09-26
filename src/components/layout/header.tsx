@@ -23,6 +23,7 @@ import { Skeleton } from '../ui/skeleton';
 const navLinks = [
   { href: '/', label: 'Inicio' },
   { href: '/servicios', label: 'Servicios' },
+  { href: '/busco-un-profesional', label: 'Busco a alguien que...' },
   { href: '/sobre-nosotros', label: 'Sobre Nosotros' },
   { href: '/contacto', label: 'Contacto' },
 ];
@@ -58,7 +59,7 @@ export function Header() {
             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'Usuario'} />
-                <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
+                <AvatarFallback>{user.email?.[0]?.toUpperCase()}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
@@ -128,8 +129,6 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
-              target={link.target}
-              rel={link.target === '_blank' ? 'noopener noreferrer' : undefined}
               className="text-foreground/60 transition-colors hover:text-foreground/80"
             >
               {link.label}
@@ -159,8 +158,6 @@ export function Header() {
                     <Link
                       key={link.href}
                       href={link.href}
-                      target={link.target}
-                      rel={link.target === '_blank' ? 'noopener noreferrer' : undefined}
                       className="text-foreground/80 transition-colors hover:text-foreground"
                     >
                       {link.label}

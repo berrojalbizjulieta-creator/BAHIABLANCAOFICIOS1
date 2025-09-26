@@ -25,9 +25,9 @@ import {
   Fan,
   Bug,
 } from 'lucide-react';
-import type { Category, Professional, Banner, Client } from '@/lib/types';
+import type { Category, Professional, Banner, Client, JobRequest } from '@/lib/types';
 import { placeholderImages } from './placeholder-images';
-import { subMonths, subDays } from 'date-fns';
+import { subMonths, subDays, subHours } from 'date-fns';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -307,26 +307,53 @@ export const AD_BANNERS = [
   },
 ];
     
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
+export const JOB_REQUESTS: JobRequest[] = [
+  {
+    id: 1,
+    title: 'Cortar el pasto de un terreno 10x20',
+    description: 'Necesito cortar el pasto y emprolijar los bordes de un patio trasero. El pasto está un poco alto. Zona centro.',
+    budget: 5000,
+    status: 'open',
+    clientId: 1,
+    clientName: 'Ana Gomez',
+    clientPhotoUrl: getImage('client-1').imageUrl,
+    createdAt: subHours(new Date(), 3),
+    whatsapp: '5492914123456',
+    comments: [],
+  },
+  {
+    id: 2,
+    title: 'Instalar 3 estantes en pared de durlock',
+    description: 'Tengo 3 estantes flotantes y necesito que alguien con las herramientas adecuadas los instale en una pared de durlock. Los estantes ya los tengo.',
+    budget: 8000,
+    status: 'open',
+    clientId: 2,
+    clientName: 'Juan Pérez',
+    clientPhotoUrl: getImage('client-3').imageUrl,
+    createdAt: subDays(new Date(), 1),
+    whatsapp: '5492915555555',
+    comments: [
+        {
+            id: 1,
+            text: '¡Hola Juan! Soy carpintero y puedo hacer ese trabajo. ¿Cuándo te quedaría bien?',
+            professionalId: 4,
+            professionalName: 'Jorge Herrera',
+            professionalPhotoUrl: getImage('prof-4').imageUrl,
+            createdAt: subHours(new Date(), 22),
+        }
+    ],
+  },
+  {
+    id: 3,
+    title: 'Pintar una habitación de 4x4',
+    description: 'Busco pintor para una habitación. Incluye techo. Yo pongo la pintura y los materiales, solo necesito la mano de obra. Gracias.',
+    budget: 15000,
+    status: 'closed',
+    clientId: 3,
+    clientName: 'María López',
+    clientPhotoUrl: getImage('client-2').imageUrl,
+    createdAt: subDays(new Date(), 3),
+    whatsapp: '5492916666666',
+    comments: [],
+  }
+];

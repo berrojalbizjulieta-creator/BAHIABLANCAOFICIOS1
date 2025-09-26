@@ -66,6 +66,25 @@ export interface Banner {
   buttonLink?: string;
 }
 
-    
+export interface JobRequest {
+  id: number;
+  title: string;
+  description: string;
+  budget: number;
+  status: 'open' | 'closed';
+  clientId: number;
+  clientName: string;
+  clientPhotoUrl: string;
+  createdAt: Date;
+  whatsapp: string;
+  comments: JobComment[];
+}
 
-    
+export interface JobComment {
+    id: number;
+    text: string;
+    professionalId: number;
+    professionalName: string;
+    professionalPhotoUrl: string;
+    createdAt: Date;
+}
