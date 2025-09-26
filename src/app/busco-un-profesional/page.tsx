@@ -44,7 +44,7 @@ type JobRequestFormValues = z.infer<typeof jobRequestSchema>;
 const ITEMS_PER_PAGE = 15;
 
 export default function JobRequestsPage() {
-  const [jobRequests, setJobRequests] = useState<JobRequest[]>(JOB_REQUESTS.sort((a,b) => b.createdAt.getTime() - a.createdAt.getTime()));
+  const [jobRequests, setJobRequests] = useState<JobRequest[]>(JOB_REQUESTS.filter(req => req.status === 'open').sort((a,b) => b.createdAt.getTime() - a.createdAt.getTime()));
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
