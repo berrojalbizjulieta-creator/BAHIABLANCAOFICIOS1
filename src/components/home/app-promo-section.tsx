@@ -12,7 +12,8 @@ export default function AppPromoSection() {
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div className="text-center md:text-left">
             <h2 className="text-3xl md:text-4xl font-bold font-headline tracking-tighter text-foreground">
-              Tus soluciones, en la palma de tu mano. Próximamente.
+              <span className="block">PRÓXIMAMENTE...</span>
+              <span className="block text-2xl md:text-3xl font-medium mt-2">Tus soluciones en la palma de la mano</span>
             </h2>
           </div>
           <div className="flex justify-center md:justify-start">
@@ -20,8 +21,8 @@ export default function AppPromoSection() {
               <Image
                 src={celularImg.imageUrl}
                 alt={celularImg.description}
-                width={450}
-                height={900}
+                width={550}
+                height={1100}
                 className="object-contain"
                 data-ai-hint={celularImg.imageHint}
               />
