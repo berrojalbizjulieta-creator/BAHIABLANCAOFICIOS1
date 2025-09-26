@@ -10,17 +10,12 @@ import { useSearchParams } from 'next/navigation';
 
 export default function ServicesPage() {
   const searchParams = useSearchParams();
-  const initialSearch = searchParams.get('search') || '';
-  const [searchTerm, setSearchTerm] = useState(initialSearch);
+  const search = searchParams.get('search') || '';
+  const [searchTerm, setSearchTerm] = useState(search);
 
   useEffect(() => {
-    // If you want to update the state if the query param changes while on the page
-    const newSearch = searchParams.get('search') || '';
-    if (newSearch !== searchTerm) {
-      setSearchTerm(newSearch);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+    setSearchTerm(search);
+  }, [search]);
 
 
   const filteredCategories = CATEGORIES.filter((category) =>
