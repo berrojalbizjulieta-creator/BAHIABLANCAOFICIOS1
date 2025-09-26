@@ -220,12 +220,15 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
       'Sesiones de fotos familiares',
       'Fotografía de productos',
       'Fotografía para CV/LinkedIn',
-      'Cobertura de cumpleaños',
       'Books de 15 años',
       'Bautismos y comuniones',
       'Sesiones de embarazo',
       'Fotografía de mascotas',
-      'Retoque digital'
+      'Retoque digital',
+      'Impresión de fotos comunes',
+      'Fotos Polaroid',
+      'Venta de cuadros decorativos',
+      'Deco con fotos'
     ]
   },
   6: { // Eventos
@@ -913,6 +916,7 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
 
 
