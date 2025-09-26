@@ -152,6 +152,51 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
       'Lustre y laqueado',
       'Amoblamientos de cocina'
     ]
+  },
+  4: { // Mudanzas
+    name: 'Mudanzas',
+    specialties: [
+      'Fletes',
+      'Mini fletes',
+      'Embalaje',
+      'Peones para carga y descarga',
+      'Traslado de pianos',
+      'Mudanzas de oficinas',
+      'Mudanzas locales',
+      'Mudanzas nacionales',
+      'Guardamuebles',
+      'Desarme y armado de muebles'
+    ]
+  },
+  13: { // Albañilería
+    name: 'Albañilería',
+    specialties: [
+      'Construcción en seco (Durlock)',
+      'Colocación de cerámicos y porcelanato',
+      'Revoques finos y gruesos',
+      'Contrapisos y carpetas',
+      'Levantamiento de paredes',
+      'Losas y vigas',
+      'Reparación de humedades',
+      'Demoliciones',
+      'Hormigón armado',
+      'Parrillas y asadores'
+    ]
+  },
+  16: { // Herrería
+    name: 'Herrería',
+    specialties: [
+      'Rejas de seguridad',
+      'Portones corredizos y levadizos',
+      'Escaleras de metal',
+      'Barandas y pasamanos',
+      'Estructuras metálicas',
+      'Protecciones para balcones',
+      'Soldaduras en general',
+      'Muebles de hierro',
+      'Cestos de basura',
+      'Reparaciones de herrería'
+    ]
   }
 };
 
