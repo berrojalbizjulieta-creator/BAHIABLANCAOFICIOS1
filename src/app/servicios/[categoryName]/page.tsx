@@ -16,7 +16,7 @@ import {
 import { useEffect, useState, useMemo } from 'react';
 import type { Professional } from '@/lib/types';
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 12;
 
 export default function CategoryPage() {
   const params = useParams();
@@ -25,60 +25,37 @@ export default function CategoryPage() {
     .replace(/\b\w/g, l => l.toUpperCase()) // Capitalize words
     .replace('Y', 'y');
   
-  const [professionals, setProfessionals] = useState<Professional[]>([]);
-  const [page, setPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [hasMore, setHasMore] = useState(true);
 
   const category = useMemo(() => CATEGORIES.find(
     (c) => c.name.toLowerCase() === categoryName.toLowerCase()
   ), [categoryName]);
 
-  // useMemo ensures this list is re-calculated only when the category or the base PROFESSIONALS array changes.
   const allProfessionalsInCategory = useMemo(() => {
       if (!category) return [];
-      // This now reads from the potentially modified PROFESSIONALS array on each render
       return PROFESSIONALS.filter(p => p.categoryIds.includes(category.id));
   }, [category]);
-
-  const fetchProfessionals = (currentPage: number) => {
-    setLoading(true);
-    
-    // Simulate fetching data from a source
-    // In a real app, this would be an API call with pagination
-    setTimeout(() => {
-        // We use the memoized 'allProfessionalsInCategory' which is based on the current state of PROFESSIONALS
-        const newProfessionals = allProfessionalsInCategory.slice(0, currentPage * PAGE_SIZE);
-        setProfessionals(newProfessionals);
-
-        if (newProfessionals.length >= allProfessionalsInCategory.length) {
-            setHasMore(false);
-        } else {
-            setHasMore(true);
-        }
-        setLoading(false);
-    }, 500); // Simulate network delay
-  };
   
    useEffect(() => {
-    // This effect now runs whenever `allProfessionalsInCategory` changes.
-    // When a user updates their profile, the PROFESSIONALS array is mutated.
-    // When we navigate back to this page, React re-renders, `allProfessionalsInCategory` is re-calculated,
-    // and this effect runs with the fresh data.
-    setLoading(true);
-    setPage(1);
-    fetchProfessionals(1);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Reset to first page when category changes
+    setCurrentPage(1);
+    setLoading(false);
   }, [allProfessionalsInCategory]);
 
+  // Pagination logic
+  const totalPages = Math.ceil(allProfessionalsInCategory.length / PAGE_SIZE);
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const endIndex = startIndex + PAGE_SIZE;
+  const currentProfessionals = allProfessionalsInCategory.slice(startIndex, endIndex);
 
-  const handleLoadMore = () => {
-      const nextPage = page + 1;
-      setPage(nextPage);
-      fetchProfessionals(nextPage);
-  }
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    window.scrollTo(0, 0); // Scroll to top on page change
+  };
 
-  if (loading && professionals.length === 0 && !category) {
+
+  if (loading && !category) {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
         <h1 className="text-2xl font-bold">Cargando categoría...</h1>
@@ -125,14 +102,14 @@ export default function CategoryPage() {
         </DropdownMenu>
       </div>
       
-       {loading && professionals.length === 0 ? (
+       {loading ? (
           <div className="flex items-center justify-center h-64">
             <Loader2 className="mr-2 h-8 w-8 animate-spin" />
             <span>Cargando profesionales...</span>
           </div>
-       ) : professionals.length > 0 ? (
+       ) : currentProfessionals.length > 0 ? (
         <div className="space-y-6">
-          {professionals.map((professional) => (
+          {currentProfessionals.map((professional) => (
             <ProfessionalCard
               key={professional.id}
               professional={professional}
@@ -140,30 +117,35 @@ export default function CategoryPage() {
           ))}
         </div>
       ) : (
-        !loading && (
-            <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-lg text-center p-4">
-                <p className="text-lg font-medium text-muted-foreground">
-                    Aún no hay profesionales en &quot;{category.name}&quot;.
-                </p>
-                <p className="text-sm text-muted-foreground mt-2">¡Sé el primero en registrarte en esta categoría!</p>
-            </div>
-        )
+        <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-lg text-center p-4">
+            <p className="text-lg font-medium text-muted-foreground">
+                Aún no hay profesionales en &quot;{category.name}&quot;.
+            </p>
+            <p className="text-sm text-muted-foreground mt-2">¡Sé el primero en registrarte en esta categoría!</p>
+        </div>
       )}
 
-      <div className="mt-10 text-center">
-          {loading && professionals.length > 0 && (
-             <div className="flex items-center justify-center">
-                <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-                <span>Cargando más...</span>
-            </div>
-          )}
-          {!loading && hasMore && (
-            <Button onClick={handleLoadMore}>Cargar más</Button>
-          )}
-          {!hasMore && professionals.length > 0 && (
-            <p className="text-muted-foreground">No hay más profesionales para mostrar.</p>
-          )}
-      </div>
+      {totalPages > 1 && (
+        <div className="mt-12 flex justify-center items-center gap-4">
+          <Button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            variant="outline"
+          >
+            Anterior
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Página {currentPage} de {totalPages}
+          </span>
+          <Button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            variant="outline"
+          >
+            Siguiente
+          </Button>
+        </div>
+      )}
 
     </div>
   );
