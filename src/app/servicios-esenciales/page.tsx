@@ -13,7 +13,7 @@ const maintenanceCategories = [
   'Electricista',
   'Gasista',
   'Cerrajería',
-  'Climatización',
+  'Aire Acondicionado',
   'Vidriería',
   'Reparaciones',
   'Limpieza',
