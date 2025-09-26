@@ -153,22 +153,22 @@ export default function ProfilePage() {
 
   const handleSave = () => {
     if (professional) {
-        // In a real app, this would be an API call.
-        // Here, we simulate updating the central data source.
+        // In a real app, this would be an API call to update the DB.
+        // Here, we simulate updating our "live" data source.
         const professionalIndex = PROFESSIONALS.findIndex(p => p.id === professional.id);
         if (professionalIndex !== -1) {
+            // Update existing professional
             PROFESSIONALS[professionalIndex] = { ...PROFESSIONALS[professionalIndex], ...professional };
-        } else {
-            // If it's a new professional (ID 0), add them.
-            // This is a simplified logic for the mock data.
+        } else if (professional.id === 0) {
+            // Add new professional if it's the initial one (ID 0)
             const newProfessional = { ...professional, id: PROFESSIONALS.length + 1 };
             PROFESSIONALS.push(newProfessional);
-            setProfessional(newProfessional); // Update state with the new ID
+            setProfessional(newProfessional); // Update local state with the new ID
         }
         
         toast({
             title: "Perfil Actualizado",
-            description: "Tus cambios han sido guardados con éxito en toda la plataforma."
+            description: "Tus cambios han sido guardados. Ahora serán visibles en toda la plataforma."
         });
         setIsEditing(false);
     } else {
@@ -200,7 +200,7 @@ export default function ProfilePage() {
         };
         setProfessional(updatedProfessional);
 
-        // Also update the central data source
+        // Also update the central data source to reflect the new subscription status
         const professionalIndex = PROFESSIONALS.findIndex(p => p.id === professional.id);
         if (professionalIndex !== -1) {
             PROFESSIONALS[professionalIndex] = updatedProfessional;

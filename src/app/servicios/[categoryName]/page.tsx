@@ -33,9 +33,12 @@ export default function CategoryPage() {
     (c) => c.name.toLowerCase() === categoryName.toLowerCase()
   ), [categoryName]);
 
-  const allProfessionalsInCategory = useMemo(() => category 
-    ? PROFESSIONALS.filter(p => p.categoryId === category.id)
-    : [], [category]);
+  // useMemo ensures this list is re-calculated only when the category or the base PROFESSIONALS array changes.
+  const allProfessionalsInCategory = useMemo(() => {
+      if (!category) return [];
+      // This now reads from the potentially modified PROFESSIONALS array on each render
+      return PROFESSIONALS.filter(p => p.categoryId === category.id);
+  }, [category]);
 
   const fetchProfessionals = (currentPage: number) => {
     setLoading(true);
@@ -43,6 +46,7 @@ export default function CategoryPage() {
     // Simulate fetching data from a source
     // In a real app, this would be an API call with pagination
     setTimeout(() => {
+        // We use the memoized 'allProfessionalsInCategory' which is based on the current state of PROFESSIONALS
         const newProfessionals = allProfessionalsInCategory.slice(0, currentPage * PAGE_SIZE);
         setProfessionals(newProfessionals);
 
@@ -56,17 +60,30 @@ export default function CategoryPage() {
   };
   
    useEffect(() => {
+    // This effect now runs whenever `allProfessionalsInCategory` changes.
+    // When a user updates their profile, the PROFESSIONALS array is mutated.
+    // When we navigate back to this page, React re-renders, `allProfessionalsInCategory` is re-calculated,
+    // and this effect runs with the fresh data.
     setLoading(true);
     setPage(1);
     fetchProfessionals(1);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allProfessionalsInCategory]); // Rerun when the underlying category data changes
+  }, [allProfessionalsInCategory]);
 
 
   const handleLoadMore = () => {
       const nextPage = page + 1;
       setPage(nextPage);
       fetchProfessionals(nextPage);
+  }
+
+  if (loading && professionals.length === 0 && !category) {
+    return (
+      <div className="container mx-auto px-4 py-12 text-center">
+        <h1 className="text-2xl font-bold">Cargando categoría...</h1>
+        <Loader2 className="mx-auto mt-4 h-8 w-8 animate-spin" />
+      </div>
+    );
   }
 
   if (!category) {
@@ -123,12 +140,11 @@ export default function CategoryPage() {
         </div>
       ) : (
         !loading && (
-            <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-lg text-center">
+            <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-lg text-center p-4">
                 <p className="text-lg font-medium text-muted-foreground">
-                    No hay profesionales disponibles en esta categoría por el
-                    momento.
+                    Aún no hay profesionales en &quot;{category.name}&quot;.
                 </p>
-                <p className="text-sm text-muted-foreground mt-2">Vuelve a intentarlo más tarde o explora otras categorías.</p>
+                <p className="text-sm text-muted-foreground mt-2">¡Sé el primero en registrarte en esta categoría!</p>
             </div>
         )
       )}
