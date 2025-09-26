@@ -17,7 +17,7 @@ const popularCategoryNames = [
   'Electricista',
   'Pintores',
   'Albañilería',
-  'Gasista',
+  'Gasista Matriculado',
 ];
 
 const popularCategories = CATEGORIES.filter(c => popularCategoryNames.includes(c.name));

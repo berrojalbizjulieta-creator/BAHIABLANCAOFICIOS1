@@ -11,7 +11,7 @@ import { placeholderImages } from '@/lib/placeholder-images';
 const maintenanceCategories = [
   'Plomería',
   'Electricista',
-  'Gasista',
+  'Gasista Matriculado',
   'Cerrajería',
   'Aire Acondicionado',
   'Vidriería',
