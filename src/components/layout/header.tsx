@@ -124,7 +124,7 @@ export function Header() {
           <Logo className="h-8 w-auto" />
         </Link>
 
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+        <nav className="hidden md:flex items-center gap-6 text-base font-medium">
           {navLinks.map((link) => (
             <Link
               key={link.href}
