@@ -41,9 +41,13 @@ const jobRequestSchema = z.object({
 
 type JobRequestFormValues = z.infer<typeof jobRequestSchema>;
 
+const ITEMS_PER_PAGE = 15;
+
 export default function JobRequestsPage() {
   const [jobRequests, setJobRequests] = useState<JobRequest[]>(JOB_REQUESTS.sort((a,b) => b.createdAt.getTime() - a.createdAt.getTime()));
   const [isFormVisible, setIsFormVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
   const { toast } = useToast();
   const { user, isProfessional } = useAdminAuth();
 
@@ -83,6 +87,18 @@ export default function JobRequestsPage() {
   };
   
   const isClient = user && !isProfessional;
+
+  // Pagination logic
+  const totalPages = Math.ceil(jobRequests.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentJobRequests = jobRequests.slice(startIndex, endIndex);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    window.scrollTo(0, 0); // Scroll to top on page change
+  };
+
 
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
@@ -211,10 +227,32 @@ export default function JobRequestsPage() {
       )}
 
       <div className="space-y-6 max-w-4xl mx-auto">
-        {jobRequests.map(request => (
+        {currentJobRequests.map(request => (
           <JobRequestCard key={request.id} request={request} />
         ))}
       </div>
+
+       {totalPages > 1 && (
+        <div className="mt-12 flex justify-center items-center gap-4">
+          <Button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            variant="outline"
+          >
+            Anterior
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Página {currentPage} de {totalPages}
+          </span>
+          <Button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            variant="outline"
+          >
+            Siguiente
+          </Button>
+        </div>
+      )}
 
     </div>
   );
