@@ -2,7 +2,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { placeholderImages } from '@/lib/placeholder-images';
 
 const celularImg = placeholderImages.find(p => p.id === 'app-promo-mockup-new');
@@ -16,26 +15,6 @@ export default function AppPromoSection() {
             <h2 className="text-3xl md:text-4xl font-bold font-headline tracking-tighter text-foreground">
               Tus soluciones, en la palma de tu mano. Próximamente.
             </h2>
-            <div className="mt-8 flex justify-center md:justify-start gap-4">
-              <Link href="#" passHref>
-                <Image
-                  src="/google-play-badge.svg"
-                  alt="Get it on Google Play"
-                  width={135}
-                  height={40}
-                  className="opacity-90 hover:opacity-100 transition-opacity"
-                />
-              </Link>
-              <Link href="#" passHref>
-                <Image
-                  src="/app-store-badge.svg"
-                  alt="Download on the App Store"
-                  width={135}
-                  height={40}
-                  className="opacity-90 hover:opacity-100 transition-opacity"
-                />
-              </Link>
-            </div>
           </div>
           <div className="flex justify-center md:justify-start">
             {celularImg && (
