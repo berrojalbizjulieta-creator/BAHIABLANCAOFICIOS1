@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -21,8 +20,8 @@ export default function AppPromoSection() {
               <Image
                 src={celularImg.imageUrl}
                 alt={celularImg.description}
-                width={350}
-                height={700}
+                width={450}
+                height={900}
                 className="object-contain"
                 data-ai-hint={celularImg.imageHint}
               />
