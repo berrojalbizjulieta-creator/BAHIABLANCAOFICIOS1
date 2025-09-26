@@ -26,7 +26,7 @@ import {
   Bug,
   Car,
 } from 'lucide-react';
-import type { Category, Professional, Banner, Client, JobRequest } from '@/lib/types';
+import type { Category, Professional, Banner, Client, JobRequest, CategorySpecialties } from '@/lib/types';
 import { placeholderImages } from './placeholder-images';
 import { subMonths, subDays, subHours } from 'date-fns';
 
@@ -61,6 +61,54 @@ export const CATEGORIES: Category[] = [
     { id: 66, name: 'Control de Plagas', icon: Bug, description: 'Fumigación y control de plagas.', imageUrl: getImage('cat-plagas').imageUrl, imageHint: getImage('cat-plagas').imageHint },
     { id: 68, name: 'Mecánicos Auto/Motos', icon: Car, description: 'Servicio y reparación de vehículos.', imageUrl: getImage('cat-mecanica').imageUrl, imageHint: getImage('cat-mecanica').imageHint },
 ];
+
+export const CATEGORY_SPECIALTIES: CategorySpecialties = {
+  11: { // Plomería
+    name: 'Plomería',
+    specialties: [
+      'Destapar cañerías',
+      'Cambio cuerito',
+      'Instalación grifería',
+      'Reparación inodoro',
+      'Colocación bidet',
+      'Perdida de agua',
+      'Bomba de agua',
+      'Termotanque instalación',
+      'Calefón reparación',
+      'Tanque de agua limpieza'
+    ]
+  },
+  14: { // Electricista
+    name: 'Electricista',
+    specialties: [
+      'Instalaciones eléctricas',
+      'Tableros eléctricos',
+      'Reparación de cortocircuitos',
+      'Cableado estructurado',
+      'Iluminación LED',
+      'Porteros eléctricos',
+      'Tomas y enchufes',
+      'Ventiladores de techo',
+      'Certificados DCI',
+      'Urgencias 24hs'
+    ]
+  },
+  17: { // Pintores
+    name: 'Pintores',
+    specialties: [
+      'Pintura de interiores',
+      'Pintura de exteriores',
+      'Enduido y lijado',
+      'Pintura de aberturas',
+      'Impermeabilización',
+      'Revestimientos plásticos',
+      'Pintura de piletas',
+      'Pintura epoxi',
+      'Trabajos en altura',
+      'Quitar empapelado'
+    ]
+  }
+};
 
 
 export const PROFESSIONALS: Professional[] = [

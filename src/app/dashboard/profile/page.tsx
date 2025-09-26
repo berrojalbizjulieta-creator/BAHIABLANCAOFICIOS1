@@ -26,6 +26,7 @@ import {
   Phone,
   Sparkles as PremiumIcon,
   XCircle,
+  Tag,
 } from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {
@@ -58,7 +59,8 @@ import {
 import PaymentDialog from '@/components/professionals/payment-dialog';
 import { subMonths } from 'date-fns';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CATEGORIES, PROFESSIONALS } from '@/lib/data';
+import { CATEGORIES, PROFESSIONALS, CATEGORY_SPECIALTIES } from '@/lib/data';
+import SpecialtiesDialog from '@/components/professionals/specialties-dialog';
 
 
 function StarRating({
@@ -122,9 +124,12 @@ export default function ProfilePage() {
   const [paymentMethods, setPaymentMethods] = useState('');
   const [price, setPrice] = useState({ type: 'Por Hora', amount: '', details: '' });
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
-  // Simulate last payment date, setting it to 2 months ago to show the button by default.
   const [lastPaymentDate, setLastPaymentDate] = useState(subMonths(new Date(), 2)); 
   const [isSubscriptionActive, setIsSubscriptionActive] = useState(false);
+
+  // State for specialties dialog
+  const [isSpecialtiesDialogOpen, setIsSpecialtiesDialogOpen] = useState(false);
+  const [currentCategoryForSpecialties, setCurrentCategoryForSpecialties] = useState<number | null>(null);
 
   const { toast } = useToast();
   const avatarFileInputRef = useRef<HTMLInputElement>(null);
@@ -143,18 +148,23 @@ export default function ProfilePage() {
   }
   
   const handleCategoryChange = (index: number, newCategoryId: string) => {
+    const categoryIdNum = Number(newCategoryId);
     setProfessional(prev => {
         if (!prev) return null;
         const newCategoryIds = [...prev.categoryIds];
-        newCategoryIds[index] = Number(newCategoryId);
+        newCategoryIds[index] = categoryIdNum;
         return { ...prev, categoryIds: newCategoryIds };
     });
+    // Open specialties dialog if the category has specialties defined
+    if (CATEGORY_SPECIALTIES[categoryIdNum]) {
+        setCurrentCategoryForSpecialties(categoryIdNum);
+        setIsSpecialtiesDialogOpen(true);
+    }
   };
 
   const addCategory = () => {
     setProfessional(prev => {
         if (!prev || prev.categoryIds.length >= 3) return prev;
-        // Add a placeholder (e.g., 0) for the new category to be selected
         return { ...prev, categoryIds: [...prev.categoryIds, 0] };
     });
   };
@@ -163,11 +173,12 @@ export default function ProfilePage() {
     setProfessional(prev => {
         if (!prev) return null;
         const newCategoryIds = prev.categoryIds.filter((_, i) => i !== index);
+        // Also remove specialties associated with this category if needed
         return { ...prev, categoryIds: newCategoryIds };
     });
   };
 
-  const handleInputChange = (field: keyof Professional, value: string | number | boolean) => {
+  const handleInputChange = (field: keyof Professional, value: string | number | boolean | string[]) => {
     setProfessional(prev => (prev ? {...prev, [field]: value} : null));
   };
   
@@ -203,6 +214,15 @@ export default function ProfilePage() {
         })
     }
   }
+  
+  const handleSpecialtiesSave = (newSpecialties: string[]) => {
+    // Logic to merge new specialties with existing ones, avoiding duplicates
+    if (professional) {
+        const updatedSpecialties = Array.from(new Set([...professional.specialties, ...newSpecialties]));
+        handleInputChange('specialties', updatedSpecialties);
+    }
+  };
+
 
   const handlePublish = () => {
     // Before opening the payment dialog, we could do a final save
@@ -456,6 +476,27 @@ export default function ProfilePage() {
                       </p>
                     )}
                     <Separator />
+                    
+                    {/* Specialties Section */}
+                    <div>
+                         <h4 className="font-semibold mb-3">Especialidades</h4>
+                         {professional.specialties.length > 0 ? (
+                             <div className="flex flex-wrap gap-2">
+                                {professional.specialties.map(spec => (
+                                    <Badge key={spec} variant="secondary" className="text-sm">
+                                        <Tag className="mr-2 h-3 w-3"/>
+                                        {spec}
+                                    </Badge>
+                                ))}
+                             </div>
+                         ) : (
+                            <p className="text-sm text-muted-foreground">
+                                {isEditing ? 'Selecciona tus oficios para añadir especialidades.' : 'Aún no se han especificado especialidades.'}
+                            </p>
+                         )}
+                    </div>
+                    <Separator />
+                    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <h4 className="font-semibold mb-3">
@@ -737,6 +778,18 @@ export default function ProfilePage() {
         professionalName={professional.name}
         onPaymentSuccess={handlePaymentSuccess}
       />
+      
+      {currentCategoryForSpecialties !== null && CATEGORY_SPECIALTIES[currentCategoryForSpecialties] && (
+        <SpecialtiesDialog
+            isOpen={isSpecialtiesDialogOpen}
+            onOpenChange={setIsSpecialtiesDialogOpen}
+            categoryName={CATEGORY_SPECIALTIES[currentCategoryForSpecialties].name}
+            availableSpecialties={CATEGORY_SPECIALTIES[currentCategoryForSpecialties].specialties}
+            selectedSpecialties={professional.specialties}
+            onSave={handleSpecialtiesSave}
+        />
+     )}
+
     </>
   );
 }

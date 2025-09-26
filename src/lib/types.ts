@@ -88,3 +88,10 @@ export interface JobComment {
     professionalPhotoUrl: string;
     createdAt: Date;
 }
+
+export interface CategorySpecialties {
+  [categoryId: number]: {
+    name: string;
+    specialties: string[];
+  }
+}
