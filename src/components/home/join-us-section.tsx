@@ -15,11 +15,11 @@ export default function JoinUsSection() {
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="flex justify-center">
               <Image
-                src="https://i.postimg.cc/prbsXFyh/b5a7f93a-e2d3-4543-a2ef-d1765fb00143.jpg"
+                src="https://i.postimg.cc/P5Rz5wRX/b5a7f93a-e2d3-4543-a2ef-d1765fb00143-1.png"
                 alt="Profesionales de distintos oficios trabajando juntos"
                 width={500}
                 height={500}
-                className="rounded-xl object-cover border-8 border-background shadow-xl"
+                className="object-contain"
                 data-ai-hint="professionals working"
               />
           </div>
