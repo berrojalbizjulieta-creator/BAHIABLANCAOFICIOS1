@@ -200,12 +200,18 @@ export default function ProfilePage() {
             PROFESSIONALS.push(newProfessional);
             setProfessional(newProfessional); // Update local state with the new ID
         }
-        
-        toast({
-            title: "Perfil Actualizado",
-            description: "Tus cambios han sido guardados. Ahora serán visibles en toda la plataforma."
-        });
-        setIsEditing(false);
+
+        if (isSubscriptionActive) {
+            toast({
+                title: "Perfil Actualizado",
+                description: "Tus cambios han sido guardados. Ahora serán visibles en toda la plataforma."
+            });
+            setIsEditing(false);
+        } else {
+            // If subscription is not active, it's the first publication.
+            // Open the payment dialog to choose a plan.
+            setIsPaymentDialogOpen(true);
+        }
     } else {
         toast({
             title: "Error",
@@ -223,13 +229,6 @@ export default function ProfilePage() {
     }
   };
 
-
-  const handlePublish = () => {
-    // Before opening the payment dialog, we could do a final save
-    handleSave();
-    // Then open the dialog
-    setIsPaymentDialogOpen(true);
-  }
 
   const handlePaymentSuccess = (plan: 'standard' | 'premium') => {
     const newLastPaymentDate = new Date();
@@ -780,16 +779,6 @@ export default function ProfilePage() {
                   </div>
                 )}
               </CardContent>
-                 {isEditing && !isSubscriptionActive && (
-                    <CardFooter className="flex-col items-start gap-3 pt-4 border-t">
-                        <Button onClick={handlePublish} className="w-full">
-                           <PartyPopper className="mr-2" /> ¡Terminar Edición y Publicar!
-                        </Button>
-                        <p className="text-xs text-center w-full text-muted-foreground">
-                            ¡Estás a un clic de empezar a mostrarle tus laburos a nuevos clientes!
-                        </p>
-                    </CardFooter>
-                 )}
             </Card>
           </div>
         </div>
