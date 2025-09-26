@@ -197,6 +197,21 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
       'Cestos de basura',
       'Reparaciones de herrería'
     ]
+  },
+  5: { // Reparaciones
+    name: 'Reparaciones',
+    specialties: [
+      'Arreglo de persianas',
+      'Colgar cuadros y estantes',
+      'Armado de muebles',
+      'Instalación de cortinas',
+      'Colocar soporte de TV',
+      'Reparación de mosquiteros',
+      'Ajuste de puertas/cajones',
+      'Cambiar un enchufe',
+      'Sellar juntas con silicona',
+      'Pequeñas "changas"'
+    ]
   }
 };
 
@@ -419,7 +434,7 @@ export const PROFESSIONALS: Professional[] = [
     photoHint: 'woman portrait',
     specialties: ['Instalación de aires', 'Cortocircuitos'],
     avgRating: 4.8,
-    categoryIds: [14, 67],
+    categoryIds: [67, 14],
     isSubscriptionActive: true,
     subscriptionTier: 'premium',
     registrationDate: subDays(new Date(), 70),
@@ -718,3 +733,4 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
