@@ -11,11 +11,11 @@ export default function AppPromoSection() {
     <section className="relative py-20 md:py-24 overflow-hidden bg-muted/20">
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="grid md:grid-cols-2 gap-8 items-center">
-          <div className="max-w-md text-left">
+          <div className="text-center md:text-left">
             <h2 className="text-3xl md:text-4xl font-bold font-headline tracking-tighter text-foreground">
               Tus soluciones, en la palma de tu mano. Próximamente.
             </h2>
-            <div className="mt-8 flex justify-start gap-4">
+            <div className="mt-8 flex justify-center md:justify-start gap-4">
               <Link href="#" passHref>
                 <Image
                   src="/app-store-badge.svg"
@@ -36,7 +36,7 @@ export default function AppPromoSection() {
               </Link>
             </div>
           </div>
-          <div className="flex justify-center md:justify-end">
+          <div className="flex justify-center md:justify-start">
             {celularImg && (
               <Image
                 src={celularImg.imageUrl}
