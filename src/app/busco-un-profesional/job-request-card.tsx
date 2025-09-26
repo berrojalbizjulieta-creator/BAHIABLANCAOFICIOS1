@@ -5,15 +5,18 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, Check, MessageSquare, Tag } from 'lucide-react';
+import { Calendar, Check, MessageSquare, Tag, Phone } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { useState } from 'react';
+import Link from 'next/link';
 
 interface JobRequestCardProps {
     request: JobRequest;
 }
 
 export default function JobRequestCard({ request }: JobRequestCardProps) {
+    const [showContact, setShowContact] = useState(false);
 
     const getWhatsAppLink = (phone?: string) => {
         if (!phone) return '#';
@@ -25,6 +28,13 @@ export default function JobRequestCard({ request }: JobRequestCardProps) {
     const hasComments = request.comments.length > 0;
     // This is a placeholder. In a real app, this would check if the current professional user has commented.
     const currentUserHasCommented = hasComments; 
+
+    const handleApply = () => {
+        // In a real app, this would open a comment modal.
+        // For now, we'll just toggle the contact visibility directly
+        // to simulate the flow after commenting.
+        setShowContact(true);
+    }
 
     return (
         <Card className="w-full overflow-hidden transition-shadow hover:shadow-md">
@@ -68,9 +78,17 @@ export default function JobRequestCard({ request }: JobRequestCardProps) {
                         </div>
                      )}
                      {request.status === 'open' ? (
-                        <Button>
-                           {currentUserHasCommented ? 'Ver Contacto' : 'Postularme'}
-                        </Button>
+                        showContact ? (
+                             <Button asChild>
+                                <a href={getWhatsAppLink(request.whatsapp)} target="_blank" rel="noopener noreferrer">
+                                    <Phone className="mr-2" /> Ver Contacto
+                                </a>
+                            </Button>
+                        ) : (
+                            <Button onClick={handleApply}>
+                               Postularme
+                            </Button>
+                        )
                      ): (
                         <Button disabled variant="outline">
                            <Check className="mr-2" />
