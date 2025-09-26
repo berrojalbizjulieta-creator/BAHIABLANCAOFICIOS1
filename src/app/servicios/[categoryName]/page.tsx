@@ -27,7 +27,7 @@ export default function CategoryPage() {
   const [professionals, setProfessionals] = useState<Professional[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [hasMore, setHasMore]_useState(true);
+  const [hasMore, setHasMore] = useState(true);
 
   const category = useMemo(() => CATEGORIES.find(
     (c) => c.name.toLowerCase() === categoryName.toLowerCase()
