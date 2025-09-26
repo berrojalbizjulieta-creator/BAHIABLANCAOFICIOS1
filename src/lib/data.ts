@@ -107,6 +107,51 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
       'Trabajos en altura',
       'Quitar empapelado'
     ]
+  },
+  3: { // Limpieza
+    name: 'Limpieza',
+    specialties: [
+      'Limpieza de oficinas',
+      'Limpieza final de obra',
+      'Limpieza de tapizados',
+      'Limpieza de alfombras',
+      'Limpieza de vidrios en altura',
+      'Limpieza de casas particulares',
+      'Limpieza profunda de cocinas',
+      'Limpieza de consorcios',
+      'Personal de limpieza por hora',
+      'Limpieza industrial'
+    ]
+  },
+  2: { // Jardinería
+    name: 'Jardinería',
+    specialties: [
+      'Corte de césped',
+      'Mantenimiento de jardines',
+      'Poda de árboles y arbustos',
+      'Diseño de jardines',
+      'Instalación de sistemas de riego',
+      'Control de plagas de jardín',
+      'Colocación de césped (panes)',
+      'Nivelación de terreno',
+      'Poda en altura',
+      'Desmalezamiento de terrenos'
+    ]
+  },
+  15: { // Carpintería
+    name: 'Carpintería',
+    specialties: [
+      'Muebles a medida',
+      'Restauración de muebles',
+      'Instalación de puertas y ventanas',
+      'Decks y pérgolas',
+      'Escaleras de madera',
+      'Revestimientos de madera',
+      'Reparación de muebles',
+      'Carpintería de obra',
+      'Lustre y laqueado',
+      'Amoblamientos de cocina'
+    ]
   }
 };
 
