@@ -418,14 +418,6 @@ export const PROFESSIONALS: Professional[] = [
     isActive: true,
     isVerified: false,
     testimonials: [
-        {
-        id: 10,
-        clientName: 'Sofía C.',
-        clientPhotoUrl: '',
-        clientPhotoHint: '',
-        rating: 5,
-        text: 'No me había dado cuenta de cuántos profesionales había en Bahía. Escribís cosas como "limpieza de casas" o "jardinería" y aparecen un montón de opciones. Lo que sea que necesites, acá está.',
-      },
       {
         id: 11,
         clientName: 'Mateo R.',
@@ -434,21 +426,21 @@ export const PROFESSIONALS: Professional[] = [
         rating: 5,
         text: 'La página está re buena... La verdad soy estudiante de afuera y me re salvó, no conocía a ningún plomero de confianza acá en Bahía y todo re bien! Recomendable.',
       },
-      {
-        id: 1,
-        clientName: 'Ana Gomez',
-        clientPhotoUrl: getImage('client-1').imageUrl,
-        clientPhotoHint: getImage('client-1').imageHint,
+       {
+        id: 12,
+        clientName: 'Fernando',
+        clientPhotoUrl: '',
+        clientPhotoHint: '',
         rating: 5,
-        text: 'Excelente servicio. Rápido y muy profesional.',
+        text: 'Me abrió la puerta en 10 minutos sin romper nada. Y encima re buena onda.',
       },
-      {
-        id: 2,
-        clientName: 'Juan Pérez',
-        clientPhotoUrl: getImage('client-3').imageUrl,
-        clientPhotoHint: getImage('client-3').imageHint,
-        rating: 4,
-        text: 'Buen trabajo, resolvió el problema de la tubería eficientemente.',
+       {
+        id: 13,
+        clientName: 'Jorge',
+        clientPhotoUrl: '',
+        clientPhotoHint: '',
+        rating: 5,
+        text: 'Me levantaron una pared y pusieron cerámicos en la cocina, impecable el laburo y buena gente.',
       },
     ],
     workPhotos: [
@@ -472,24 +464,7 @@ export const PROFESSIONALS: Professional[] = [
     lastPaymentDate: subDays(new Date(), 10),
     isActive: true,
     isVerified: true,
-    testimonials: [
-      {
-        id: 3,
-        clientName: 'María López',
-        clientPhotoUrl: getImage('client-2').imageUrl,
-        clientPhotoHint: getImage('client-2').imageHint,
-        rating: 5,
-        text: '¡Impecable! Muy prolija y atenta a los detalles.',
-      },
-      {
-        id: 4,
-        clientName: 'Pedro Martins',
-        clientPhotoUrl: getImage('client-4').imageUrl,
-        clientPhotoHint: getImage('client-4').imageHint,
-        rating: 5,
-        text: 'La mejor electricista de la ciudad. Totalmente recomendada.',
-      },
-    ],
+    testimonials: [],
     workPhotos: [
       getImage('work-5'),
     ]
@@ -511,16 +486,7 @@ export const PROFESSIONALS: Professional[] = [
     lastPaymentDate: subDays(new Date(), 5),
     isActive: true,
     isVerified: false,
-    testimonials: [
-      {
-        id: 5,
-        clientName: 'Laura Sanchez',
-        clientPhotoUrl: getImage('client-1').imageUrl,
-        clientPhotoHint: getImage('client-1').imageHint,
-        rating: 4,
-        text: 'El departamento quedó como nuevo, aunque tardó un poco más de lo esperado.',
-      },
-    ],
+    testimonials: [],
     workPhotos: [
         getImage('work-2'),
     ]
@@ -541,16 +507,7 @@ export const PROFESSIONALS: Professional[] = [
     lastPaymentDate: subDays(new Date(), 20),
     isActive: false,
     isVerified: true,
-    testimonials: [
-      {
-        id: 6,
-        clientName: 'Sofía Castro',
-        clientPhotoUrl: getImage('client-2').imageUrl,
-        clientPhotoHint: getImage('client-2').imageHint,
-        rating: 5,
-        text: 'El ropero que diseñó es perfecto. Un verdadero artesano.',
-      },
-    ],
+    testimonials: [],
     workPhotos: [
         getImage('work-4'),
     ]
@@ -572,7 +529,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 45),
     isActive: true,
     isVerified: true,
-    testimonials: [{ id: 20, clientName: 'Cliente Feliz', clientPhotoUrl: '', clientPhotoHint: '', rating: 5, text: 'Gran trabajo.' }],
+    testimonials: [],
   },
   {
     id: 6,
@@ -589,7 +546,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 50),
     isActive: true,
     isVerified: true,
-    testimonials: [{ id: 21, clientName: 'Otro Cliente', clientPhotoUrl: '', clientPhotoHint: '', rating: 5, text: 'Solucionó todo rapidísimo.' }],
+    testimonials: [],
   },
   {
     id: 7,
@@ -623,7 +580,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 70),
     isActive: true,
     isVerified: true,
-    testimonials: [{ id: 22, clientName: 'Negocio Local', clientPhotoUrl: '', clientPhotoHint: '', rating: 5, text: 'Servicio excelente.' }],
+    testimonials: [],
   },
   {
     id: 9,
@@ -657,7 +614,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 90),
     isActive: true,
     isVerified: true,
-    testimonials: [{ id: 23, clientName: 'Constructora Sur', clientPhotoUrl: '', clientPhotoHint: '', rating: 5, text: 'Siempre a tiempo y profesional.' }],
+    testimonials: [],
   },
   {
     id: 11,
@@ -691,7 +648,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 110),
     isActive: true,
     isVerified: true,
-    testimonials: [{ id: 24, clientName: 'Café del Centro', clientPhotoUrl: '', clientPhotoHint: '', rating: 5, text: 'Muy recomendable para locales.' }],
+    testimonials: [],
   },
   {
     id: 13,
@@ -725,7 +682,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 130),
     isActive: true,
     isVerified: true,
-    testimonials: [{ id: 25, clientName: 'Familia Perez', clientPhotoUrl: '', clientPhotoHint: '', rating: 5, text: 'Nos salvó un domingo a la noche.' }],
+    testimonials: [],
   },
   {
     id: 15,
@@ -759,7 +716,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 150),
     isActive: true,
     isVerified: true,
-    testimonials: [{ id: 26, clientName: 'Admin. Consorcio', clientPhotoUrl: '', clientPhotoHint: '', rating: 5, text: 'La llamamos siempre para el edificio.' }],
+    testimonials: [],
   },
   // END - Added professionals
 ];
@@ -916,6 +873,7 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
 
 
