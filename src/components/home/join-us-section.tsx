@@ -14,16 +14,14 @@ export default function JoinUsSection() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="flex justify-center">
-            {joinIllustration && (
               <Image
-                src="https://i.pinimg.com/736x/db/f0/57/dbf0577b8b35d18acf0d51b9207b5a70.jpg"
-                alt="Agustín y Julieta"
-                width={450}
-                height={450}
-                className="rounded-full object-cover border-8 border-background shadow-xl"
-                data-ai-hint="couple portrait"
+                src="https://i.postimg.cc/prbsXFyh/b5a7f93a-e2d3-4543-a2ef-d1765fb00143.jpg"
+                alt="Profesionales de distintos oficios trabajando juntos"
+                width={500}
+                height={500}
+                className="rounded-xl object-cover border-8 border-background shadow-xl"
+                data-ai-hint="professionals working"
               />
-            )}
           </div>
           <div className="text-center md:text-left">
             <h2 className="text-3xl md:text-4xl font-bold font-headline tracking-tighter text-foreground">
