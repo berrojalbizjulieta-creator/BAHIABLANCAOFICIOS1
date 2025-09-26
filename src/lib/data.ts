@@ -287,6 +287,111 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
       'Guardería de día',
       'Acompañamiento veterinario'
     ]
+  },
+  38: { // Tecnología
+    name: 'Tecnología',
+    specialties: [
+      'Arreglo de PC',
+      'Limpieza de virus',
+      'Formateo e instalación',
+      'Reparación de notebooks',
+      'Cambio de pantalla celu',
+      'Armado de PC gamer',
+      'Configuración de redes WiFi',
+      'Recupero de datos',
+      'Clases de computación',
+      'Soporte técnico a domicilio'
+    ]
+  },
+  12: { // Gasista Matriculado
+    name: 'Gasista Matriculado',
+    specialties: [
+      'Instalación de calefactores',
+      'Reparación de termotanques',
+      'Revisión de estufas',
+      'Prueba de hermeticidad',
+      'Cambio de flexibles',
+      'Instalación de cocinas',
+      'Habilitación de medidor',
+      'Reparación de calderas',
+      'Planos de gas',
+      'Urgencias de gas 24hs'
+    ]
+  },
+  64: { // Cerrajería
+    name: 'Cerrajería',
+    specialties: [
+      'Apertura de puertas',
+      'Cambio de combinación',
+      'Cerraduras de auto',
+      'Copias de llaves',
+      'Cerraduras de seguridad',
+      'Reparación de cerraduras',
+      'Apertura de cajas fuertes',
+      'Puertas blindadas',
+      'Urgencias 24hs',
+      'Cerrojos y pasadores'
+    ]
+  },
+  67: { // Aire Acondicionado
+    name: 'Aire Acondicionado',
+    specialties: [
+      'Instalación de split',
+      'Carga de gas',
+      'Limpieza de filtros',
+      'Reparación de equipos',
+      'Mantenimiento preventivo',
+      'Desinstalación de equipos',
+      'Reparación de plaquetas',
+      'Instalación de centrales',
+      'Control remoto',
+      'Asesoramiento de compra'
+    ]
+  },
+  65: { // Vidriería
+    name: 'Vidriería',
+    specialties: [
+      'Cambio de vidrios rotos',
+      'Espejos a medida',
+      'Vidrios de seguridad (laminados)',
+      'Frentes de locales',
+      'Mamparas de baño',
+      'Tapas de mesa de vidrio',
+      'Vidrios para ventanas',
+      'Claraboyas',
+      'Policarbonato y acrílico',
+      'Urgencias a domicilio'
+    ]
+  },
+  66: { // Control de Plagas
+    name: 'Control de Plagas',
+    specialties: [
+      'Fumigación de cucarachas',
+      'Desratización',
+      'Control de hormigas',
+      'Eliminación de pulgas',
+      'Ahuyentamiento de palomas',
+      'Control de arañas',
+      'Tratamientos para madera (termitas)',
+      'Desinfección de tanques',
+      'Control de alacranes',
+      'Abonos para comercios'
+    ]
+  },
+  68: { // Mecánicos Auto/Motos
+    name: 'Mecánicos Auto/Motos',
+    specialties: [
+      'Cambio de aceite y filtro',
+      'Tren delantero',
+      'Frenos',
+      'Embrague',
+      'Afinación de motor',
+      'Service de motos',
+      'Diagnóstico con scanner',
+      'Revisión para VTV',
+      'Reparación de motor',
+      'Auxilio mecánico ligero'
+    ]
   }
 };
 
@@ -808,6 +913,7 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
 
 
