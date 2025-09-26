@@ -34,7 +34,7 @@ export default function JoinUsSection() {
             </p>
             <Button asChild className="mt-6">
               <Link href="/signup">
-                Activá tu prueba ahora
+                Activá tu prueba GRATIS ahora
               </Link>
             </Button>
           </div>
