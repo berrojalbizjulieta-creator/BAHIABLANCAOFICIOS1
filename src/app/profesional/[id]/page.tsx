@@ -28,9 +28,14 @@ import {
   CardTitle,
   CardFooter,
 } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import type { Professional, Testimonial } from '@/lib/types';
+import type { Professional, Testimonial, WorkPhoto } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -176,7 +181,7 @@ export default function PublicProfilePage() {
 
   // Use state to manage professional data, so it can be updated
   const [professional, setProfessional] = useState<Professional | undefined>(initialProfessional);
-
+  
   const handleNewReview = (newReview: Testimonial) => {
     if (professional) {
       const updatedTestimonials = [newReview, ...professional.testimonials];
@@ -185,11 +190,19 @@ export default function PublicProfilePage() {
       const totalRating = updatedTestimonials.reduce((sum, t) => sum + t.rating, 0);
       const newAvgRating = totalRating / updatedTestimonials.length;
 
-      setProfessional({
+      const updatedProfessional = {
         ...professional,
         testimonials: updatedTestimonials,
         avgRating: newAvgRating,
-      });
+      };
+
+      // Update the main data source
+      const professionalIndex = PROFESSIONALS.findIndex(p => p.id === updatedProfessional.id);
+      if(professionalIndex !== -1){
+        PROFESSIONALS[professionalIndex] = updatedProfessional;
+      }
+      
+      setProfessional(updatedProfessional);
     }
   };
 
@@ -384,30 +397,41 @@ export default function PublicProfilePage() {
                   </CardHeader>
                   <CardContent>
                      {professional.workPhotos && professional.workPhotos.length > 0 ? (
-                      <Carousel
-                        opts={{ align: 'start' }}
-                        className="w-full"
-                      >
-                        <CarouselContent>
-                          {professional.workPhotos.map((photo, index) => (
-                            <CarouselItem key={photo.id}>
-                              <div className="p-1">
-                                  <div className="relative aspect-video overflow-hidden rounded-lg">
+                      <Dialog>
+                        <Carousel opts={{ align: 'start' }} className="w-full">
+                            <CarouselContent>
+                            {professional.workPhotos.map((photo) => (
+                                <CarouselItem key={photo.id}>
+                                <DialogTrigger asChild>
+                                    <div className="p-1 cursor-pointer">
+                                        <div className="relative aspect-video overflow-hidden rounded-lg">
+                                            <Image
+                                            src={photo.imageUrl}
+                                            alt={photo.description}
+                                            fill
+                                            className="object-cover"
+                                            data-ai-hint={photo.imageHint}
+                                            />
+                                        </div>
+                                    </div>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-3xl p-2">
+                                    <div className="relative aspect-video">
                                     <Image
-                                      src={photo.imageUrl}
-                                      alt={photo.description}
-                                      fill
-                                      className="object-cover"
-                                      data-ai-hint={photo.imageHint}
+                                        src={photo.imageUrl}
+                                        alt={photo.description}
+                                        fill
+                                        className="object-contain rounded-md"
                                     />
-                                  </div>
-                              </div>
-                            </CarouselItem>
-                          ))}
-                        </CarouselContent>
-                        <CarouselPrevious className="-ml-2"/>
-                        <CarouselNext className="-mr-2"/>
-                      </Carousel>
+                                    </div>
+                                </DialogContent>
+                                </CarouselItem>
+                            ))}
+                            </CarouselContent>
+                            <CarouselPrevious className="-ml-2"/>
+                            <CarouselNext className="-mr-2"/>
+                        </Carousel>
+                      </Dialog>
                     ) : (
                       <p className="text-sm text-muted-foreground">
                           El profesional no ha subido fotos de sus trabajos.

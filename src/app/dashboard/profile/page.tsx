@@ -38,6 +38,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {Badge} from '@/components/ui/badge';
 import {Separator} from '@/components/ui/separator';
@@ -708,35 +713,44 @@ export default function ProfilePage() {
                   </CardHeader>
                   <CardContent>
                     {professional.workPhotos && professional.workPhotos.length > 0 ? (
-                      <Carousel
-                        opts={{
-                          align: 'start',
-                        }}
-                        className="w-full"
-                      >
-                        <CarouselContent>
-                          {professional.workPhotos.map((photo, index) => (
-                            <CarouselItem
-                              key={photo.id}
-                              className="md:basis-1/2 lg:basis-1/3"
-                            >
-                              <div className="p-1">
-                                  <div className="relative aspect-video overflow-hidden rounded-lg">
+                      <Dialog>
+                        <Carousel opts={{ align: 'start' }} className="w-full">
+                          <CarouselContent>
+                            {professional.workPhotos.map((photo) => (
+                              <CarouselItem
+                                key={photo.id}
+                                className="md:basis-1/2 lg:basis-1/3"
+                              >
+                                <DialogTrigger asChild>
+                                    <div className="p-1 cursor-pointer">
+                                        <div className="relative aspect-video overflow-hidden rounded-lg">
+                                        <Image
+                                            src={photo.imageUrl}
+                                            alt={photo.description}
+                                            fill
+                                            className="object-cover"
+                                            data-ai-hint={photo.imageHint}
+                                        />
+                                        </div>
+                                    </div>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-3xl p-2">
+                                  <div className="relative aspect-video">
                                     <Image
                                       src={photo.imageUrl}
                                       alt={photo.description}
                                       fill
-                                      className="object-cover"
-                                      data-ai-hint={photo.imageHint}
+                                      className="object-contain rounded-md"
                                     />
                                   </div>
-                              </div>
-                            </CarouselItem>
-                          ))}
-                        </CarouselContent>
-                        <CarouselPrevious className="ml-12" />
-                        <CarouselNext className="mr-12" />
-                      </Carousel>
+                                </DialogContent>
+                              </CarouselItem>
+                            ))}
+                          </CarouselContent>
+                          <CarouselPrevious className="ml-12" />
+                          <CarouselNext className="mr-12" />
+                        </Carousel>
+                      </Dialog>
                     ) : (
                       <div className="text-center py-10">
                         <p className="text-muted-foreground">
