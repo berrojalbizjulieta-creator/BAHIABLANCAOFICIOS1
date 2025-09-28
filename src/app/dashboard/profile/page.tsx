@@ -27,6 +27,7 @@ import {
   Sparkles as PremiumIcon,
   XCircle,
   Tag,
+  Loader2,
 } from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {
@@ -61,6 +62,7 @@ import { subMonths } from 'date-fns';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CATEGORIES, PROFESSIONALS, CATEGORY_SPECIALTIES } from '@/lib/data';
 import SpecialtiesDialog from '@/components/professionals/specialties-dialog';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 
 
 function StarRating({
@@ -119,12 +121,15 @@ const initialProfessionalData: Professional = {
 
 
 export default function ProfilePage() {
+  const { user, loading } = useAdminAuth();
   const [isEditing, setIsEditing] = useState(true);
-  const [professional, setProfessional] = useState<Professional | null>(initialProfessionalData);
+  const [professional, setProfessional] = useState<Professional | null>(null);
   const [paymentMethods, setPaymentMethods] = useState('');
   const [price, setPrice] = useState({ type: 'Por Hora', amount: '', details: '' });
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
-  const [lastPaymentDate, setLastPaymentDate] = useState(subMonths(new Date(), 2)); 
+  
+  // States for subscription status
+  const [lastPaymentDate, setLastPaymentDate] = useState<Date | undefined>(); 
   const [isSubscriptionActive, setIsSubscriptionActive] = useState(false);
 
   // State for specialties dialog
@@ -137,14 +142,55 @@ export default function ProfilePage() {
 
 
   useEffect(() => {
+    if (loading) return;
+    if (!user) return;
+
+    // Try to find an existing profile for the logged-in user
+    const existingProfile = PROFESSIONALS.find(p => p.email === user.email);
+
+    if (existingProfile) {
+        setProfessional(existingProfile);
+        setIsEditing(false); // If profile exists, start in view mode
+        setLastPaymentDate(existingProfile.lastPaymentDate);
+        // Set price from existing data
+        if (existingProfile.priceInfo) {
+            const [typePart, amountPart] = existingProfile.priceInfo.split(': $');
+            const type = typePart.trim();
+            const amount = amountPart ? amountPart.split(' ')[0] : '';
+            setPrice({ type: type || 'Por Hora', amount: amount || '', details: '' }); // Simplified details for now
+        }
+    } else {
+        // If no profile, create a new one based on auth data
+        const newProfessional: Professional = {
+            ...initialProfessionalData,
+            name: user.displayName || 'Nuevo Profesional',
+            email: user.email || '',
+            photoUrl: user.photoURL || '',
+        };
+        setProfessional(newProfessional);
+        setIsEditing(true); // New profile, start in editing mode
+    }
+  }, [user, loading]);
+
+
+  useEffect(() => {
     // Check if the last payment was within the last month
+    if (!lastPaymentDate) {
+        setIsSubscriptionActive(false);
+        return;
+    };
     const oneMonthAgo = subMonths(new Date(), 1);
     setIsSubscriptionActive(lastPaymentDate > oneMonthAgo);
   }, [lastPaymentDate]);
 
 
-  if (!professional) {
-    return <div>Profesional no encontrado.</div>;
+  if (loading || !professional) {
+    return (
+        <div className='flex items-center justify-center h-screen'>
+            <Loader2 className='w-12 h-12 animate-spin text-primary' />
+            <p className='ml-4 text-lg'>Cargando tu perfil...</p>
+        </div>
+    );
   }
   
   const handleCategoryChange = (index: number, newCategoryId: string) => {
@@ -178,7 +224,7 @@ export default function ProfilePage() {
     });
   };
 
-  const handleInputChange = (field: keyof Professional, value: string | number | boolean | string[]) => {
+  const handleInputChange = (field: keyof Professional, value: string | number | boolean | string[] | Date | undefined) => {
     setProfessional(prev => (prev ? {...prev, [field]: value} : null));
   };
   
@@ -188,22 +234,22 @@ export default function ProfilePage() {
 
   const handleSave = () => {
       if (professional) {
-          // This is the key change: update the central data source.
-          const professionalIndex = PROFESSIONALS.findIndex(p => p.id === professional.id);
+          const finalProfessionalData = {
+              ...professional,
+              priceInfo: `${price.type}: $${price.amount}`
+          };
+          
+          const professionalIndex = PROFESSIONALS.findIndex(p => p.id === professional.id || p.email === professional.email);
+
           if (professionalIndex !== -1) {
               // Update existing professional
-              PROFESSIONALS[professionalIndex] = { ...PROFESSIONALS[professionalIndex], ...professional };
-          } else if (professional.id === 0) {
-              // Add new professional if it's the initial one (ID 0)
-              const newProfessional = { ...professional, id: PROFESSIONALS.length + 1, priceInfo: `${price.type}: $${price.amount}` };
-              PROFESSIONALS.push(newProfessional);
-              setProfessional(newProfessional); // Update local state with the new ID
+              PROFESSIONALS[professionalIndex] = finalProfessionalData;
           } else {
-             // This handles the case where a professional is being edited for the first time
-             // and might not exist in the initial static array.
-             const newProfessional = { ...professional, priceInfo: `${price.type}: $${price.amount}` };
-             PROFESSIONALS.push(newProfessional);
-             setProfessional(newProfessional);
+              // Add new professional
+              const newId = Math.max(...PROFESSIONALS.map(p => Number(p.id))) + 1;
+              const newProfessionalWithId = { ...finalProfessionalData, id: newId };
+              PROFESSIONALS.push(newProfessionalWithId);
+              setProfessional(newProfessionalWithId); // Update local state with the new ID
           }
 
           if (isSubscriptionActive) {
@@ -245,13 +291,19 @@ export default function ProfilePage() {
             subscriptionTier: plan,
             isSubscriptionActive: true,
             lastPaymentDate: newLastPaymentDate,
+            priceInfo: `${price.type}: $${price.amount}`
         };
         setProfessional(updatedProfessional);
 
-        // Also update the central data source to reflect the new subscription status
-        const professionalIndex = PROFESSIONALS.findIndex(p => p.id === professional.id);
+        const professionalIndex = PROFESSIONALS.findIndex(p => p.id === professional.id || p.email === professional.email);
+        
         if (professionalIndex !== -1) {
             PROFESSIONALS[professionalIndex] = updatedProfessional;
+        } else {
+             const newId = Math.max(...PROFESSIONALS.map(p => Number(p.id))) + 1;
+             const newProfessionalWithId = { ...updatedProfessional, id: newId };
+             PROFESSIONALS.push(newProfessionalWithId);
+             setProfessional(newProfessionalWithId);
         }
 
         toast({
