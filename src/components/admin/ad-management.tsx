@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import {
   collection,
@@ -9,6 +9,8 @@ import {
   deleteDoc,
   doc,
   serverTimestamp,
+  query,
+  orderBy,
 } from 'firebase/firestore';
 import {
   ref,
@@ -24,12 +26,11 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Trash2, Upload, PlusCircle, Image as ImageIcon } from 'lucide-react';
+import { Trash2, Upload, Image as ImageIcon, Loader2 } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -55,25 +56,34 @@ export default function AdManagement() {
   const [loading, setLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   const [newBannerFile, setNewBannerFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  const fetchBanners = async () => {
-    setLoading(true);
-    const querySnapshot = await getDocs(collection(db, 'adBanners'));
-    const bannersData = querySnapshot.docs.map(
-      (doc) => ({ id: doc.id, ...doc.data() } as AdBanner)
-    );
-    setBanners(bannersData);
-    setLoading(false);
-  };
-
   useEffect(() => {
+    const fetchBanners = async () => {
+      setLoading(true);
+      try {
+        const q = query(collection(db, 'adBanners'), orderBy('createdAt', 'desc'));
+        const querySnapshot = await getDocs(q);
+        const bannersData = querySnapshot.docs.map(
+          (doc) => ({ id: doc.id, ...doc.data() } as AdBanner)
+        );
+        setBanners(bannersData);
+      } catch (error) {
+          console.error("Error fetching banners:", error);
+          toast({ title: 'Error', description: 'No se pudieron cargar los banners.', variant: 'destructive' });
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchBanners();
-  }, []);
+  }, [toast]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setNewBannerFile(e.target.files[0]);
+    } else {
+      setNewBannerFile(null);
     }
   };
 
@@ -85,22 +95,40 @@ export default function AdManagement() {
 
     setIsUploading(true);
     try {
+      // 1. Upload to Storage
       const storagePath = `adBanners/${Date.now()}_${newBannerFile.name}`;
       const storageRef = ref(storage, storagePath);
       const uploadResult = await uploadBytes(storageRef, newBannerFile);
       const imageUrl = await getDownloadURL(uploadResult.ref);
 
-      await addDoc(collection(db, 'adBanners'), {
+      // 2. Add to Firestore
+      const docRef = await addDoc(collection(db, 'adBanners'), {
         imageUrl,
         storagePath,
         alt: 'Banner publicitario',
         imageHint: 'advertisement',
         createdAt: serverTimestamp(),
       });
+      
+      const newBanner = {
+          id: docRef.id,
+          imageUrl,
+          storagePath,
+          alt: 'Banner publicitario',
+          imageHint: 'advertisement'
+      }
+
+      // 3. Update state locally for instant feedback
+      setBanners(prev => [newBanner, ...prev]);
 
       toast({ title: '¡Éxito!', description: 'El nuevo banner ha sido añadido.' });
+      
+      // 4. Reset file input
       setNewBannerFile(null);
-      fetchBanners(); // Refresh the list
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+
     } catch (error) {
       console.error('Error adding banner:', error);
       toast({ title: 'Error', description: 'No se pudo añadir el banner.', variant: 'destructive' });
@@ -109,20 +137,24 @@ export default function AdManagement() {
     }
   };
 
-  const handleDeleteBanner = async (banner: AdBanner) => {
+  const handleDeleteBanner = async (bannerToDelete: AdBanner) => {
+    // Optimistically remove from UI
+    setBanners(prevBanners => prevBanners.filter(b => b.id !== bannerToDelete.id));
+
     try {
       // Delete from Firestore
-      await deleteDoc(doc(db, 'adBanners', banner.id));
+      await deleteDoc(doc(db, 'adBanners', bannerToDelete.id));
 
       // Delete from Storage
-      const storageRef = ref(storage, banner.storagePath);
+      const storageRef = ref(storage, bannerToDelete.storagePath);
       await deleteObject(storageRef);
 
       toast({ title: 'Banner Eliminado', description: 'El banner ha sido eliminado correctamente.' });
-      fetchBanners(); // Refresh the list
     } catch (error) {
       console.error('Error deleting banner:', error);
-      toast({ title: 'Error', description: 'No se pudo eliminar el banner.', variant: 'destructive' });
+      toast({ title: 'Error', description: 'No se pudo eliminar el banner. Se restaurará la lista.', variant: 'destructive' });
+      // Rollback UI change on error
+      setBanners(prevBanners => [...prevBanners, bannerToDelete].sort((a,b) => b.id.localeCompare(a.id)));
     }
   };
 
@@ -136,10 +168,10 @@ export default function AdManagement() {
         <CardContent className="flex flex-col sm:flex-row items-center gap-4">
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="picture">Imagen del Banner (JPG)</Label>
-            <Input id="picture" type="file" accept="image/jpeg" onChange={handleFileChange} />
+            <Input id="picture" type="file" accept="image/jpeg" onChange={handleFileChange} ref={fileInputRef} />
           </div>
           <Button onClick={handleAddBanner} disabled={isUploading || !newBannerFile} className="w-full sm:w-auto mt-4 sm:mt-0">
-            {isUploading ? 'Subiendo...' : <><Upload className="mr-2" /> Subir Banner</>}
+            {isUploading ? <><Loader2 className="mr-2 animate-spin" /> Subiendo...</> : <><Upload className="mr-2" /> Subir Banner</>}
           </Button>
         </CardContent>
       </Card>
@@ -151,7 +183,9 @@ export default function AdManagement() {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <p>Cargando banners...</p>
+            <div className='flex items-center justify-center h-24'>
+                <Loader2 className="mr-2 animate-spin" /> Cargando banners...
+            </div>
           ) : banners.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {banners.map((banner) => (
