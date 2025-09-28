@@ -43,7 +43,7 @@ export function Header() {
   };
 
   const renderAuthButtons = () => {
-    if (!isClient) {
+    if (loading || !isClient) {
        return (
         <div className="flex items-center gap-3">
           <Skeleton className="h-9 w-24" />
@@ -89,7 +89,7 @@ export function Header() {
   };
 
   const renderMobileAuthContent = () => {
-    if (!isClient) {
+    if (loading || !isClient) {
       return null;
     }
 
