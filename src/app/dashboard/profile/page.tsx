@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, {useRef, useState, useEffect} from 'react';
@@ -142,6 +141,7 @@ export default function ProfilePage() {
   const [isSpecialtiesDialogOpen, setIsSpecialtiesDialogOpen] = useState(false);
   const [currentCategoryForSpecialties, setCurrentCategoryForSpecialties] = useState<number | null>(null);
   const [activePhoto, setActivePhoto] = useState<WorkPhoto | null>(null);
+  const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
 
   const { toast } = useToast();
   const avatarFileInputRef = useRef<HTMLInputElement>(null);
@@ -322,10 +322,14 @@ export default function ProfilePage() {
   }
 
   const handleAvatarClick = () => {
-      if(isEditing && avatarFileInputRef.current) {
-          avatarFileInputRef.current.click();
+    if (isEditing) {
+      if (avatarFileInputRef.current) {
+        avatarFileInputRef.current.click();
       }
-  }
+    } else {
+      setIsAvatarDialogOpen(true);
+    }
+  };
   
   const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
@@ -403,7 +407,7 @@ export default function ProfilePage() {
                 <div className="flex flex-col sm:flex-row items-start gap-6">
                   <div className="relative group">
                     <Avatar 
-                        className={`w-36 h-36 border-4 border-background shadow-md ${isEditing ? 'cursor-pointer' : ''}`}
+                        className="w-36 h-36 border-4 border-background shadow-md cursor-pointer"
                         onClick={handleAvatarClick}
                     >
                         <AvatarImage src={professional.photoUrl} alt={professional.name} />
@@ -878,6 +882,21 @@ export default function ProfilePage() {
         />
      )}
 
+    <Dialog open={isAvatarDialogOpen} onOpenChange={setIsAvatarDialogOpen}>
+        <DialogContent className="max-w-md p-2">
+            <DialogTitle className="sr-only">Foto de Perfil de {professional.name}</DialogTitle>
+            <div className="relative aspect-square">
+            <Image
+                src={professional.photoUrl}
+                alt={professional.name}
+                fill
+                className="object-contain rounded-md"
+            />
+            </div>
+        </DialogContent>
+    </Dialog>
     </>
   );
 }
+
+    
