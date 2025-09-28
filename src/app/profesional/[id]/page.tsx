@@ -32,6 +32,7 @@ import {
   Dialog,
   DialogContent,
   DialogTrigger,
+  DialogTitle,
 } from "@/components/ui/dialog"
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -181,6 +182,7 @@ export default function PublicProfilePage() {
 
   // Use state to manage professional data, so it can be updated
   const [professional, setProfessional] = useState<Professional | undefined>(initialProfessional);
+  const [activePhoto, setActivePhoto] = useState<WorkPhoto | null>(null);
   
   const handleNewReview = (newReview: Testimonial) => {
     if (professional) {
@@ -402,7 +404,7 @@ export default function PublicProfilePage() {
                             <CarouselContent>
                             {professional.workPhotos.map((photo) => (
                                 <CarouselItem key={photo.id}>
-                                <DialogTrigger asChild>
+                                <DialogTrigger asChild onClick={() => setActivePhoto(photo)}>
                                     <div className="p-1 cursor-pointer">
                                         <div className="relative aspect-video overflow-hidden rounded-lg">
                                             <Image
@@ -415,22 +417,25 @@ export default function PublicProfilePage() {
                                         </div>
                                     </div>
                                 </DialogTrigger>
-                                <DialogContent className="max-w-3xl p-2">
-                                    <div className="relative aspect-video">
-                                    <Image
-                                        src={photo.imageUrl}
-                                        alt={photo.description}
-                                        fill
-                                        className="object-contain rounded-md"
-                                    />
-                                    </div>
-                                </DialogContent>
                                 </CarouselItem>
                             ))}
                             </CarouselContent>
                             <CarouselPrevious className="-ml-2"/>
                             <CarouselNext className="-mr-2"/>
                         </Carousel>
+                        <DialogContent className="max-w-3xl p-2">
+                            <DialogTitle className="sr-only">Imagen de trabajo</DialogTitle>
+                           {activePhoto && (
+                            <div className="relative aspect-video">
+                                <Image
+                                src={activePhoto.imageUrl}
+                                alt={activePhoto.description}
+                                fill
+                                className="object-contain rounded-md"
+                                />
+                            </div>
+                           )}
+                        </DialogContent>
                       </Dialog>
                     ) : (
                       <p className="text-sm text-muted-foreground">
