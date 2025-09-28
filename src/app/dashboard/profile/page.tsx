@@ -187,38 +187,43 @@ export default function ProfilePage() {
   }
 
   const handleSave = () => {
-    if (professional) {
-        // In a real app, this would be an API call to update the DB.
-        // Here, we simulate updating our "live" data source.
-        const professionalIndex = PROFESSIONALS.findIndex(p => p.id === professional.id);
-        if (professionalIndex !== -1) {
-            // Update existing professional
-            PROFESSIONALS[professionalIndex] = { ...PROFESSIONALS[professionalIndex], ...professional };
-        } else if (professional.id === 0) {
-            // Add new professional if it's the initial one (ID 0)
-            const newProfessional = { ...professional, id: PROFESSIONALS.length + 1 };
-            PROFESSIONALS.push(newProfessional);
-            setProfessional(newProfessional); // Update local state with the new ID
-        }
+      if (professional) {
+          // This is the key change: update the central data source.
+          const professionalIndex = PROFESSIONALS.findIndex(p => p.id === professional.id);
+          if (professionalIndex !== -1) {
+              // Update existing professional
+              PROFESSIONALS[professionalIndex] = { ...PROFESSIONALS[professionalIndex], ...professional };
+          } else if (professional.id === 0) {
+              // Add new professional if it's the initial one (ID 0)
+              const newProfessional = { ...professional, id: PROFESSIONALS.length + 1, priceInfo: `${price.type}: $${price.amount}` };
+              PROFESSIONALS.push(newProfessional);
+              setProfessional(newProfessional); // Update local state with the new ID
+          } else {
+             // This handles the case where a professional is being edited for the first time
+             // and might not exist in the initial static array.
+             const newProfessional = { ...professional, priceInfo: `${price.type}: $${price.amount}` };
+             PROFESSIONALS.push(newProfessional);
+             setProfessional(newProfessional);
+          }
 
-        if (isSubscriptionActive) {
-            toast({
-                title: "Perfil Actualizado",
-                description: "Tus cambios han sido guardados. Ahora serán visibles en toda la plataforma."
-            });
-            setIsEditing(false);
-        } else {
-            // If subscription is not active, it's the first publication.
-            // Open the payment dialog to choose a plan.
-            setIsPaymentDialogOpen(true);
-        }
-    } else {
-        toast({
-            title: "Error",
-            description: "No se pudieron guardar los cambios.",
-            variant: "destructive"
-        })
-    }
+          if (isSubscriptionActive) {
+              toast({
+                  title: "Perfil Actualizado",
+                  description: "Tus cambios han sido guardados. Ahora serán visibles en toda la plataforma."
+              });
+              setIsEditing(false);
+          } else {
+              // If subscription is not active, it's the first publication.
+              // Open the payment dialog to choose a plan.
+              setIsPaymentDialogOpen(true);
+          }
+      } else {
+          toast({
+              title: "Error",
+              description: "No se pudieron guardar los cambios.",
+              variant: "destructive"
+          })
+      }
   }
   
   const handleSpecialtiesSave = (newSpecialties: string[]) => {
