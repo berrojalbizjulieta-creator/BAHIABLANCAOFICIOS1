@@ -42,6 +42,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { AD_BANNERS } from '@/lib/data';
 
 interface AdBanner {
   id: string;
@@ -68,10 +69,20 @@ export default function AdManagement() {
         const bannersData = querySnapshot.docs.map(
           (doc) => ({ id: doc.id, ...doc.data() } as AdBanner)
         );
-        setBanners(bannersData);
+        
+        if (bannersData.length > 0) {
+          setBanners(bannersData);
+        } else {
+          // Fallback to static data if firestore is empty, adding a mock storagePath
+          const staticBanners = AD_BANNERS.map(b => ({...b, id: String(b.id), storagePath: `static/${b.id}`}));
+          setBanners(staticBanners);
+        }
+
       } catch (error) {
           console.error("Error fetching banners:", error);
-          toast({ title: 'Error', description: 'No se pudieron cargar los banners.', variant: 'destructive' });
+          toast({ title: 'Error', description: 'No se pudieron cargar los banners. Mostrando datos de ejemplo.', variant: 'destructive' });
+          const staticBanners = AD_BANNERS.map(b => ({...b, id: String(b.id), storagePath: `static/${b.id}`}));
+          setBanners(staticBanners);
       } finally {
         setLoading(false);
       }
@@ -119,7 +130,7 @@ export default function AdManagement() {
       }
 
       // 3. Update state locally for instant feedback
-      setBanners(prev => [newBanner, ...prev]);
+      setBanners(prev => [newBanner, ...prev.filter(b => !b.storagePath.startsWith('static/'))]);
 
       toast({ title: '¡Éxito!', description: 'El nuevo banner ha sido añadido.' });
       
@@ -138,6 +149,13 @@ export default function AdManagement() {
   };
 
   const handleDeleteBanner = async (bannerToDelete: AdBanner) => {
+    // If it's a static fallback banner, just remove from UI
+    if (bannerToDelete.storagePath.startsWith('static/')) {
+        setBanners(prevBanners => prevBanners.filter(b => b.id !== bannerToDelete.id));
+        toast({ title: 'Banner de Ejemplo Eliminado', description: 'El banner de ejemplo ha sido eliminado de la vista.' });
+        return;
+    }
+
     // Optimistically remove from UI
     setBanners(prevBanners => prevBanners.filter(b => b.id !== bannerToDelete.id));
 
