@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import type { Professional, Schedule } from '@/lib/types';
 import { es } from 'date-fns/locale';
 
@@ -86,11 +86,13 @@ export default function CategoryPage() {
                 const bIsAvailable = isAvailableNow(b.schedule);
                 if (aIsAvailable && !bIsAvailable) return -1;
                 if (!aIsAvailable && bIsAvailable) return 1;
-                return b.avgRating - a.avgRating; // secondary sort by rating
+                // As a secondary sort, rank by rating
+                return b.avgRating - a.avgRating;
             });
             break;
         default:
-             sorted.sort((a,b) => b.avgRating - a.avgRating); // Default sort
+             // Default sort is by rating
+             sorted.sort((a,b) => b.avgRating - a.avgRating);
             break;
     }
     return sorted;
