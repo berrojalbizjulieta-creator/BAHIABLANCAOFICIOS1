@@ -44,8 +44,18 @@ const defaultSchedule: Schedule[] = [
     { day: 'Mie', open: '09:00', close: '18:00', enabled: true },
     { day: 'Jue', open: '09:00', close: '18:00', enabled: true },
     { day: 'Vie', open: '09:00', close: '18:00', enabled: true },
-    { day: 'Sab', open: '09:00', close: '13:00', enabled: true },
-]
+    { day: 'Sab', open: '09:00', close: '13:00', enabled: false },
+];
+
+const alwaysAvailableSchedule: Schedule[] = [
+    { day: 'Dom', open: '00:00', close: '23:59', enabled: true },
+    { day: 'Lun', open: '00:00', close: '23:59', enabled: true },
+    { day: 'Mar', open: '00:00', close: '23:59', enabled: true },
+    { day: 'Mie', open: '00:00', close: '23:59', enabled: true },
+    { day: 'Jue', open: '00:00', close: '23:59', enabled: true },
+    { day: 'Vie', open: '00:00', close: '23:59', enabled: true },
+    { day: 'Sab', open: '00:00', close: '23:59', enabled: true },
+];
 
 export const CATEGORIES: Category[] = [
     { id: 11, name: 'Plomería', icon: Wrench, description: 'Arreglar canillas, caños y desagües.', imageUrl: getImage('cat-plomeria-2').imageUrl, imageHint: getImage('cat-plomeria-2').imageHint },
@@ -475,7 +485,7 @@ export const PROFESSIONALS: Professional[] = [
     lastPaymentDate: subDays(new Date(), 10),
     isActive: true,
     isVerified: true,
-    schedule: defaultSchedule,
+    schedule: alwaysAvailableSchedule, // Always available for testing
     testimonials: [],
     workPhotos: [
       getImage('work-5'),
@@ -561,7 +571,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 50),
     isActive: true,
     isVerified: true,
-    schedule: defaultSchedule,
+    schedule: alwaysAvailableSchedule, // Always available for testing
     testimonials: [],
   },
   {
@@ -899,10 +909,4 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
-
-
-
-
-
-
 
