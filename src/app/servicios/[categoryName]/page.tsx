@@ -13,10 +13,39 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useEffect, useState, useMemo } from 'react';
-import type { Professional } from '@/lib/types';
+import { useEffect, useState, useMemo, useCallback } from 'react';
+import type { Professional, Schedule } from '@/lib/types';
+import { es } from 'date-fns/locale';
 
 const PAGE_SIZE = 12;
+
+type SortType = 'default' | 'rating' | 'price' | 'availability';
+
+const isAvailableNow = (schedule?: Schedule[]): boolean => {
+    if (!schedule) return false;
+
+    const now = new Date();
+    const dayOfWeek = now.getDay(); // 0 (Sun) to 6 (Sat)
+    const dayMapping = ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'];
+    const currentDayStr = dayMapping[dayOfWeek];
+    
+    const todaySchedule = schedule.find(s => s.day === currentDayStr);
+    if (!todaySchedule || !todaySchedule.enabled) {
+        return false;
+    }
+
+    const [openHour, openMinute] = todaySchedule.open.split(':').map(Number);
+    const [closeHour, closeMinute] = todaySchedule.close.split(':').map(Number);
+    
+    const openTime = new Date(now);
+    openTime.setHours(openHour, openMinute, 0, 0);
+    
+    const closeTime = new Date(now);
+    closeTime.setHours(closeHour, closeMinute, 0, 0);
+
+    return now >= openTime && now <= closeTime;
+}
+
 
 export default function CategoryPage() {
   const params = useParams();
@@ -27,6 +56,7 @@ export default function CategoryPage() {
   
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState<SortType>('default');
 
   const category = useMemo(() => CATEGORIES.find(
     (c) => c.name.toLowerCase() === categoryName.toLowerCase()
@@ -37,6 +67,36 @@ export default function CategoryPage() {
       return PROFESSIONALS.filter(p => p.categoryIds.includes(category.id));
   }, [category]);
   
+  const sortedProfessionals = useMemo(() => {
+    let sorted = [...allProfessionalsInCategory];
+    switch (sortBy) {
+        case 'rating':
+            sorted.sort((a,b) => b.avgRating - a.avgRating);
+            break;
+        case 'price':
+            sorted.sort((a,b) => {
+                const priceA = a.priceInfo ? parseFloat(a.priceInfo.replace(/[^0-9.-]+/g,"")) : Infinity;
+                const priceB = b.priceInfo ? parseFloat(b.priceInfo.replace(/[^0-9.-]+/g,"")) : Infinity;
+                return priceA - priceB;
+            });
+            break;
+        case 'availability':
+             sorted.sort((a, b) => {
+                const aIsAvailable = isAvailableNow(a.schedule);
+                const bIsAvailable = isAvailableNow(b.schedule);
+                if (aIsAvailable && !bIsAvailable) return -1;
+                if (!aIsAvailable && bIsAvailable) return 1;
+                return b.avgRating - a.avgRating; // secondary sort by rating
+            });
+            break;
+        default:
+             sorted.sort((a,b) => b.avgRating - a.avgRating); // Default sort
+            break;
+    }
+    return sorted;
+  }, [allProfessionalsInCategory, sortBy]);
+
+
    useEffect(() => {
     // Reset to first page when category changes
     setCurrentPage(1);
@@ -44,10 +104,10 @@ export default function CategoryPage() {
   }, [allProfessionalsInCategory]);
 
   // Pagination logic
-  const totalPages = Math.ceil(allProfessionalsInCategory.length / PAGE_SIZE);
+  const totalPages = Math.ceil(sortedProfessionals.length / PAGE_SIZE);
   const startIndex = (currentPage - 1) * PAGE_SIZE;
   const endIndex = startIndex + PAGE_SIZE;
-  const currentProfessionals = allProfessionalsInCategory.slice(startIndex, endIndex);
+  const currentProfessionals = sortedProfessionals.slice(startIndex, endIndex);
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
@@ -95,9 +155,9 @@ export default function CategoryPage() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem>Mejor Rankeados</DropdownMenuItem>
-            <DropdownMenuItem>Más Baratos</DropdownMenuItem>
-            <DropdownMenuItem>Disponibilidad</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setSortBy('rating')}>Mejor Rankeados</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setSortBy('price')}>Más Baratos</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setSortBy('availability')}>Disponibilidad</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

@@ -16,6 +16,13 @@ export interface WorkPhoto {
     imageHint: string;
 }
 
+export interface Schedule {
+  day: string;
+  open: string;
+  close: string;
+  enabled: boolean;
+}
+
 export interface Professional {
   id: string | number; // Can be string from firestore doc id
   name: string;
@@ -36,6 +43,7 @@ export interface Professional {
   registrationDate: Date;
   lastPaymentDate?: Date;
   isActive: boolean;
+  schedule?: Schedule[];
 }
 
 export interface Client {

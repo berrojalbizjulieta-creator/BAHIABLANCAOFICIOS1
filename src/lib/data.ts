@@ -26,7 +26,7 @@ import {
   Bug,
   Car,
 } from 'lucide-react';
-import type { Category, Professional, Banner, Client, JobRequest, CategorySpecialties } from '@/lib/types';
+import type { Category, Professional, Banner, Client, JobRequest, CategorySpecialties, Schedule } from '@/lib/types';
 import { placeholderImages } from './placeholder-images';
 import { subMonths, subDays, subHours } from 'date-fns';
 
@@ -36,6 +36,16 @@ const getImage = (id: string) =>
     imageHint: '',
     description: '',
   };
+
+const defaultSchedule: Schedule[] = [
+    { day: 'Dom', open: '00:00', close: '00:00', enabled: false },
+    { day: 'Lun', open: '09:00', close: '18:00', enabled: true },
+    { day: 'Mar', open: '09:00', close: '18:00', enabled: true },
+    { day: 'Mie', open: '09:00', close: '18:00', enabled: true },
+    { day: 'Jue', open: '09:00', close: '18:00', enabled: true },
+    { day: 'Vie', open: '09:00', close: '18:00', enabled: true },
+    { day: 'Sab', open: '09:00', close: '13:00', enabled: true },
+]
 
 export const CATEGORIES: Category[] = [
     { id: 11, name: 'Plomería', icon: Wrench, description: 'Arreglar canillas, caños y desagües.', imageUrl: getImage('cat-plomeria-2').imageUrl, imageHint: getImage('cat-plomeria-2').imageHint },
@@ -417,6 +427,7 @@ export const PROFESSIONALS: Professional[] = [
     lastPaymentDate: subMonths(new Date(), 2),
     isActive: true,
     isVerified: false,
+    schedule: defaultSchedule,
     testimonials: [
       {
         id: 11,
@@ -464,6 +475,7 @@ export const PROFESSIONALS: Professional[] = [
     lastPaymentDate: subDays(new Date(), 10),
     isActive: true,
     isVerified: true,
+    schedule: defaultSchedule,
     testimonials: [],
     workPhotos: [
       getImage('work-5'),
@@ -486,6 +498,7 @@ export const PROFESSIONALS: Professional[] = [
     lastPaymentDate: subDays(new Date(), 5),
     isActive: true,
     isVerified: false,
+    schedule: defaultSchedule,
     testimonials: [],
     workPhotos: [
         getImage('work-2'),
@@ -507,6 +520,7 @@ export const PROFESSIONALS: Professional[] = [
     lastPaymentDate: subDays(new Date(), 20),
     isActive: false,
     isVerified: true,
+    schedule: defaultSchedule,
     testimonials: [],
     workPhotos: [
         getImage('work-4'),
@@ -529,6 +543,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 45),
     isActive: true,
     isVerified: true,
+    schedule: defaultSchedule,
     testimonials: [],
   },
   {
@@ -546,6 +561,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 50),
     isActive: true,
     isVerified: true,
+    schedule: defaultSchedule,
     testimonials: [],
   },
   {
@@ -563,6 +579,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 60),
     isActive: true,
     isVerified: false,
+    schedule: defaultSchedule,
     testimonials: [],
   },
   {
@@ -580,6 +597,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 70),
     isActive: true,
     isVerified: true,
+    schedule: defaultSchedule,
     testimonials: [],
   },
   {
@@ -597,6 +615,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 80),
     isActive: true,
     isVerified: false,
+    schedule: defaultSchedule,
     testimonials: [],
   },
   {
@@ -614,6 +633,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 90),
     isActive: true,
     isVerified: true,
+    schedule: defaultSchedule,
     testimonials: [],
   },
   {
@@ -631,6 +651,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 100),
     isActive: true,
     isVerified: false,
+    schedule: defaultSchedule,
     testimonials: [],
   },
   {
@@ -648,6 +669,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 110),
     isActive: true,
     isVerified: true,
+    schedule: defaultSchedule,
     testimonials: [],
   },
   {
@@ -665,6 +687,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 120),
     isActive: true,
     isVerified: false,
+    schedule: defaultSchedule,
     testimonials: [],
   },
   {
@@ -682,6 +705,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 130),
     isActive: true,
     isVerified: true,
+    schedule: defaultSchedule,
     testimonials: [],
   },
   {
@@ -699,6 +723,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 140),
     isActive: true,
     isVerified: false,
+    schedule: defaultSchedule,
     testimonials: [],
   },
   {
@@ -716,6 +741,7 @@ export const PROFESSIONALS: Professional[] = [
     registrationDate: subDays(new Date(), 150),
     isActive: true,
     isVerified: true,
+    schedule: defaultSchedule,
     testimonials: [],
   },
   // END - Added professionals
@@ -873,6 +899,7 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
 
 

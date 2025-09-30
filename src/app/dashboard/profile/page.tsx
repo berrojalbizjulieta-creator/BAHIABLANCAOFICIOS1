@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, {useRef, useState, useEffect} from 'react';
@@ -49,7 +50,7 @@ import {Separator} from '@/components/ui/separator';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Textarea} from '@/components/ui/textarea';
-import type { Professional, WorkPhoto } from '@/lib/types';
+import type { Professional, WorkPhoto, Schedule } from '@/lib/types';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {useToast} from '@/hooks/use-toast';
 import {Switch} from '@/components/ui/switch';
@@ -142,6 +143,7 @@ export default function ProfilePage() {
   const [currentCategoryForSpecialties, setCurrentCategoryForSpecialties] = useState<number | null>(null);
   const [activePhoto, setActivePhoto] = useState<WorkPhoto | null>(null);
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
+  const [schedule, setSchedule] = useState<Schedule[]>([]);
 
   const { toast } = useToast();
   const avatarFileInputRef = useRef<HTMLInputElement>(null);
@@ -159,6 +161,7 @@ export default function ProfilePage() {
         setProfessional(existingProfile);
         setIsEditing(false); // If profile exists, start in view mode
         setLastPaymentDate(existingProfile.lastPaymentDate);
+        setSchedule(existingProfile.schedule || []);
         // Set price from existing data
         if (existingProfile.priceInfo) {
             const [typePart, amountPart] = existingProfile.priceInfo.split(': $');
@@ -175,6 +178,7 @@ export default function ProfilePage() {
             photoUrl: user.photoURL || '',
         };
         setProfessional(newProfessional);
+        setSchedule(newProfessional.schedule || []);
         setIsEditing(true); // New profile, start in editing mode
     }
   }, [user, loading]);
@@ -236,14 +240,15 @@ export default function ProfilePage() {
   };
   
   const handleScheduleChange = (day: string, field: 'open' | 'close' | 'enabled', value: string | boolean) => {
-     // This is a mock implementation. In a real app, you would update the state properly.
+      setSchedule(prev => prev.map(s => s.day === day ? { ...s, [field]: value } : s));
   }
 
   const handleSave = () => {
       if (professional) {
           const finalProfessionalData = {
               ...professional,
-              priceInfo: `${price.type}: $${price.amount}`
+              priceInfo: `${price.type}: $${price.amount}`,
+              schedule,
           };
           
           const professionalIndex = PROFESSIONALS.findIndex(p => p.id === professional.id || p.email === professional.email);
@@ -621,25 +626,24 @@ export default function ProfilePage() {
                         <h4 className="font-semibold mb-3">Horarios</h4>
                         {isEditing ? (
                             <div className="space-y-2 text-sm">
-                                {['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'].map(day => (
-                                    <div key={day} className="flex items-center justify-between gap-2">
-                                        <span className="w-8">{day}:</span>
-                                        <Input type="time" defaultValue="09:00" className="h-8 w-24"/>
+                                {schedule.map((s, i) => (
+                                    <div key={i} className="flex items-center justify-between gap-2">
+                                        <span className="w-8">{s.day}:</span>
+                                        <Input type="time" value={s.open} onChange={e => handleScheduleChange(s.day, 'open', e.target.value)} disabled={!s.enabled} className="h-8 w-24"/>
                                         <span>-</span>
-                                        <Input type="time" defaultValue="18:00" className="h-8 w-24"/>
-                                        <Switch defaultChecked={day !== 'Sab' && day !== 'Dom'}/>
+                                        <Input type="time" value={s.close} onChange={e => handleScheduleChange(s.day, 'close', e.target.value)} disabled={!s.enabled} className="h-8 w-24"/>
+                                        <Switch checked={s.enabled} onCheckedChange={value => handleScheduleChange(s.day, 'enabled', value)}/>
                                     </div>
                                 ))}
                             </div>
                         ) : (
                              <ul className="space-y-2 text-sm text-muted-foreground">
-                               <li className="flex justify-between"><span>Dom:</span> <span>Cerrado</span></li>
-                               <li className="flex justify-between"><span>Lun:</span> <span>9:00 AM - 6:00 PM</span></li>
-                               <li className="flex justify-between"><span>Mar:</span> <span>9:00 AM - 6:00 PM</span></li>
-                               <li className="flex justify-between"><span>Mie:</span> <span>9:00 AM - 6:00 PM</span></li>
-                               <li className="flex justify-between"><span>Jue:</span> <span>9:00 AM - 6:00 PM</span></li>
-                               <li className="flex justify-between"><span>Vie:</span> <span>9:00 AM - 6:00 PM</span></li>
-                               <li className="flex justify-between"><span>Sab:</span> <span>Cerrado</span></li>
+                                {schedule.map(s => (
+                                     <li key={s.day} className="flex justify-between">
+                                        <span>{s.day}:</span> 
+                                        <span>{s.enabled ? `${s.open} - ${s.close}` : 'Cerrado'}</span>
+                                    </li>
+                                ))}
                             </ul>
                         )}
                       </div>
