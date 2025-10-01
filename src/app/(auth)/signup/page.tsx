@@ -88,7 +88,6 @@ export default function SignupPage() {
 
   const handleAccountTypeChange = (newType: string) => {
     setAccountType(newType);
-    setTermsRead(false); 
     clientForm.reset();
     professionalForm.reset();
   }
@@ -166,8 +165,6 @@ export default function SignupPage() {
     } finally {
       setIsLoading(false);
     }
-    
-    activeForm.reset();
   };
 
   return (
