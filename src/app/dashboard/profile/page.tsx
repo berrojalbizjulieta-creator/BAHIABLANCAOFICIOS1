@@ -73,6 +73,11 @@ import { storage, db } from '@/lib/firebase';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { doc, setDoc, updateDoc } from 'firebase/firestore';
 
+const MAX_AVATAR_SIZE_MB = 2;
+const MAX_WORK_PHOTO_SIZE_MB = 5;
+const MAX_WORK_PHOTOS = 10;
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
 
 function StarRating({
   rating,
@@ -383,6 +388,16 @@ export default function ProfilePage() {
   const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file && professional) {
+          // Validation
+          if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+              toast({ title: "Formato no permitido", description: "Por favor, sube una imagen en formato JPG, PNG o WebP.", variant: "destructive" });
+              return;
+          }
+          if (file.size > MAX_AVATAR_SIZE_MB * 1024 * 1024) {
+              toast({ title: "Archivo muy grande", description: `La imagen no puede superar los ${MAX_AVATAR_SIZE_MB}MB.`, variant: "destructive" });
+              return;
+          }
+
           const reader = new FileReader();
           reader.onloadend = () => {
               setProfessional({...professional, photoUrl: reader.result as string});
@@ -400,10 +415,29 @@ export default function ProfilePage() {
   const handleWorkPhotoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && professional) {
+      const currentPhotoCount = professional.workPhotos?.length || 0;
+      if (files.length + currentPhotoCount > MAX_WORK_PHOTOS) {
+        toast({
+            title: `Límite de ${MAX_WORK_PHOTOS} fotos alcanzado`,
+            description: `Solo puedes tener un total de ${MAX_WORK_PHOTOS} fotos en tu galería.`,
+            variant: "destructive"
+        });
+        return;
+      }
+      
       const newPhotos: WorkPhoto[] = [];
       const filesArray = Array.from(files);
 
-      filesArray.forEach(file => {
+      for (const file of filesArray) {
+         if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+            toast({ title: "Formato no permitido", description: `El archivo '${file.name}' no es un formato de imagen válido (JPG, PNG, WebP).`, variant: "destructive" });
+            continue; // Skip this file
+        }
+        if (file.size > MAX_WORK_PHOTO_SIZE_MB * 1024 * 1024) {
+            toast({ title: "Archivo muy grande", description: `La foto '${file.name}' supera el límite de ${MAX_WORK_PHOTO_SIZE_MB}MB.`, variant: "destructive" });
+            continue; // Skip this file
+        }
+
         const reader = new FileReader();
         reader.onloadend = () => {
           newPhotos.push({
@@ -413,17 +447,19 @@ export default function ProfilePage() {
             imageHint: "professional work"
           });
 
-          // When the last file is read, update the state
-          if (newPhotos.length === filesArray.length) {
+          // When the last valid file is read, update the state
+          if (newPhotos.length === filesArray.filter(f => ALLOWED_IMAGE_TYPES.includes(f.type) && f.size <= MAX_WORK_PHOTO_SIZE_MB * 1024 * 1024).length) {
             setProfessional(prev => prev ? { ...prev, workPhotos: [...(prev.workPhotos || []), ...newPhotos] } : null);
+             if (newPhotos.length > 0) {
+                 toast({
+                    title: `${newPhotos.length} foto(s) añadida(s)`,
+                    description: "Tus nuevas fotos de trabajo ahora están en la galería."
+                })
+             }
           }
         };
         reader.readAsDataURL(file);
-      });
-        toast({
-            title: `${files.length} foto(s) añadida(s)`,
-            description: "Tus nuevas fotos de trabajo ahora están en la galería."
-        })
+      }
     }
   };
   
@@ -474,7 +510,7 @@ export default function ProfilePage() {
                         ref={avatarFileInputRef} 
                         onChange={handleAvatarFileChange}
                         className="hidden" 
-                        accept="image/*"
+                        accept={ALLOWED_IMAGE_TYPES.join(',')}
                     />
                   </div>
                   <div className="flex-1">
@@ -750,10 +786,10 @@ export default function ProfilePage() {
                <TabsContent value="photos" className="mt-6">
                 <Card className="shadow-lg">
                   <CardHeader className="flex-row items-center justify-between">
-                    <CardTitle>Galería de Trabajos</CardTitle>
+                    <CardTitle>Galería de Trabajos ({professional.workPhotos?.length || 0}/{MAX_WORK_PHOTOS})</CardTitle>
                     {isEditing && (
                       <>
-                        <Button variant="outline" onClick={handleAddWorkPhotoClick}>
+                        <Button variant="outline" onClick={handleAddWorkPhotoClick} disabled={(professional.workPhotos?.length || 0) >= MAX_WORK_PHOTOS}>
                           <PlusCircle className="mr-2" /> Añadir Foto
                         </Button>
                         <input
@@ -761,7 +797,7 @@ export default function ProfilePage() {
                           ref={workPhotoInputRef}
                           onChange={handleWorkPhotoFileChange}
                           className="hidden"
-                          accept="image/*"
+                          accept={ALLOWED_IMAGE_TYPES.join(',')}
                           multiple
                         />
                       </>

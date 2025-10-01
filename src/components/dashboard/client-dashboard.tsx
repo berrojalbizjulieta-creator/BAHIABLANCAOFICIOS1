@@ -22,6 +22,9 @@ import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { auth, db, storage } from '@/lib/firebase';
 import { Separator } from '../ui/separator';
 
+const MAX_AVATAR_SIZE_MB = 2;
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
 interface ClientDashboardProps {
   user: User;
 }
@@ -50,6 +53,16 @@ export default function ClientDashboard({ user }: ClientDashboardProps) {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validation
+      if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+        toast({ title: "Formato no permitido", description: "Por favor, sube una imagen en formato JPG, PNG o WebP.", variant: "destructive" });
+        return;
+      }
+      if (file.size > MAX_AVATAR_SIZE_MB * 1024 * 1024) {
+        toast({ title: "Archivo muy grande", description: `La imagen no puede superar los ${MAX_AVATAR_SIZE_MB}MB.`, variant: "destructive" });
+        return;
+      }
+      
       const reader = new FileReader();
       reader.onloadend = () => {
         setPhotoURL(reader.result as string); // Show preview immediately
@@ -137,7 +150,7 @@ export default function ClientDashboard({ user }: ClientDashboardProps) {
               ref={avatarFileInputRef}
               onChange={handleFileChange}
               className="hidden"
-              accept="image/*"
+              accept={ALLOWED_IMAGE_TYPES.join(',')}
             />
             
             {isEditing ? (

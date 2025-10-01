@@ -44,6 +44,9 @@ import {
 } from '@/components/ui/alert-dialog';
 import { AD_BANNERS } from '@/lib/data';
 
+const MAX_BANNER_SIZE_MB = 5;
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
 interface AdBanner {
   id: string;
   imageUrl: string;
@@ -91,10 +94,23 @@ export default function AdManagement() {
   }, [toast]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setNewBannerFile(e.target.files[0]);
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+        toast({ title: 'Formato no permitido', description: 'Por favor, sube una imagen en formato JPG, PNG o WebP.', variant: 'destructive' });
+        setNewBannerFile(null);
+        e.target.value = ""; // Reset file input
+        return;
+      }
+      if (file.size > MAX_BANNER_SIZE_MB * 1024 * 1024) {
+        toast({ title: 'Archivo muy grande', description: `La imagen no puede superar los ${MAX_BANNER_SIZE_MB}MB.`, variant: 'destructive' });
+        setNewBannerFile(null);
+        e.target.value = ""; // Reset file input
+        return;
+      }
+      setNewBannerFile(file);
     } else {
-      setNewBannerFile(null);
+        setNewBannerFile(null);
     }
   };
 
@@ -185,8 +201,8 @@ export default function AdManagement() {
         </CardHeader>
         <CardContent className="flex flex-col sm:flex-row items-center gap-4">
           <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="picture">Imagen del Banner (JPG)</Label>
-            <Input id="picture" type="file" accept="image/jpeg" onChange={handleFileChange} ref={fileInputRef} />
+            <Label htmlFor="picture">Imagen del Banner (JPG, PNG, WebP - Máx {MAX_BANNER_SIZE_MB}MB)</Label>
+            <Input id="picture" type="file" accept={ALLOWED_IMAGE_TYPES.join(',')} onChange={handleFileChange} ref={fileInputRef} />
           </div>
           <Button onClick={handleAddBanner} disabled={isUploading || !newBannerFile} className="w-full sm:w-auto mt-4 sm:mt-0">
             {isUploading ? <><Loader2 className="mr-2 animate-spin" /> Subiendo...</> : <><Upload className="mr-2" /> Subir Banner</>}
