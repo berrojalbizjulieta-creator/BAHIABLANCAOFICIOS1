@@ -82,6 +82,7 @@ export default function SignupPage() {
   const handleTermsDialogClose = (open: boolean) => {
     setIsTermsDialogOpen(open);
     if (!open) {
+      // Only set termsRead to true, don't set it to false when dialog opens.
       setTermsRead(true);
     }
   }
@@ -183,7 +184,6 @@ export default function SignupPage() {
                   setAccountType(newType)
                   clientForm.reset();
                   professionalForm.reset();
-                  setTermsRead(false); 
                 }}
               >
                 <TabsList className="grid w-full grid-cols-2">
