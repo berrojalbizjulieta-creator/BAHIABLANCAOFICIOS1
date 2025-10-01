@@ -66,7 +66,7 @@ import {
 import PaymentDialog from '@/components/professionals/payment-dialog';
 import { subMonths } from 'date-fns';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CATEGORIES, PROFESSIONALS, CATEGORY_SPECIALTIES } from '@/lib/data';
+import { CATEGORIES, PROFESSIONALS, CATEGORY_SPECIALTIES, defaultSchedule } from '@/lib/data';
 import SpecialtiesDialog from '@/components/professionals/specialties-dialog';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 
@@ -123,6 +123,7 @@ const initialProfessionalData: Professional = {
     subscriptionTier: 'standard',
     registrationDate: new Date(),
     isActive: true,
+    schedule: defaultSchedule,
 }
 
 
@@ -161,7 +162,7 @@ export default function ProfilePage() {
         setProfessional(existingProfile);
         setIsEditing(false); // If profile exists, start in view mode
         setLastPaymentDate(existingProfile.lastPaymentDate);
-        setSchedule(existingProfile.schedule || []);
+        setSchedule(existingProfile.schedule || defaultSchedule);
         // Set price from existing data
         if (existingProfile.priceInfo) {
             const [typePart, amountPart] = existingProfile.priceInfo.split(': $');
@@ -178,7 +179,7 @@ export default function ProfilePage() {
             photoUrl: user.photoURL || '',
         };
         setProfessional(newProfessional);
-        setSchedule(newProfessional.schedule || []);
+        setSchedule(newProfessional.schedule || defaultSchedule);
         setIsEditing(true); // New profile, start in editing mode
     }
   }, [user, loading]);

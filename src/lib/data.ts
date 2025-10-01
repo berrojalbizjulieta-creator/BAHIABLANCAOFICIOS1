@@ -37,7 +37,7 @@ const getImage = (id: string) =>
     description: '',
   };
 
-const defaultSchedule: Schedule[] = [
+export const defaultSchedule: Schedule[] = [
     { day: 'Dom', open: '00:00', close: '00:00', enabled: false },
     { day: 'Lun', open: '09:00', close: '18:00', enabled: true },
     { day: 'Mar', open: '09:00', close: '18:00', enabled: true },
@@ -909,4 +909,3 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
-
