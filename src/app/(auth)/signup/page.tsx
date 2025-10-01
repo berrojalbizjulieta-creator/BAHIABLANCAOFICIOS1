@@ -88,10 +88,9 @@ export default function SignupPage() {
 
   const handleAccountTypeChange = (newType: string) => {
     setAccountType(newType);
-    // Reset forms when switching tabs to ensure clean state
+    setTermsRead(false); // Reset terms read status on tab change
     clientForm.reset({ fullName: '', email: '', password: '', terms: false });
     professionalForm.reset({ fullName: '', email: '', password: '', category: '', terms: false });
-    setTermsRead(false);
   }
 
 
@@ -169,6 +168,45 @@ export default function SignupPage() {
     }
   };
 
+  const commonTermsField = (form: any) => (
+      <FormField
+          control={form.control}
+          name="terms"
+          render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-6">
+              <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    disabled={!termsRead}
+                  />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                  <FormLabel>
+                      Acepto los{' '}
+                      <Button
+                          type="button"
+                          variant="link"
+                          className="p-0 h-auto font-medium"
+                          onClick={() => setIsTermsDialogOpen(true)}
+                      >
+                          términos y condiciones
+                      </Button>
+                      .
+                  </FormLabel>
+                   { !termsRead && (
+                      <p className="text-xs text-muted-foreground">
+                          Debes leer los términos para poder aceptar.
+                      </p>
+                  )}
+                  <FormMessage />
+              </div>
+              </FormItem>
+          )}
+      />
+  );
+
+
   return (
     <>
     <div className="flex items-center justify-center min-h-[calc(100vh-10rem)] py-12">
@@ -233,6 +271,7 @@ export default function SignupPage() {
                       )}
                     />
                   </div>
+                   {commonTermsField(clientForm)}
                 </TabsContent>
                 <TabsContent value="professional" className="mt-6">
                    <div className="space-y-4">
@@ -300,43 +339,9 @@ export default function SignupPage() {
                         )}
                       />
                     </div>
+                    {commonTermsField(professionalForm)}
                 </TabsContent>
               </Tabs>
-               <FormField
-                control={activeForm.control}
-                name="terms"
-                render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-6">
-                    <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          disabled={!termsRead}
-                        />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                        <FormLabel>
-                            Acepto los{' '}
-                            <Button
-                                type="button"
-                                variant="link"
-                                className="p-0 h-auto font-medium"
-                                onClick={() => setIsTermsDialogOpen(true)}
-                            >
-                                términos y condiciones
-                            </Button>
-                            .
-                        </FormLabel>
-                         { !termsRead && (
-                            <p className="text-xs text-muted-foreground">
-                                Debes leer los términos para poder aceptar.
-                            </p>
-                        )}
-                        <FormMessage />
-                    </div>
-                    </FormItem>
-                )}
-                />
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
               <Button type="submit" className="w-full" disabled={isLoading || !activeForm.watch('terms')}>
