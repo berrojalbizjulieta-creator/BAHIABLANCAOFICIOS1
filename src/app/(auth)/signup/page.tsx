@@ -44,8 +44,8 @@ const baseSchema = {
   fullName: z.string().min(3, 'El nombre debe tener al menos 3 caracteres.'),
   email: z.string().email('Email inválido.'),
   password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres.'),
-  terms: z.boolean().refine(val => val === true, {
-    message: 'Debes aceptar los términos y condiciones para continuar.',
+  terms: z.literal(true, {
+    errorMap: () => ({ message: 'Debes aceptar los términos para continuar.' }),
   }),
 };
 
@@ -88,8 +88,10 @@ export default function SignupPage() {
 
   const handleAccountTypeChange = (newType: string) => {
     setAccountType(newType);
-    clientForm.reset();
-    professionalForm.reset();
+    // Reset forms when switching tabs to ensure clean state
+    clientForm.reset({ fullName: '', email: '', password: '', terms: false });
+    professionalForm.reset({ fullName: '', email: '', password: '', category: '', terms: false });
+    setTermsRead(false);
   }
 
 
