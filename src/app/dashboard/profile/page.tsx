@@ -69,6 +69,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CATEGORIES, PROFESSIONALS, CATEGORY_SPECIALTIES, defaultSchedule } from '@/lib/data';
 import SpecialtiesDialog from '@/components/professionals/specialties-dialog';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { storage, db } from '@/lib/firebase';
+import { ref, uploadString, getDownloadURL } from 'firebase/storage';
+import { doc, setDoc, updateDoc } from 'firebase/firestore';
 
 
 function StarRating({
@@ -134,6 +137,7 @@ export default function ProfilePage() {
   const [paymentMethods, setPaymentMethods] = useState('');
   const [price, setPrice] = useState({ type: 'Por Hora', amount: '', details: '' });
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   
   // States for subscription status
   const [lastPaymentDate, setLastPaymentDate] = useState<Date | undefined>(); 
@@ -174,6 +178,7 @@ export default function ProfilePage() {
         // If no profile, create a new one based on auth data
         const newProfessional: Professional = {
             ...initialProfessionalData,
+            id: user.uid, // Use UID for new professionals
             name: user.displayName || 'Nuevo Profesional',
             email: user.email || '',
             photoUrl: user.photoURL || '',
@@ -244,44 +249,81 @@ export default function ProfilePage() {
       setSchedule(prev => prev.map(s => s.day === day ? { ...s, [field]: value } : s));
   }
 
-  const handleSave = () => {
-      if (professional) {
+  const uploadImage = async (fileDataUrl: string, path: string): Promise<string> => {
+    if (fileDataUrl.startsWith('http')) return fileDataUrl; // Already a URL
+    const storageRef = ref(storage, path);
+    const uploadTask = await uploadString(storageRef, fileDataUrl, 'data_url');
+    return await getDownloadURL(uploadTask.ref);
+  };
+
+  const handleSave = async () => {
+      if (!professional || !user) {
+          toast({ title: "Error", description: "No se pudieron guardar los cambios, no hay datos de profesional.", variant: "destructive" });
+          return;
+      }
+      
+      setIsSaving(true);
+
+      try {
+          // --- Upload Images ---
+          let finalAvatarUrl = professional.photoUrl;
+          if (professional.photoUrl && !professional.photoUrl.startsWith('http')) {
+              finalAvatarUrl = await uploadImage(professional.photoUrl, `professional-avatars/${user.uid}`);
+          }
+
+          const uploadedWorkPhotos = await Promise.all(
+              (professional.workPhotos || []).map(async (photo) => {
+                  if (photo.imageUrl && !photo.imageUrl.startsWith('http')) {
+                      const newUrl = await uploadImage(photo.imageUrl, `professional-work-photos/${user.uid}/${Date.now()}`);
+                      return { ...photo, imageUrl: newUrl };
+                  }
+                  return photo;
+              })
+          );
+
+          // --- Prepare Data for Firestore ---
           const finalProfessionalData = {
               ...professional,
+              photoUrl: finalAvatarUrl,
+              workPhotos: uploadedWorkPhotos,
               priceInfo: `${price.type}: $${price.amount}`,
               schedule,
           };
           
-          const professionalIndex = PROFESSIONALS.findIndex(p => p.id === professional.id || p.email === professional.email);
+          // --- Save to Firestore ---
+          const professionalDocRef = doc(db, 'professionalsDetails', user.uid);
+          // Check if document exists to decide between setDoc and updateDoc
+          // For simplicity here, we use setDoc with merge to handle both creation and update
+          await setDoc(professionalDocRef, finalProfessionalData, { merge: true });
 
-          if (professionalIndex !== -1) {
-              // Update existing professional
-              PROFESSIONALS[professionalIndex] = finalProfessionalData;
-          } else {
-              // Add new professional
-              const newId = Math.max(...PROFESSIONALS.map(p => Number(p.id))) + 1;
-              const newProfessionalWithId = { ...finalProfessionalData, id: newId };
-              PROFESSIONALS.push(newProfessionalWithId);
-              setProfessional(newProfessionalWithId); // Update local state with the new ID
-          }
+          // Also update the main 'users' collection if needed
+          const userDocRef = doc(db, 'users', user.uid);
+          await updateDoc(userDocRef, {
+              name: professional.name,
+              photoUrl: finalAvatarUrl,
+          });
+
+          // --- Update Local State and UI ---
+          setProfessional(finalProfessionalData);
 
           if (isSubscriptionActive) {
               toast({
                   title: "Perfil Actualizado",
-                  description: "Tus cambios han sido guardados. Ahora serán visibles en toda la plataforma."
+                  description: "Tus cambios han sido guardados y están visibles en la plataforma."
               });
               setIsEditing(false);
           } else {
-              // If subscription is not active, it's the first publication.
-              // Open the payment dialog to choose a plan.
               setIsPaymentDialogOpen(true);
           }
-      } else {
+      } catch (error) {
+          console.error("Error saving profile:", error);
           toast({
-              title: "Error",
-              description: "No se pudieron guardar los cambios.",
+              title: "Error al Guardar",
+              description: "No se pudieron subir las imágenes o guardar los datos. Por favor, intenta de nuevo.",
               variant: "destructive"
-          })
+          });
+      } finally {
+          setIsSaving(false);
       }
   }
   
@@ -294,36 +336,37 @@ export default function ProfilePage() {
   };
 
 
-  const handlePaymentSuccess = (plan: 'standard' | 'premium') => {
-    const newLastPaymentDate = new Date();
-    setLastPaymentDate(newLastPaymentDate);
+  const handlePaymentSuccess = async (plan: 'standard' | 'premium') => {
+    if (!professional || !user) return;
 
-    if (professional) {
-        const updatedProfessional = {
-            ...professional,
+    const newLastPaymentDate = new Date();
+    
+    const updatedProfessional = {
+        ...professional,
+        subscriptionTier: plan,
+        isSubscriptionActive: true,
+        lastPaymentDate: newLastPaymentDate,
+    };
+    
+    try {
+        const professionalDocRef = doc(db, 'professionalsDetails', user.uid);
+        await updateDoc(professionalDocRef, {
             subscriptionTier: plan,
             isSubscriptionActive: true,
             lastPaymentDate: newLastPaymentDate,
-            priceInfo: `${price.type}: $${price.amount}`
-        };
-        setProfessional(updatedProfessional);
+        });
 
-        const professionalIndex = PROFESSIONALS.findIndex(p => p.id === professional.id || p.email === professional.email);
-        
-        if (professionalIndex !== -1) {
-            PROFESSIONALS[professionalIndex] = updatedProfessional;
-        } else {
-             const newId = Math.max(...PROFESSIONALS.map(p => Number(p.id))) + 1;
-             const newProfessionalWithId = { ...updatedProfessional, id: newId };
-             PROFESSIONALS.push(newProfessionalWithId);
-             setProfessional(newProfessionalWithId);
-        }
+        setProfessional(updatedProfessional);
+        setLastPaymentDate(newLastPaymentDate);
 
         toast({
             title: "¡Publicación Exitosa!",
             description: `Tu perfil ahora está visible para nuevos clientes con el plan ${plan === 'premium' ? 'Premium' : 'Estándar'}.`,
         });
         setIsEditing(false);
+    } catch(error) {
+        console.error("Error updating payment status:", error);
+        toast({ title: "Error", description: "No se pudo actualizar tu plan. Por favor, contacta a soporte.", variant: "destructive" });
     }
   }
 
@@ -521,7 +564,9 @@ export default function ProfilePage() {
                    <div className="flex gap-2">
                     {isEditing ? (
                         <>
-                            <Button onClick={handleSave}><Save className="mr-2" /> Guardar Cambios</Button>
+                            <Button onClick={handleSave} disabled={isSaving}>
+                              {isSaving ? <><Loader2 className="mr-2 animate-spin" /> Guardando...</> : <><Save className="mr-2" /> Guardar Cambios</>}
+                            </Button>
                             <Button variant="outline" onClick={() => setIsEditing(false)}><X className="mr-2"/> Cancelar</Button>
                         </>
                     ) : (
@@ -903,9 +948,3 @@ export default function ProfilePage() {
     </>
   );
 }
-
-    
-
-    
-
-    
