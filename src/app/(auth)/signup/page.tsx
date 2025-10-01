@@ -37,19 +37,23 @@ import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { Checkbox } from '@/components/ui/checkbox';
+import TermsDialog from '@/components/auth/terms-dialog';
 
-
-const clientSchema = z.object({
+const baseSchema = {
   fullName: z.string().min(3, 'El nombre debe tener al menos 3 caracteres.'),
   email: z.string().email('Email inválido.'),
   password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres.'),
-});
+  terms: z.boolean().refine(val => val === true, {
+    message: 'Debes aceptar los términos y condiciones para continuar.',
+  }),
+};
+
+const clientSchema = z.object(baseSchema);
 
 const professionalSchema = z.object({
-  fullName: z.string().min(3, 'El nombre debe tener al menos 3 caracteres.'),
-  email: z.string().email('Email inválido.'),
+  ...baseSchema,
   category: z.string().min(1, 'Debes seleccionar un oficio.'),
-  password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres.'),
 });
 
 type ClientFormValues = z.infer<typeof clientSchema>;
@@ -58,20 +62,31 @@ type ProfessionalFormValues = z.infer<typeof professionalSchema>;
 export default function SignupPage() {
   const [accountType, setAccountType] = useState('client');
   const [isLoading, setIsLoading] = useState(false);
+  const [isTermsDialogOpen, setIsTermsDialogOpen] = useState(false);
+  const [termsRead, setTermsRead] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
 
   const clientForm = useForm<ClientFormValues>({
     resolver: zodResolver(clientSchema),
-    defaultValues: { fullName: '', email: '', password: '' },
+    defaultValues: { fullName: '', email: '', password: '', terms: false },
   });
 
   const professionalForm = useForm<ProfessionalFormValues>({
     resolver: zodResolver(professionalSchema),
-    defaultValues: { fullName: '', email: '', password: '', category: '' },
+    defaultValues: { fullName: '', email: '', password: '', category: '', terms: false },
   });
 
   const activeForm = accountType === 'client' ? clientForm : professionalForm;
+
+  const handleTermsDialogClose = (open: boolean) => {
+    setIsTermsDialogOpen(open);
+    if (!open) {
+      // Mark terms as "read" only after the dialog has been opened and closed
+      setTermsRead(true);
+    }
+  }
+
 
   const onSubmit: SubmitHandler<ClientFormValues | ProfessionalFormValues> = async (data) => {
     setIsLoading(true);
@@ -150,6 +165,7 @@ export default function SignupPage() {
   };
 
   return (
+    <>
     <div className="flex items-center justify-center min-h-[calc(100vh-10rem)] py-12">
       <Form {...activeForm}>
         <form onSubmit={activeForm.handleSubmit(onSubmit)} className="w-full max-w-md">
@@ -169,6 +185,7 @@ export default function SignupPage() {
                   // Reset forms when changing tabs
                   clientForm.reset();
                   professionalForm.reset();
+                  setTermsRead(false);
                 }}
               >
                 <TabsList className="grid w-full grid-cols-2">
@@ -286,9 +303,44 @@ export default function SignupPage() {
                     </div>
                 </TabsContent>
               </Tabs>
+               <FormField
+                control={activeForm.control}
+                name="terms"
+                render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-6">
+                    <FormControl>
+                        <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        disabled={!termsRead || isLoading}
+                        />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                        <FormLabel>
+                            Acepto los{' '}
+                            <Button
+                                type="button"
+                                variant="link"
+                                className="p-0 h-auto font-medium"
+                                onClick={() => setIsTermsDialogOpen(true)}
+                            >
+                                términos y condiciones
+                            </Button>
+                            .
+                        </FormLabel>
+                         {!termsRead && (
+                            <p className="text-xs text-muted-foreground">
+                                Debes leer los términos para poder aceptar.
+                            </p>
+                        )}
+                        <FormMessage />
+                    </div>
+                    </FormItem>
+                )}
+                />
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full" disabled={isLoading || !activeForm.watch('terms')}>
                 {isLoading ? 'Creando cuenta...' : 'Crear Cuenta'}
               </Button>
               <p className="text-xs text-center text-muted-foreground">
@@ -302,5 +354,11 @@ export default function SignupPage() {
         </form>
       </Form>
     </div>
+
+    <TermsDialog 
+        isOpen={isTermsDialogOpen}
+        onOpenChange={handleTermsDialogClose}
+    />
+    </>
   );
 }
