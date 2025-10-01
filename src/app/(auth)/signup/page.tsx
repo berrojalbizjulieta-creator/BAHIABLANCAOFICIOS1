@@ -63,7 +63,6 @@ export default function SignupPage() {
   const [accountType, setAccountType] = useState('client');
   const [isLoading, setIsLoading] = useState(false);
   const [isTermsDialogOpen, setIsTermsDialogOpen] = useState(false);
-  const [termsRead, setTermsRead] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -81,16 +80,7 @@ export default function SignupPage() {
 
   const handleTermsDialogClose = (open: boolean) => {
     setIsTermsDialogOpen(open);
-    if (!open && !termsRead) {
-      setTermsRead(true);
-      // Explicitly set the value on both forms to ensure sync
-      const currentClientTerms = clientForm.getValues('terms');
-      const currentProfessionalTerms = professionalForm.getValues('terms');
-      if (currentClientTerms) clientForm.setValue('terms', true, { shouldValidate: true });
-      if (currentProfessionalTerms) professionalForm.setValue('terms', true, { shouldValidate: true });
-    }
   }
-
 
   const onSubmit: SubmitHandler<ClientFormValues | ProfessionalFormValues> = async (data) => {
     setIsLoading(true);
@@ -186,6 +176,8 @@ export default function SignupPage() {
                 className="w-full"
                 onValueChange={(newType) => {
                   setAccountType(newType);
+                  clientForm.reset();
+                  professionalForm.reset();
                 }}
               >
                 <TabsList className="grid w-full grid-cols-2">
@@ -310,9 +302,9 @@ export default function SignupPage() {
                     <FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-6">
                     <FormControl>
                         <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        disabled={!termsRead}
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          disabled={!clientForm.formState.isDirty && !professionalForm.formState.isDirty && !isTermsDialogOpen && !field.value}
                         />
                     </FormControl>
                     <div className="space-y-1 leading-none">
@@ -328,7 +320,7 @@ export default function SignupPage() {
                             </Button>
                             .
                         </FormLabel>
-                         {!termsRead && (
+                         { !field.value && !isTermsDialogOpen && (
                             <p className="text-xs text-muted-foreground">
                                 Debes leer los términos para poder aceptar.
                             </p>
