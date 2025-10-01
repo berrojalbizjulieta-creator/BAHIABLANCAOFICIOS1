@@ -63,6 +63,7 @@ export default function SignupPage() {
   const [accountType, setAccountType] = useState('client');
   const [isLoading, setIsLoading] = useState(false);
   const [isTermsDialogOpen, setIsTermsDialogOpen] = useState(false);
+  const [termsRead, setTermsRead] = useState(false); // State to track if terms have been read
   const { toast } = useToast();
   const router = useRouter();
 
@@ -80,6 +81,9 @@ export default function SignupPage() {
 
   const handleTermsDialogClose = (open: boolean) => {
     setIsTermsDialogOpen(open);
+    if (!open) {
+      setTermsRead(true);
+    }
   }
 
   const onSubmit: SubmitHandler<ClientFormValues | ProfessionalFormValues> = async (data) => {
@@ -176,6 +180,7 @@ export default function SignupPage() {
                 className="w-full"
                 onValueChange={(newType) => {
                   setAccountType(newType);
+                  setTermsRead(false);
                   clientForm.reset();
                   professionalForm.reset();
                 }}
@@ -304,7 +309,7 @@ export default function SignupPage() {
                         <Checkbox
                           checked={field.value}
                           onCheckedChange={field.onChange}
-                          disabled={!clientForm.formState.isDirty && !professionalForm.formState.isDirty && !isTermsDialogOpen && !field.value}
+                          disabled={!termsRead}
                         />
                     </FormControl>
                     <div className="space-y-1 leading-none">
@@ -320,7 +325,7 @@ export default function SignupPage() {
                             </Button>
                             .
                         </FormLabel>
-                         { !field.value && !isTermsDialogOpen && (
+                         { !termsRead && (
                             <p className="text-xs text-muted-foreground">
                                 Debes leer los términos para poder aceptar.
                             </p>
