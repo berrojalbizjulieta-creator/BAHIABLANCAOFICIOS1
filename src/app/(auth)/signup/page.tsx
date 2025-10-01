@@ -63,7 +63,7 @@ export default function SignupPage() {
   const [accountType, setAccountType] = useState('client');
   const [isLoading, setIsLoading] = useState(false);
   const [isTermsDialogOpen, setIsTermsDialogOpen] = useState(false);
-  const [termsRead, setTermsRead] = useState(false); // State to track if terms have been read
+  const [termsRead, setTermsRead] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -78,13 +78,21 @@ export default function SignupPage() {
   });
 
   const activeForm = accountType === 'client' ? clientForm : professionalForm;
-
+  
   const handleTermsDialogClose = (open: boolean) => {
     setIsTermsDialogOpen(open);
-    if (!open) {
+    if (!open) { // When dialog closes
       setTermsRead(true);
     }
   }
+
+  const handleAccountTypeChange = (newType: string) => {
+    setAccountType(newType);
+    setTermsRead(false); 
+    clientForm.reset();
+    professionalForm.reset();
+  }
+
 
   const onSubmit: SubmitHandler<ClientFormValues | ProfessionalFormValues> = async (data) => {
     setIsLoading(true);
@@ -178,12 +186,7 @@ export default function SignupPage() {
               <Tabs
                 defaultValue="client"
                 className="w-full"
-                onValueChange={(newType) => {
-                  setAccountType(newType);
-                  setTermsRead(false);
-                  clientForm.reset();
-                  professionalForm.reset();
-                }}
+                onValueChange={handleAccountTypeChange}
               >
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="client">Soy Cliente</TabsTrigger>
