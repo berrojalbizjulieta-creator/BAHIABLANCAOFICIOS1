@@ -82,7 +82,6 @@ export default function SignupPage() {
   const handleTermsDialogClose = (open: boolean) => {
     setIsTermsDialogOpen(open);
     if (!open) {
-      // Mark terms as "read" only after the dialog has been opened and closed
       setTermsRead(true);
     }
   }
@@ -182,10 +181,9 @@ export default function SignupPage() {
                 className="w-full"
                 onValueChange={(newType) => {
                   setAccountType(newType)
-                  // Reset forms when changing tabs
                   clientForm.reset();
                   professionalForm.reset();
-                  setTermsRead(false);
+                  setTermsRead(false); 
                 }}
               >
                 <TabsList className="grid w-full grid-cols-2">
@@ -312,7 +310,7 @@ export default function SignupPage() {
                         <Checkbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
-                        disabled={!termsRead || isLoading}
+                        disabled={!termsRead}
                         />
                     </FormControl>
                     <div className="space-y-1 leading-none">
