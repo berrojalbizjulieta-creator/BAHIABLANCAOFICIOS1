@@ -1,5 +1,5 @@
 // lib/auth.ts
-export const ADMIN_EMAIL = "agustinarturogiardino@gmail.com";
+export const ADMIN_EMAIL = "berrojalbizjulieta@gmail.com";
 
 export function esAdmin(userEmail?: string) {
   if (!userEmail) return false;
