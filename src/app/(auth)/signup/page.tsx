@@ -81,8 +81,13 @@ export default function SignupPage() {
 
   const handleTermsDialogClose = (open: boolean) => {
     setIsTermsDialogOpen(open);
-    if (!open) {
+    if (!open && !termsRead) {
       setTermsRead(true);
+      // Explicitly set the value on both forms to ensure sync
+      const currentClientTerms = clientForm.getValues('terms');
+      const currentProfessionalTerms = professionalForm.getValues('terms');
+      if (currentClientTerms) clientForm.setValue('terms', true, { shouldValidate: true });
+      if (currentProfessionalTerms) professionalForm.setValue('terms', true, { shouldValidate: true });
     }
   }
 
@@ -181,7 +186,6 @@ export default function SignupPage() {
                 className="w-full"
                 onValueChange={(newType) => {
                   setAccountType(newType);
-                  // No reseteamos los forms aquí para no perder el estado `terms`
                 }}
               >
                 <TabsList className="grid w-full grid-cols-2">
