@@ -15,7 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 
 export default function LoginForm() {
@@ -24,6 +24,7 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isResetMode, setIsResetMode] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,15 +70,47 @@ export default function LoginForm() {
     }
   };
 
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      toast({
+        title: 'Email requerido',
+        description: 'Por favor, ingresa tu dirección de email.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    setIsLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, email);
+      toast({
+        title: 'Correo Enviado',
+        description: 'Si tu email está registrado, recibirás un enlace para restablecer tu contraseña.',
+      });
+      setIsResetMode(false);
+    } catch (error: any) {
+       console.error("Error sending password reset email:", error);
+       // We show a generic message to avoid disclosing which emails are registered
+       toast({
+        title: 'Correo Enviado',
+        description: 'Si tu email está registrado, recibirás un enlace para restablecer tu contraseña.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-10rem)] py-12">
-      <form onSubmit={handleLogin} className="w-full max-w-sm">
+      <form onSubmit={isResetMode ? handlePasswordReset : handleLogin} className="w-full max-w-sm">
         <Card>
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-headline">
-              Iniciar Sesión
+              {isResetMode ? 'Recuperar Contraseña' : 'Iniciar Sesión'}
             </CardTitle>
-            <CardDescription>Ingresa a tu cuenta para continuar.</CardDescription>
+            <CardDescription>
+              {isResetMode ? 'Ingresa tu email para recibir un enlace de recuperación.' : 'Ingresa a tu cuenta para continuar.'}
+            </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
             <div className="grid gap-2">
@@ -91,27 +124,52 @@ export default function LoginForm() {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">Contraseña</Label>
-              <Input 
-                id="password" 
-                type="password" 
-                required 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+            {!isResetMode && (
+              <div className="grid gap-2">
+                <div className="flex items-center">
+                  <Label htmlFor="password">Contraseña</Label>
+                   <Button
+                      type="button"
+                      variant="link"
+                      className="ml-auto p-0 h-auto text-xs"
+                      onClick={() => setIsResetMode(true)}
+                    >
+                      ¿Olvidaste tu contraseña?
+                    </Button>
+                </div>
+                <Input 
+                  id="password" 
+                  type="password" 
+                  required 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+            )}
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Ingresando...' : 'Ingresar'}
+              {isLoading
+                ? isResetMode ? 'Enviando...' : 'Ingresando...'
+                : isResetMode ? 'Enviar email de recuperación' : 'Ingresar'}
             </Button>
-            <p className="text-xs text-center text-muted-foreground">
-              ¿No tienes una cuenta?{' '}
-              <Link href="/signup" className="underline hover:text-primary">
-                Regístrate
-              </Link>
-            </p>
+            {isResetMode ? (
+               <Button
+                  type="button"
+                  variant="link"
+                  className="text-xs text-center"
+                  onClick={() => setIsResetMode(false)}
+                >
+                  Volver a Iniciar Sesión
+                </Button>
+            ) : (
+              <p className="text-xs text-center text-muted-foreground">
+                ¿No tienes una cuenta?{' '}
+                <Link href="/signup" className="underline hover:text-primary">
+                  Regístrate
+                </Link>
+              </p>
+            )}
           </CardFooter>
         </Card>
       </form>
