@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import React, {useRef, useState, useEffect} from 'react';
@@ -71,7 +69,7 @@ import SpecialtiesDialog from '@/components/professionals/specialties-dialog';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { storage, db } from '@/lib/firebase';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
-import { doc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 
 const MAX_AVATAR_SIZE_MB = 2;
 const MAX_WORK_PHOTO_SIZE_MB = 5;
@@ -164,34 +162,45 @@ export default function ProfilePage() {
     if (loading) return;
     if (!user) return;
 
-    // Try to find an existing profile for the logged-in user
-    const existingProfile = PROFESSIONALS.find(p => p.email === user.email);
+    const fetchProfile = async () => {
+        const docRef = doc(db, 'professionalsDetails', user.uid);
+        const docSnap = await getDoc(docRef);
 
-    if (existingProfile) {
-        setProfessional(existingProfile);
-        setIsEditing(false); // If profile exists, start in view mode
-        setLastPaymentDate(existingProfile.lastPaymentDate);
-        setSchedule(existingProfile.schedule || defaultSchedule);
-        // Set price from existing data
-        if (existingProfile.priceInfo) {
-            const [typePart, amountPart] = existingProfile.priceInfo.split(': $');
-            const type = typePart.trim();
-            const amount = amountPart ? amountPart.split(' ')[0] : '';
-            setPrice({ type: type || 'Por Hora', amount: amount || '', details: '' }); // Simplified details for now
+        if (docSnap.exists()) {
+            const data = docSnap.data() as Professional;
+             // Ensure dates are converted correctly from Firestore Timestamps
+            if (data.lastPaymentDate && (data.lastPaymentDate as any).toDate) {
+                data.lastPaymentDate = (data.lastPaymentDate as any).toDate();
+            }
+             if (data.registrationDate && (data.registrationDate as any).toDate) {
+                data.registrationDate = (data.registrationDate as any).toDate();
+            }
+            setProfessional(data);
+            setLastPaymentDate(data.lastPaymentDate);
+            setSchedule(data.schedule || defaultSchedule);
+            if (data.priceInfo) {
+                const [typePart, amountPart] = data.priceInfo.split(': $');
+                const type = typePart?.trim();
+                const amount = amountPart ? amountPart.split(' ')[0] : '';
+                setPrice({ type: type || 'Por Hora', amount: amount || '', details: '' });
+            }
+            setIsEditing(false);
+        } else {
+            const newProfessional: Professional = {
+                ...initialProfessionalData,
+                id: user.uid,
+                name: user.displayName || 'Nuevo Profesional',
+                email: user.email || '',
+                photoUrl: user.photoURL || '',
+                registrationDate: new Date(),
+            };
+            setProfessional(newProfessional);
+            setSchedule(newProfessional.schedule || defaultSchedule);
+            setIsEditing(true);
         }
-    } else {
-        // If no profile, create a new one based on auth data
-        const newProfessional: Professional = {
-            ...initialProfessionalData,
-            id: user.uid, // Use UID for new professionals
-            name: user.displayName || 'Nuevo Profesional',
-            email: user.email || '',
-            photoUrl: user.photoURL || '',
-        };
-        setProfessional(newProfessional);
-        setSchedule(newProfessional.schedule || defaultSchedule);
-        setIsEditing(true); // New profile, start in editing mode
-    }
+    };
+
+    fetchProfile();
   }, [user, loading]);
 
 
@@ -297,11 +306,10 @@ export default function ProfilePage() {
           
           // --- Save to Firestore ---
           const professionalDocRef = doc(db, 'professionalsDetails', user.uid);
-          // Check if document exists to decide between setDoc and updateDoc
-          // For simplicity here, we use setDoc with merge to handle both creation and update
+          // Use setDoc with merge to handle both creation and update
           await setDoc(professionalDocRef, finalProfessionalData, { merge: true });
 
-          // Also update the main 'users' collection if needed
+          // Also update the main 'users' collection with name and photo
           const userDocRef = doc(db, 'users', user.uid);
           await updateDoc(userDocRef, {
               name: professional.name,
@@ -428,6 +436,7 @@ export default function ProfilePage() {
       const newPhotos: WorkPhoto[] = [];
       const filesArray = Array.from(files);
 
+      let validFilesCount = 0;
       for (const file of filesArray) {
          if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
             toast({ title: "Formato no permitido", description: `El archivo '${file.name}' no es un formato de imagen válido (JPG, PNG, WebP).`, variant: "destructive" });
@@ -437,6 +446,7 @@ export default function ProfilePage() {
             toast({ title: "Archivo muy grande", description: `La foto '${file.name}' supera el límite de ${MAX_WORK_PHOTO_SIZE_MB}MB.`, variant: "destructive" });
             continue; // Skip this file
         }
+        validFilesCount++;
 
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -448,7 +458,7 @@ export default function ProfilePage() {
           });
 
           // When the last valid file is read, update the state
-          if (newPhotos.length === filesArray.filter(f => ALLOWED_IMAGE_TYPES.includes(f.type) && f.size <= MAX_WORK_PHOTO_SIZE_MB * 1024 * 1024).length) {
+          if (newPhotos.length === validFilesCount) {
             setProfessional(prev => prev ? { ...prev, workPhotos: [...(prev.workPhotos || []), ...newPhotos] } : null);
              if (newPhotos.length > 0) {
                  toast({
