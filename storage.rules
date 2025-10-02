@@ -1,12 +1,32 @@
+
 rules_version = '2';
 
-// Learn more about Storage rules at:
-// https://firebase.google.com/docs/storage/security/start
 service firebase.storage {
   match /b/{bucket}/o {
-    // Allow read and write access to all files
-    match /{allPaths=**} {
-      allow read, write;
+
+    // Reglas para los avatares de los usuarios (clientes y profesionales)
+    // Permite que cualquier usuario autenticado lea las fotos de perfil.
+    // Solo permite que un usuario escriba (suba, actualice, borre) su propia foto de perfil.
+    match /user-avatars/{userId} {
+      allow read;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Reglas para las fotos de la galería de trabajos de los profesionales.
+    // Permite que cualquiera lea las fotos de los trabajos.
+    // Solo permite que un usuario autenticado (que debe ser un profesional) escriba en su propia carpeta de fotos.
+    // Asumimos que la lógica de la app verifica que el usuario es profesional antes de intentar subir.
+    match /professional-work-photos/{userId}/{allPaths=**} {
+      allow read;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Reglas para los banners publicitarios.
+    // Permite que cualquiera lea los banners para mostrarlos en la página.
+    // Solo permite la escritura (subir, borrar) si el usuario está autenticado y su email es el del administrador.
+    match /adBanners/{allPaths=**} {
+      allow read;
+      allow write: if request.auth != null && request.auth.token.email == 'berrojalbizjulieta@gmail.com';
     }
   }
 }
