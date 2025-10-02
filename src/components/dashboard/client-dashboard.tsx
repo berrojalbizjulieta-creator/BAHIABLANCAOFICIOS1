@@ -78,6 +78,8 @@ export default function ClientDashboard({ user }: ClientDashboardProps) {
 
       // 1. If photo has changed, upload it to Storage
       if (photoURL !== user.photoURL && photoURL) {
+        console.log('DEBUG: Valor de user antes de usarlo:', user);
+        console.log('DEBUG: user.uid antes de usarlo para Storage:', user?.uid);
         const storageRef = ref(storage, `user-avatars/${user.uid}`);
         // uploadString is used because photoURL is a data URL (base64)
         const uploadTask = await uploadString(storageRef, photoURL, 'data_url');
