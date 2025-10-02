@@ -35,7 +35,13 @@ export function Header() {
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+    if (user) {
+      console.log('--- USUARIO AUTENTICADO ---');
+      console.log('EMAIL:', user.email);
+      console.log('UID (Copia este valor):', user.uid);
+      console.log('---------------------------');
+    }
+  }, [user]);
 
   const handleLogout = async () => {
     await signOut(auth);
