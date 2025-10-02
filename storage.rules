@@ -2,29 +2,11 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Reglas para los avatares de los usuarios
-    match /user-avatars/{userId} {
-      // Cualquiera puede leer las fotos de perfil (para mostrarlas en la app)
+    match /user-avatars/{allPaths=**} {
+      // Cualquiera puede leer las fotos de perfil
       allow read;
-      // Solo el usuario autenticado y dueño del perfil puede escribir (subir/actualizar/borrar) su propia foto.
-      allow write: if request.auth != null && request.auth.uid == userId;
-    }
-
-    // Reglas para las fotos de trabajos de los profesionales
-    match /professional-work-photos/{userId}/{imageId} {
-        // Cualquiera puede leer las fotos de los trabajos
-        allow read;
-        // Solo el profesional autenticado puede subir fotos a su propia galería
-        allow write: if request.auth != null && request.auth.uid == userId;
-    }
-
-    // Reglas para los banners publicitarios
-    match /adBanners/{bannerId} {
-        // Cualquiera puede leer los banners
-        allow read;
-        // La escritura/borrado se gestionaría desde un backend con privilegios de administrador,
-        // por lo que no se permite la escritura desde el cliente.
-        allow write: if false;
+      // Solo los usuarios autenticados pueden subir/escribir archivos en esta carpeta
+      allow write: if request.auth != null;
     }
   }
 }
