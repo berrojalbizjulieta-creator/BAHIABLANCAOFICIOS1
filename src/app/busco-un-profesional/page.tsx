@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -24,13 +24,15 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { DollarSign, PlusCircle } from 'lucide-react';
+import { DollarSign, PlusCircle, Loader2 } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import Link from 'next/link';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { JOB_REQUESTS } from '@/lib/data';
 import type { JobRequest } from '@/lib/types';
 import JobRequestCard from './job-request-card';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, getDocs, query, orderBy, serverTimestamp } from 'firebase/firestore';
+
 
 const jobRequestSchema = z.object({
   title: z.string().min(10, 'El título debe tener al menos 10 caracteres.'),
@@ -44,12 +46,45 @@ type JobRequestFormValues = z.infer<typeof jobRequestSchema>;
 const ITEMS_PER_PAGE = 15;
 
 export default function JobRequestsPage() {
-  const [jobRequests, setJobRequests] = useState<JobRequest[]>(JOB_REQUESTS.filter(req => req.status === 'open').sort((a,b) => b.createdAt.getTime() - a.createdAt.getTime()));
+  const [jobRequests, setJobRequests] = useState<JobRequest[]>([]);
+  const [loadingRequests, setLoadingRequests] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
   const { toast } = useToast();
   const { user, isProfessional } = useAdminAuth();
+
+  useEffect(() => {
+    const fetchJobRequests = async () => {
+      setLoadingRequests(true);
+      try {
+        const q = query(collection(db, 'jobRequests'), orderBy('createdAt', 'desc'));
+        const querySnapshot = await getDocs(q);
+        const requestsData = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            ...data,
+            // Convert Firestore Timestamp to JS Date
+            createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
+          } as JobRequest;
+        });
+        setJobRequests(requestsData.filter(req => req.status === 'open'));
+      } catch (error) {
+        console.error("Error fetching job requests: ", error);
+        toast({
+          title: "Error",
+          description: "No se pudieron cargar los anuncios de trabajo. Intenta recargar la página.",
+          variant: "destructive"
+        });
+      } finally {
+        setLoadingRequests(false);
+      }
+    };
+    fetchJobRequests();
+  }, [toast]);
+
 
   const form = useForm<JobRequestFormValues>({
     resolver: zodResolver(jobRequestSchema),
@@ -63,27 +98,46 @@ export default function JobRequestsPage() {
 
   const onSubmit: SubmitHandler<JobRequestFormValues> = async (data) => {
     if (!user) return;
+    
+    setIsSubmitting(true);
 
-    const newRequest: JobRequest = {
-        id: Date.now(),
+    const newRequestData = {
         ...data,
-        clientId: 0, // In a real app, this would be user.uid
+        clientId: user.uid, // This is crucial for the security rules
         clientName: user.displayName || 'Cliente Anónimo',
         clientPhotoUrl: user.photoURL || '',
-        createdAt: new Date(),
-        status: 'open',
+        createdAt: serverTimestamp(), // Use server timestamp for consistency
+        status: 'open' as 'open',
         comments: [],
     };
     
-    setJobRequests(prev => [newRequest, ...prev]);
+    try {
+        const docRef = await addDoc(collection(db, "jobRequests"), newRequestData);
+        // Add to local state for immediate UI update
+        const localNewRequest = {
+            ...newRequestData,
+            id: docRef.id,
+            createdAt: new Date(), // Use local date for immediate display
+        };
+        setJobRequests(prev => [localNewRequest, ...prev]);
 
-    toast({
-      title: '¡Anuncio Publicado!',
-      description: 'Tu búsqueda ya está visible para los profesionales.',
-    });
+        toast({
+          title: '¡Anuncio Publicado!',
+          description: 'Tu búsqueda ya está visible para los profesionales.',
+        });
 
-    form.reset();
-    setIsFormVisible(false);
+        form.reset();
+        setIsFormVisible(false);
+    } catch(error) {
+        console.error("Error adding document: ", error);
+         toast({
+          title: "Error al publicar",
+          description: "No se pudo guardar tu anuncio. Revisa las reglas de seguridad o contacta a soporte.",
+          variant: "destructive"
+        });
+    } finally {
+        setIsSubmitting(false);
+    }
   };
   
   const isClient = user && !isProfessional;
@@ -194,8 +248,8 @@ export default function JobRequestsPage() {
                          <p className='text-xs text-muted-foreground'>Tu WhatsApp solo será visible para los profesionales que comenten en tu anuncio.</p>
                     </CardContent>
                     <CardFooter className='gap-4'>
-                        <Button type="submit">
-                           Publicar Anuncio
+                        <Button type="submit" disabled={isSubmitting}>
+                           {isSubmitting ? <><Loader2 className="mr-2 animate-spin"/> Publicando...</> : 'Publicar Anuncio'}
                         </Button>
                          <Button type="button" variant="ghost" onClick={() => setIsFormVisible(false)}>
                            Cancelar
@@ -226,11 +280,18 @@ export default function JobRequestsPage() {
         </Alert>
       )}
 
-      <div className="space-y-6 max-w-4xl mx-auto">
-        {currentJobRequests.map(request => (
-          <JobRequestCard key={request.id} request={request} />
-        ))}
-      </div>
+      {loadingRequests ? (
+        <div className="flex justify-center items-center h-64">
+          <Loader2 className="animate-spin h-8 w-8 text-primary" />
+        </div>
+      ) : (
+        <div className="space-y-6 max-w-4xl mx-auto">
+          {currentJobRequests.map(request => (
+            <JobRequestCard key={request.id} request={request} />
+          ))}
+        </div>
+      )}
+
 
        {totalPages > 1 && (
         <div className="mt-12 flex justify-center items-center gap-4">

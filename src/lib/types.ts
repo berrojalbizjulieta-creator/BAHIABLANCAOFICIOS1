@@ -75,12 +75,12 @@ export interface Banner {
 }
 
 export interface JobRequest {
-  id: number;
+  id: string | number;
   title: string;
   description: string;
   budget: number;
   status: 'open' | 'closed';
-  clientId: number;
+  clientId: string;
   clientName: string;
   clientPhotoUrl: string;
   createdAt: Date;
