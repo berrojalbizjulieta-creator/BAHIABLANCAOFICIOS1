@@ -5,18 +5,19 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, Check, MessageSquare, Tag, Phone } from 'lucide-react';
+import { Calendar, Check, MessageSquare, Tag, Phone, PowerOff, Loader2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useState } from 'react';
-import Link from 'next/link';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 
 interface JobRequestCardProps {
     request: JobRequest;
+    onUpdateRequest: (id: string, status: 'open' | 'closed') => void;
+    isUpdating: boolean;
 }
 
-export default function JobRequestCard({ request }: JobRequestCardProps) {
+export default function JobRequestCard({ request, onUpdateRequest, isUpdating }: JobRequestCardProps) {
     const { user, isProfessional } = useAdminAuth();
     const [showContact, setShowContact] = useState(false);
 
@@ -29,17 +30,19 @@ export default function JobRequestCard({ request }: JobRequestCardProps) {
 
     const hasComments = request.comments.length > 0;
     
-    // A professional can apply if they are logged in and it's a professional account
     const canApply = isProfessional && user;
+    const isOwner = user && user.uid === request.clientId;
 
-    // A professional should be able to see the contact info if they have applied.
-    // For now, we simulate this with the local `showContact` state.
-    // A real implementation would check if the professional has already commented or "applied".
     const handleApply = () => {
-        // In a real app, this would probably open a comment modal or save an application to the DB.
-        // For now, we'll just toggle the contact visibility directly to simulate the flow.
         setShowContact(true);
     }
+    
+    const handleFinalize = () => {
+        if (isOwner) {
+            onUpdateRequest(request.id.toString(), 'closed');
+        }
+    }
+
 
     return (
         <Card className="w-full overflow-hidden transition-shadow hover:shadow-md">
@@ -83,19 +86,27 @@ export default function JobRequestCard({ request }: JobRequestCardProps) {
                         </div>
                      )}
                      {request.status === 'open' ? (
-                        canApply ? (
-                            showContact ? (
-                                <Button asChild>
-                                    <a href={getWhatsAppLink(request.whatsapp)} target="_blank" rel="noopener noreferrer">
-                                        <Phone className="mr-2" /> Ver Contacto
-                                    </a>
+                        <>
+                            {isOwner && (
+                                 <Button onClick={handleFinalize} variant="destructive" size="sm" disabled={isUpdating}>
+                                    {isUpdating ? <Loader2 className="mr-2 animate-spin" /> : <PowerOff className="mr-2"/>} 
+                                    Finalizar
                                 </Button>
-                            ) : (
-                                <Button onClick={handleApply}>
-                                    Postularme
-                                </Button>
-                            )
-                        ) : null
+                            )}
+                            {canApply && (
+                                showContact ? (
+                                    <Button asChild>
+                                        <a href={getWhatsAppLink(request.whatsapp)} target="_blank" rel="noopener noreferrer">
+                                            <Phone className="mr-2" /> Ver Contacto
+                                        </a>
+                                    </Button>
+                                ) : (
+                                    <Button onClick={handleApply}>
+                                        Postularme
+                                    </Button>
+                                )
+                            )}
+                        </>
                      ): (
                         <Button disabled variant="outline">
                            <Check className="mr-2" />

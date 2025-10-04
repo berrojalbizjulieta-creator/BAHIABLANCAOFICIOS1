@@ -31,7 +31,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import type { JobRequest } from '@/lib/types';
 import JobRequestCard from './job-request-card';
 import { db } from '@/lib/firebase';
-import { collection, addDoc, getDocs, query, orderBy, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, updateDoc } from 'firebase/firestore';
 
 
 const jobRequestSchema = z.object({
@@ -49,6 +49,7 @@ export default function JobRequestsPage() {
   const [jobRequests, setJobRequests] = useState<JobRequest[]>([]);
   const [loadingRequests, setLoadingRequests] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -66,7 +67,6 @@ export default function JobRequestsPage() {
           return {
             id: doc.id,
             ...data,
-            // Convert Firestore Timestamp to JS Date
             createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
           } as JobRequest;
         });
@@ -103,21 +103,20 @@ export default function JobRequestsPage() {
 
     const newRequestData = {
         ...data,
-        clientId: user.uid, // This is crucial for the security rules
+        clientId: user.uid,
         clientName: user.displayName || 'Cliente Anónimo',
         clientPhotoUrl: user.photoURL || '',
-        createdAt: serverTimestamp(), // Use server timestamp for consistency
+        createdAt: serverTimestamp(),
         status: 'open' as 'open',
         comments: [],
     };
     
     try {
         const docRef = await addDoc(collection(db, "jobRequests"), newRequestData);
-        // Add to local state for immediate UI update
         const localNewRequest = {
             ...newRequestData,
             id: docRef.id,
-            createdAt: new Date(), // Use local date for immediate display
+            createdAt: new Date(),
         };
         setJobRequests(prev => [localNewRequest, ...prev]);
 
@@ -140,9 +139,31 @@ export default function JobRequestsPage() {
     }
   };
   
+  const handleUpdateRequest = async (id: string, status: 'open' | 'closed') => {
+      setIsUpdatingStatus(true);
+      const jobRef = doc(db, 'jobRequests', id);
+      try {
+          await updateDoc(jobRef, { status });
+          // Update local state to remove the card from the UI
+          setJobRequests(prev => prev.filter(req => req.id !== id));
+          toast({
+              title: 'Anuncio Finalizado',
+              description: 'Tu solicitud de trabajo ha sido marcada como finalizada.'
+          });
+      } catch (error) {
+           console.error("Error updating job request status: ", error);
+           toast({
+              title: "Error",
+              description: "No se pudo actualizar el estado del anuncio. Inténtalo de nuevo.",
+              variant: "destructive"
+           });
+      } finally {
+          setIsUpdatingStatus(false);
+      }
+  }
+
   const isClient = user && !isProfessional;
 
-  // Pagination logic
   const totalPages = Math.ceil(jobRequests.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
@@ -150,7 +171,7 @@ export default function JobRequestsPage() {
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
-    window.scrollTo(0, 0); // Scroll to top on page change
+    window.scrollTo(0, 0);
   };
 
 
@@ -287,7 +308,12 @@ export default function JobRequestsPage() {
       ) : (
         <div className="space-y-6 max-w-4xl mx-auto">
           {currentJobRequests.map(request => (
-            <JobRequestCard key={request.id} request={request} />
+            <JobRequestCard 
+                key={request.id} 
+                request={request}
+                onUpdateRequest={handleUpdateRequest}
+                isUpdating={isUpdatingStatus}
+            />
           ))}
         </div>
       )}
