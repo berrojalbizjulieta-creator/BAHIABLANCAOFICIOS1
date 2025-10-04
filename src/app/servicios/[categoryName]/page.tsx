@@ -81,7 +81,7 @@ export default function CategoryPage() {
         const q = query(
           professionalsRef,
           where('categoryIds', 'array-contains', category.id),
-          where('isSubscriptionActive', '==', true), // Only show active professionals
+          where('subscription.isSubscriptionActive', '==', true),
           where('isActive', '==', true)
         );
 
