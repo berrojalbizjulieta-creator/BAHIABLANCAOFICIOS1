@@ -3,7 +3,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { CATEGORIES, PROFESSIONALS } from '@/lib/data';
+import { CATEGORIES } from '@/lib/data';
 import ProfessionalCard from '@/components/professionals/professional-card';
 import { Button } from '@/components/ui/button';
 import { ListFilter, Loader2 } from 'lucide-react';
@@ -15,7 +15,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useEffect, useState, useMemo } from 'react';
 import type { Professional, Schedule } from '@/lib/types';
-import { es } from 'date-fns/locale';
+import { collection, query, where, getDocs, DocumentData } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 const PAGE_SIZE = 12;
 
@@ -54,21 +55,68 @@ export default function CategoryPage() {
     .replace(/\b\w/g, l => l.toUpperCase()) // Capitalize words
     .replace('Y', 'y');
   
+  const [professionals, setProfessionals] = useState<Professional[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortType>('default');
+  const [error, setError] = useState<string | null>(null);
 
   const category = useMemo(() => CATEGORIES.find(
     (c) => c.name.toLowerCase() === categoryName.toLowerCase()
   ), [categoryName]);
 
-  const allProfessionalsInCategory = useMemo(() => {
-      if (!category) return [];
-      return PROFESSIONALS.filter(p => p.categoryIds.includes(category.id));
-  }, [category]);
-  
+  useEffect(() => {
+    const fetchProfessionals = async () => {
+      if (!category) {
+        setError('Categoría no encontrada.');
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const professionalsRef = collection(db, 'professionalsDetails');
+        const q = query(
+          professionalsRef,
+          where('categoryIds', 'array-contains', category.id),
+          where('isSubscriptionActive', '==', true), // Only show active professionals
+          where('isActive', '==', true)
+        );
+
+        const querySnapshot = await getDocs(q);
+        const fetchedProfessionals = querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            // Convert Firestore Timestamps to JS Dates
+            if (data.registrationDate && data.registrationDate.toDate) {
+                data.registrationDate = data.registrationDate.toDate();
+            }
+            if (data.lastPaymentDate && data.lastPaymentDate.toDate) {
+                data.lastPaymentDate = data.lastPaymentDate.toDate();
+            }
+            return {
+              id: doc.id,
+              ...data
+            } as Professional;
+        });
+        setProfessionals(fetchedProfessionals);
+      } catch (err: any) {
+        console.error("Error al obtener profesionales:", err);
+        setError('No se pudieron cargar los profesionales. Por favor, inténtalo de nuevo.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (categoryName) {
+      fetchProfessionals();
+    }
+  }, [categoryName, category]);
+
+
   const sortedProfessionals = useMemo(() => {
-    let sorted = [...allProfessionalsInCategory];
+    let sorted = [...professionals];
     switch (sortBy) {
         case 'rating':
             sorted.sort((a,b) => b.avgRating - a.avgRating);
@@ -96,14 +144,7 @@ export default function CategoryPage() {
             break;
     }
     return sorted;
-  }, [allProfessionalsInCategory, sortBy]);
-
-
-   useEffect(() => {
-    // Reset to first page when category changes
-    setCurrentPage(1);
-    setLoading(false);
-  }, [allProfessionalsInCategory]);
+  }, [professionals, sortBy]);
 
   // Pagination logic
   const totalPages = Math.ceil(sortedProfessionals.length / PAGE_SIZE);
@@ -117,16 +158,7 @@ export default function CategoryPage() {
   };
 
 
-  if (loading && !category) {
-    return (
-      <div className="container mx-auto px-4 py-12 text-center">
-        <h1 className="text-2xl font-bold">Cargando categoría...</h1>
-        <Loader2 className="mx-auto mt-4 h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
-
-  if (!category) {
+  if (!category && !loading) {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
         <h1 className="text-2xl font-bold">Categoría no encontrada</h1>
@@ -139,41 +171,47 @@ export default function CategoryPage() {
 
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-        <div className="flex items-center gap-3 mb-4 sm:mb-0">
-          <div className="bg-primary/10 p-3 rounded-full">
-            <category.icon className="h-8 w-8 text-primary" />
+      {category && (
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+          <div className="flex items-center gap-3 mb-4 sm:mb-0">
+            <div className="bg-primary/10 p-3 rounded-full">
+              <category.icon className="h-8 w-8 text-primary" />
+            </div>
+            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">
+              {category.name}
+            </h1>
           </div>
-          <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">
-            {category.name}
-          </h1>
-        </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-              <ListFilter className="mr-2" />
-              Ordenar por
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onSelect={() => setSortBy('rating')}>Mejor Rankeados</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => setSortBy('price')}>Más Baratos</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => setSortBy('availability')}>Disponibilidad</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                <ListFilter className="mr-2" />
+                Ordenar por
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onSelect={() => setSortBy('rating')}>Mejor Rankeados</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => setSortBy('price')}>Más Baratos</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => setSortBy('availability')}>Disponibilidad</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
       
        {loading ? (
           <div className="flex items-center justify-center h-64">
             <Loader2 className="mr-2 h-8 w-8 animate-spin" />
             <span>Cargando profesionales...</span>
           </div>
+       ) : error ? (
+          <div className="flex items-center justify-center h-64 text-red-500">
+             <p>{error}</p>
+          </div>
        ) : currentProfessionals.length > 0 ? (
         <div className="space-y-6">
           {currentProfessionals.map((professional) => (
             <ProfessionalCard
-              key={professional.id}
+              key={professional.id as string}
               professional={professional}
             />
           ))}
@@ -181,7 +219,7 @@ export default function CategoryPage() {
       ) : (
         <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-lg text-center p-4">
             <p className="text-lg font-medium text-muted-foreground">
-                Aún no hay profesionales en &quot;{category.name}&quot;.
+                Aún no hay profesionales en &quot;{category?.name}&quot;.
             </p>
             <p className="text-sm text-muted-foreground mt-2">¡Sé el primero en registrarte en esta categoría!</p>
         </div>
