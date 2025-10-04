@@ -733,7 +733,7 @@ export default function ProfilePage() {
                                     type="tel" 
                                     placeholder="2914..." 
                                     className="w-48 h-8"
-                                    value={professional.phone}
+                                    value={professional.phone || ''}
                                     onChange={(e) => handleInputChange('phone', e.target.value)}
                                 /> 
                            </li>
