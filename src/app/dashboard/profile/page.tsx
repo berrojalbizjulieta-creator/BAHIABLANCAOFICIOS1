@@ -135,7 +135,8 @@ const initialProfessionalData: Professional = {
 
 export default function ProfilePage() {
   const { user, loading } = useAdminAuth();
-  const [isEditing, setIsEditing] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isFirstEdit, setIsFirstEdit] = useState(false);
   const [professional, setProfessional] = useState<Professional | null>(null);
   const [paymentMethods, setPaymentMethods] = useState('');
   const [price, setPrice] = useState({ type: 'Por Hora', amount: '', details: '' });
@@ -166,7 +167,7 @@ export default function ProfilePage() {
         const docRef = doc(db, 'professionalsDetails', user.uid);
         const docSnap = await getDoc(docRef);
 
-        if (docSnap.exists()) {
+        if (docSnap.exists() && docSnap.data().description) {
             const data = docSnap.data() as Professional;
              // Ensure dates are converted correctly from Firestore Timestamps
             if (data.lastPaymentDate && (data.lastPaymentDate as any).toDate) {
@@ -184,19 +185,23 @@ export default function ProfilePage() {
                 const amount = amountPart ? amountPart.split(' ')[0] : '';
                 setPrice({ type: type || 'Por Hora', amount: amount || '', details: '' });
             }
-            setIsEditing(false);
+            setIsEditing(false); // Profile exists and is filled, start in view mode
+            setIsFirstEdit(false);
         } else {
-            const newProfessional: Professional = {
+             const existingData = docSnap.exists() ? docSnap.data() as Professional : {};
+             const newProfessional: Professional = {
                 ...initialProfessionalData,
+                ...existingData,
                 id: user.uid,
                 name: user.displayName || 'Nuevo Profesional',
                 email: user.email || '',
                 photoUrl: user.photoURL || '',
-                registrationDate: new Date(),
+                registrationDate: (existingData.registrationDate as any)?.toDate ? (existingData.registrationDate as any).toDate() : new Date(),
             };
             setProfessional(newProfessional);
             setSchedule(newProfessional.schedule || defaultSchedule);
-            setIsEditing(true);
+            setIsEditing(true); // New or empty profile, start in edit mode
+            setIsFirstEdit(true);
         }
     };
 
@@ -271,28 +276,22 @@ export default function ProfilePage() {
   };
 
   const handleSave = async () => {
-    // Asegúrate de que 'professional' y 'user' están disponibles en el scope
-    // Por ejemplo, 'professional' es el estado del formulario y 'user' es el usuario autenticado
     if (!professional || !user) {
         toast({ title: "Error", description: "No se pudieron guardar los cambios, no hay datos de profesional.", variant: "destructive" });
         return;
     }
     
-    // Asegúrate de que 'setIsSaving' es una función de estado (useState)
     setIsSaving(true);
 
     try {
-        // --- Subir imágenes (avatar, fotos de trabajos) ---
         let finalAvatarUrl = professional.photoUrl;
         if (professional.photoUrl && !professional.photoUrl.startsWith('http')) {
-            // Asegúrate de que 'uploadImage' es una función disponible (importada o definida)
             finalAvatarUrl = await uploadImage(professional.photoUrl, `professional-avatars/${user.uid}`);
         }
 
         const uploadedWorkPhotos = await Promise.all(
             (professional.workPhotos || []).map(async (photo) => {
                 if (photo.imageUrl && !photo.imageUrl.startsWith('http')) {
-                    // Asegúrate de que 'uploadImage' es una función disponible
                     const newUrl = await uploadImage(photo.imageUrl, `professional-work-photos/${user.uid}/${Date.now()}`);
                     return { ...photo, imageUrl: newUrl };
                 }
@@ -300,56 +299,42 @@ export default function ProfilePage() {
             })
         );
 
-        // --- Preparar los datos para Firestore ---
         const finalProfessionalData = {
-            ...professional, // Mantiene todos los campos existentes de 'professional'
+            ...professional,
             photoUrl: finalAvatarUrl,
             workPhotos: uploadedWorkPhotos,
-            // Asegúrate de que 'price' y 'schedule' están disponibles en el scope (ej. estados del componente)
             priceInfo: `${price.type}: $${price.amount}`, 
             schedule,
-            
-            // --- CAMPOS POR DEFECTO / OBLIGATORIOS PARA NUEVOS PROFESIONALES ---
-            isActive: true, // Establecer el profesional como activo por defecto para mostrarse en la lista
+            isActive: true,
             subscription: {
-                // Mantener otros campos existentes en 'subscription' si los hay (ej. 'tier')
-                // Si 'professional.subscription' es undefined, se usará un objeto vacío
                 ...(professional.subscription || {}), 
-                isSubscriptionActive: true, // Establecer la suscripción como activa por defecto
+                isSubscriptionActive: professional.subscription?.isSubscriptionActive || false,
             },
-            // Asegurar que avgRating siempre tenga un valor numérico (0 por defecto si no se ha calificado)
             avgRating: professional.avgRating !== undefined ? professional.avgRating : 0, 
-            // --- FIN CAMPOS POR DEFECTO ---
         };
         
-        // --- Guardar en Firestore ---
-        // Asegúrate de que 'db' es tu instancia de Firestore (importada de '@/lib/firebase')
         const professionalDocRef = doc(db, 'professionalsDetails', user.uid);
-        // 'merge: true' es crucial para añadir/actualizar campos sin sobrescribir todo el documento
         await setDoc(professionalDocRef, finalProfessionalData, { merge: true });
 
-        // También actualizar la colección 'users' principal con nombre y foto
         const userDocRef = doc(db, 'users', user.uid);
         await updateDoc(userDocRef, {
             name: professional.name,
             photoUrl: finalAvatarUrl,
         });
 
-        // --- Actualizar Estado Local y UI ---
-        // Asegúrate de que 'setProfessional' es una función de estado (useState)
         setProfessional(finalProfessionalData);
 
-        // Asegúrate de que 'setIsEditing' y 'setIsPaymentDialogOpen' son funciones de estado
-        // Usa la propiedad actualizada del objeto final, no una variable externa 'isSubscriptionActive'
-        if (finalProfessionalData.subscription.isSubscriptionActive) {
+        if (isFirstEdit) {
+            setIsPaymentDialogOpen(true); // For first time users, go straight to payment
+            setIsFirstEdit(false); // No longer first edit
+        } else {
             toast({
                 title: "Perfil Actualizado",
-                description: "Tus cambios han sido guardados y están visibles en la plataforma."
+                description: "Tus cambios han sido guardados."
             });
-            setIsEditing(false);
-        } else {
-            setIsPaymentDialogOpen(true);
         }
+        setIsEditing(false);
+
     } catch (error) {
         console.error("Error saving profile:", error);
         toast({
@@ -639,10 +624,14 @@ export default function ProfilePage() {
                             <Button onClick={handleSave} disabled={isSaving}>
                               {isSaving ? <><Loader2 className="mr-2 animate-spin" /> Guardando...</> : <><Save className="mr-2" /> Guardar Cambios</>}
                             </Button>
-                            <Button variant="outline" onClick={() => setIsEditing(false)}><X className="mr-2"/> Cancelar</Button>
+                            {!isFirstEdit && (
+                                <Button variant="outline" onClick={() => setIsEditing(false)}><X className="mr-2"/> Cancelar</Button>
+                            )}
                         </>
                     ) : (
-                        <Button onClick={() => setIsEditing(true)}><Edit className="mr-2" /> Editar Perfil</Button>
+                        <Button onClick={() => setIsEditing(true)}>
+                            <Edit className="mr-2" /> {isFirstEdit ? 'Rellena tu Perfil' : 'Editar Perfil'}
+                        </Button>
                     )}
                     <Button variant="outline">
                         <Share2 className="mr-2 h-4 w-4" />
