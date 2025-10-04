@@ -255,7 +255,7 @@ export default function ProfilePage() {
     });
   };
 
-  const handleInputChange = (field: keyof Professional, value: string | number | boolean | string[] | Date | undefined) => {
+  const handleInputChange = (field: keyof Professional, value: string | number | boolean | string[] | Date | undefined | Professional['subscription']) => {
     setProfessional(prev => (prev ? {...prev, [field]: value} : null));
   };
   
@@ -271,74 +271,96 @@ export default function ProfilePage() {
   };
 
   const handleSave = async () => {
-      if (!professional || !user) {
-          toast({ title: "Error", description: "No se pudieron guardar los cambios, no hay datos de profesional.", variant: "destructive" });
-          return;
-      }
-      
-      setIsSaving(true);
+    // Asegúrate de que 'professional' y 'user' están disponibles en el scope
+    // Por ejemplo, 'professional' es el estado del formulario y 'user' es el usuario autenticado
+    if (!professional || !user) {
+        toast({ title: "Error", description: "No se pudieron guardar los cambios, no hay datos de profesional.", variant: "destructive" });
+        return;
+    }
+    
+    // Asegúrate de que 'setIsSaving' es una función de estado (useState)
+    setIsSaving(true);
 
-      try {
-          // --- Upload Images ---
-          let finalAvatarUrl = professional.photoUrl;
-          if (professional.photoUrl && !professional.photoUrl.startsWith('http')) {
-              finalAvatarUrl = await uploadImage(professional.photoUrl, `professional-avatars/${user.uid}`);
-          }
+    try {
+        // --- Subir imágenes (avatar, fotos de trabajos) ---
+        let finalAvatarUrl = professional.photoUrl;
+        if (professional.photoUrl && !professional.photoUrl.startsWith('http')) {
+            // Asegúrate de que 'uploadImage' es una función disponible (importada o definida)
+            finalAvatarUrl = await uploadImage(professional.photoUrl, `professional-avatars/${user.uid}`);
+        }
 
-          const uploadedWorkPhotos = await Promise.all(
-              (professional.workPhotos || []).map(async (photo) => {
-                  if (photo.imageUrl && !photo.imageUrl.startsWith('http')) {
-                      const newUrl = await uploadImage(photo.imageUrl, `professional-work-photos/${user.uid}/${Date.now()}`);
-                      return { ...photo, imageUrl: newUrl };
-                  }
-                  return photo;
-              })
-          );
+        const uploadedWorkPhotos = await Promise.all(
+            (professional.workPhotos || []).map(async (photo) => {
+                if (photo.imageUrl && !photo.imageUrl.startsWith('http')) {
+                    // Asegúrate de que 'uploadImage' es una función disponible
+                    const newUrl = await uploadImage(photo.imageUrl, `professional-work-photos/${user.uid}/${Date.now()}`);
+                    return { ...photo, imageUrl: newUrl };
+                }
+                return photo;
+            })
+        );
 
-          // --- Prepare Data for Firestore ---
-          const finalProfessionalData = {
-              ...professional,
-              photoUrl: finalAvatarUrl,
-              workPhotos: uploadedWorkPhotos,
-              priceInfo: `${price.type}: $${price.amount}`,
-              schedule,
-          };
-          
-          // --- Save to Firestore ---
-          const professionalDocRef = doc(db, 'professionalsDetails', user.uid);
-          // Use setDoc with merge to handle both creation and update
-          await setDoc(professionalDocRef, finalProfessionalData, { merge: true });
+        // --- Preparar los datos para Firestore ---
+        const finalProfessionalData = {
+            ...professional, // Mantiene todos los campos existentes de 'professional'
+            photoUrl: finalAvatarUrl,
+            workPhotos: uploadedWorkPhotos,
+            // Asegúrate de que 'price' y 'schedule' están disponibles en el scope (ej. estados del componente)
+            priceInfo: `${price.type}: $${price.amount}`, 
+            schedule,
+            
+            // --- CAMPOS POR DEFECTO / OBLIGATORIOS PARA NUEVOS PROFESIONALES ---
+            isActive: true, // Establecer el profesional como activo por defecto para mostrarse en la lista
+            subscription: {
+                // Mantener otros campos existentes en 'subscription' si los hay (ej. 'tier')
+                // Si 'professional.subscription' es undefined, se usará un objeto vacío
+                ...(professional.subscription || {}), 
+                isSubscriptionActive: true, // Establecer la suscripción como activa por defecto
+            },
+            // Asegurar que avgRating siempre tenga un valor numérico (0 por defecto si no se ha calificado)
+            avgRating: professional.avgRating !== undefined ? professional.avgRating : 0, 
+            // --- FIN CAMPOS POR DEFECTO ---
+        };
+        
+        // --- Guardar en Firestore ---
+        // Asegúrate de que 'db' es tu instancia de Firestore (importada de '@/lib/firebase')
+        const professionalDocRef = doc(db, 'professionalsDetails', user.uid);
+        // 'merge: true' es crucial para añadir/actualizar campos sin sobrescribir todo el documento
+        await setDoc(professionalDocRef, finalProfessionalData, { merge: true });
 
-          // Also update the main 'users' collection with name and photo
-          const userDocRef = doc(db, 'users', user.uid);
-          await updateDoc(userDocRef, {
-              name: professional.name,
-              photoUrl: finalAvatarUrl,
-          });
+        // También actualizar la colección 'users' principal con nombre y foto
+        const userDocRef = doc(db, 'users', user.uid);
+        await updateDoc(userDocRef, {
+            name: professional.name,
+            photoUrl: finalAvatarUrl,
+        });
 
-          // --- Update Local State and UI ---
-          setProfessional(finalProfessionalData);
+        // --- Actualizar Estado Local y UI ---
+        // Asegúrate de que 'setProfessional' es una función de estado (useState)
+        setProfessional(finalProfessionalData);
 
-          if (isSubscriptionActive) {
-              toast({
-                  title: "Perfil Actualizado",
-                  description: "Tus cambios han sido guardados y están visibles en la plataforma."
-              });
-              setIsEditing(false);
-          } else {
-              setIsPaymentDialogOpen(true);
-          }
-      } catch (error) {
-          console.error("Error saving profile:", error);
-          toast({
-              title: "Error al Guardar",
-              description: "No se pudieron subir las imágenes o guardar los datos. Por favor, intenta de nuevo.",
-              variant: "destructive"
-          });
-      } finally {
-          setIsSaving(false);
-      }
-  }
+        // Asegúrate de que 'setIsEditing' y 'setIsPaymentDialogOpen' son funciones de estado
+        // Usa la propiedad actualizada del objeto final, no una variable externa 'isSubscriptionActive'
+        if (finalProfessionalData.subscription.isSubscriptionActive) {
+            toast({
+                title: "Perfil Actualizado",
+                description: "Tus cambios han sido guardados y están visibles en la plataforma."
+            });
+            setIsEditing(false);
+        } else {
+            setIsPaymentDialogOpen(true);
+        }
+    } catch (error) {
+        console.error("Error saving profile:", error);
+        toast({
+            title: "Error al Guardar",
+            description: "No se pudieron subir las imágenes o guardar los datos. Por favor, intenta de nuevo.",
+            variant: "destructive"
+        });
+    } finally {
+        setIsSaving(false);
+    }
+}
   
   const handleSpecialtiesSave = (newSpecialties: string[]) => {
     // Logic to merge new specialties with existing ones, avoiding duplicates
@@ -354,10 +376,13 @@ export default function ProfilePage() {
 
     const newLastPaymentDate = new Date();
     
-    const updatedProfessional = {
+    const updatedProfessionalData = {
         ...professional,
         subscriptionTier: plan,
-        isSubscriptionActive: true,
+        subscription: {
+            ...professional.subscription,
+            isSubscriptionActive: true,
+        },
         lastPaymentDate: newLastPaymentDate,
     };
     
@@ -365,12 +390,13 @@ export default function ProfilePage() {
         const professionalDocRef = doc(db, 'professionalsDetails', user.uid);
         await updateDoc(professionalDocRef, {
             subscriptionTier: plan,
-            isSubscriptionActive: true,
+            'subscription.isSubscriptionActive': true,
             lastPaymentDate: newLastPaymentDate,
         });
 
-        setProfessional(updatedProfessional);
+        setProfessional(updatedProfessionalData);
         setLastPaymentDate(newLastPaymentDate);
+        setIsSubscriptionActive(true);
 
         toast({
             title: "¡Publicación Exitosa!",
@@ -994,5 +1020,3 @@ export default function ProfilePage() {
     </>
   );
 }
-
-    

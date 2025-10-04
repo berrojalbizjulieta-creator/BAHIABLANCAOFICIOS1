@@ -23,6 +23,14 @@ export interface Schedule {
   enabled: boolean;
 }
 
+export interface ProfessionalSubscription {
+    tier?: 'standard' | 'premium';
+    isSubscriptionActive?: boolean;
+    lastPaymentDate?: Date;
+    nextPaymentDate?: Date;
+}
+
+
 export interface Professional {
   id: string | number; // Can be string from firestore doc id
   name: string;
@@ -38,8 +46,9 @@ export interface Professional {
   workPhotos?: WorkPhoto[];
   isVerified: boolean;
   priceInfo?: string;
-  isSubscriptionActive?: boolean;
-  subscriptionTier?: 'standard' | 'premium';
+  subscription?: ProfessionalSubscription;
+  subscriptionTier?: 'standard' | 'premium'; // Legacy, prefer subscription.tier
+  isSubscriptionActive?: boolean; // Legacy, prefer subscription.isSubscriptionActive
   registrationDate: Date;
   lastPaymentDate?: Date;
   isActive: boolean;
