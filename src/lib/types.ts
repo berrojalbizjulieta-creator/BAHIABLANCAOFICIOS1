@@ -32,7 +32,7 @@ export interface ProfessionalSubscription {
 
 
 export interface Professional {
-  id: string | number; // Can be string from firestore doc id
+  id: string; // <--- MODIFICADO: Cambiado de 'string | number' a solo 'string' para user.uid
   name: string;
   description?: string;
   phone?: string;
@@ -42,7 +42,7 @@ export interface Professional {
   specialties: string[];
   avgRating: number;
   categoryIds: number[];
-  testimonials: Testimonial[];
+  // testimonials: Testimonial[]; // <--- ¡ELIMINADO! Las reseñas ahora van en su propia colección.
   workPhotos?: WorkPhoto[];
   isVerified: boolean;
   priceInfo?: string;
@@ -53,10 +53,13 @@ export interface Professional {
   lastPaymentDate?: Date;
   isActive: boolean;
   schedule?: Schedule[];
+  // --- ¡CAMPOS NUEVOS AÑADIDOS! ---
+  totalReviews: number; // <--- NUEVO: Para el conteo de reseñas
+  dayAvailability: { [key: string]: boolean }; // <--- NUEVO: Para la disponibilidad por días de la semana
 }
 
 export interface Client {
-  id: number;
+  id: number; // Podrías considerar cambiar esto a 'string' si usas user.uid para clientes también
   name: string;
   email: string;
   photoUrl: string;

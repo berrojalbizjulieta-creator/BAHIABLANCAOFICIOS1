@@ -51,7 +51,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 
 // IMPORTACIONES DE FIRESTORE
-import { doc, getDoc, DocumentData } from 'firebase/firestore';
+import { doc, getDoc, collection, addDoc, serverTimestamp, DocumentData } from 'firebase/firestore';
 import { db } from '@/lib/firebase'; // Asegúrate de que esta ruta sea correcta para tu instancia de db
 
 // --- Funciones auxiliares (mantener sin cambios) ---
@@ -85,18 +85,17 @@ function StarRatingDisplay({
 }
 
 interface ReviewFormProps {
-  onReviewSubmit: (newReview: Testimonial) => void;
-  clientName?: string;
-  clientPhotoUrl?: string;
+  onReviewSubmit: (rating: number, text: string) => Promise<void>;
+  isSubmitting: boolean;
 }
 
-function ReviewForm({ onReviewSubmit, clientName = "Cliente Anónimo", clientPhotoUrl = "" }: ReviewFormProps) {
+function ReviewForm({ onReviewSubmit, isSubmitting }: ReviewFormProps) {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [reviewText, setReviewText] = useState('');
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (rating === 0 || !reviewText) {
       toast({
@@ -107,22 +106,9 @@ function ReviewForm({ onReviewSubmit, clientName = "Cliente Anónimo", clientPho
       return;
     }
 
-    const newReview: Testimonial = {
-      id: Date.now(), // Considera usar un ID más robusto, como UUID o un ID de Firestore
-      clientName: clientName,
-      clientPhotoUrl: clientPhotoUrl,
-      clientPhotoHint: "client photo",
-      rating: rating,
-      text: reviewText,
-    };
-    
-    onReviewSubmit(newReview);
+    await onReviewSubmit(rating, reviewText);
 
-    toast({
-      title: '¡Reseña Enviada!',
-      description: 'Gracias por compartir tu opinión.',
-    });
-
+    // Reset form after submission
     setRating(0);
     setHover(0);
     setReviewText('');
@@ -148,6 +134,7 @@ function ReviewForm({ onReviewSubmit, clientName = "Cliente Anónimo", clientPho
                     onClick={() => setRating(starValue)}
                     onMouseEnter={() => setHover(starValue)}
                     onMouseLeave={() => setHover(rating)}
+                    disabled={isSubmitting}
                   >
                     <Star
                       className={`w-7 h-7 transition-colors ${
@@ -166,10 +153,13 @@ function ReviewForm({ onReviewSubmit, clientName = "Cliente Anónimo", clientPho
             value={reviewText}
             onChange={e => setReviewText(e.target.value)}
             rows={4}
+            disabled={isSubmitting}
           />
         </CardContent>
         <CardFooter>
-          <Button type="submit">Publicar Reseña</Button>
+          <Button type="submit" disabled={isSubmitting}>
+             {isSubmitting ? <><Loader2 className='mr-2 animate-spin' /> Enviando...</> : 'Publicar Reseña'}
+          </Button>
         </CardFooter>
       </form>
     </Card>
@@ -180,16 +170,17 @@ function ReviewForm({ onReviewSubmit, clientName = "Cliente Anónimo", clientPho
 
 export default function PublicProfilePage() {
   const params = useParams();
-  const { user, loading: userLoading, isProfessional } = useAdminAuth(); // Cambiado 'loading' a 'userLoading' para evitar conflicto
-  const professionalId = params.id as string; // El ID del URL siempre será string
+  const { user, loading: userLoading, isProfessional } = useAdminAuth();
+  const professionalId = params.id as string;
 
-  const [professional, setProfessional] = useState<Professional | undefined>(undefined); // Estado para el profesional
-  const [loading, setLoading] = useState<boolean>(true); // Estado de carga
-  const [error, setError] = useState<string | null>(null); // Estado de error
-  const [professionalFound, setProfessionalFound] = useState<boolean>(false); // Para saber si el profesional existe
+  const [professional, setProfessional] = useState<Professional | undefined>(undefined);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [professionalFound, setProfessionalFound] = useState<boolean>(false);
   const [activePhoto, setActivePhoto] = useState<WorkPhoto | null>(null);
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const { toast } = useToast();
 
-  // useEffect para cargar el profesional de Firestore
   useEffect(() => {
     const fetchProfessional = async () => {
       if (!professionalId) {
@@ -200,23 +191,20 @@ export default function PublicProfilePage() {
 
       setLoading(true);
       setError(null);
-      setProfessionalFound(false); // Resetear antes de cada búsqueda
 
       try {
         const docRef = doc(db, 'professionalsDetails', professionalId);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          const data = docSnap.data() as DocumentData; // Obtener los datos
+          const data = docSnap.data() as DocumentData;
 
-          // Convertir Timestamps de Firestore a JS Dates si existen
           if (data.registrationDate && data.registrationDate.toDate) {
               data.registrationDate = data.registrationDate.toDate();
           }
           if (data.lastPaymentDate && data.lastPaymentDate.toDate) {
               data.lastPaymentDate = data.lastPaymentDate.toDate();
           }
-          // Y para los anidados si es necesario, como en subscription
           if (data.subscription?.lastPaymentDate && data.subscription.lastPaymentDate.toDate) {
               data.subscription.lastPaymentDate = data.subscription.lastPaymentDate.toDate();
           }
@@ -224,17 +212,15 @@ export default function PublicProfilePage() {
               data.subscription.nextPaymentDate = data.subscription.nextPaymentDate.toDate();
           }
 
-          // Asegurarse de que `phone` sea una cadena vacía si es null/undefined para los inputs
           const finalProfessionalData: Professional = {
             id: docSnap.id,
             ...data,
-            phone: data.phone || '', // Esto ayudará a prevenir la advertencia de input descontrolado
+            phone: data.phone || '',
           };
 
           setProfessional(finalProfessionalData);
           setProfessionalFound(true);
         } else {
-          // El documento no existe
           setProfessional(undefined);
           setProfessionalFound(false);
         }
@@ -249,30 +235,46 @@ export default function PublicProfilePage() {
     };
 
     fetchProfessional();
-  }, [professionalId]); // Dependencia: re-ejecutar cuando cambia el ID del profesional en la URL
+  }, [professionalId]);
   
-  // --- Lógica para manejar nuevas reseñas (mantener si planeas guardar en Firestore después) ---
-  const handleNewReview = (newReview: Testimonial) => {
-    if (professional) {
-      const updatedTestimonials = [newReview, ...(professional.testimonials || [])];
-      
-      // Calculate new average rating
-      const totalRating = updatedTestimonials.reduce((sum, t) => sum + t.rating, 0);
-      const newAvgRating = totalRating / updatedTestimonials.length;
+  const handleNewReview = async (rating: number, comment: string) => {
+    if (!user || !professional) {
+      toast({ title: 'Error', description: 'Debes iniciar sesión para dejar una reseña.', variant: 'destructive' });
+      return;
+    }
 
-      const updatedProfessional = {
-        ...professional,
-        testimonials: updatedTestimonials,
-        avgRating: newAvgRating,
-      };
-      
-      setProfessional(updatedProfessional);
-      // ! Aquí deberías añadir la lógica para guardar 'updatedProfessional' en Firestore
+    setIsSubmittingReview(true);
+    
+    try {
+        await addDoc(collection(db, 'reviews'), {
+            professionalId: professional.id,
+            rating: rating,
+            comment: comment,
+            userId: user.uid,
+            clientName: user.displayName || 'Anónimo',
+            clientPhotoUrl: user.photoURL || '',
+            createdAt: serverTimestamp() 
+        });
+
+        toast({
+            title: '¡Reseña Enviada!',
+            description: 'Gracias por tu opinión. Tu reseña ayudará a la comunidad.',
+        });
+        
+    } catch (error) {
+        console.error('Error al enviar la reseña:', error);
+        toast({
+            title: 'Error',
+            description: 'No se pudo guardar tu reseña. Inténtalo de nuevo.',
+            variant: 'destructive',
+        });
+    } finally {
+        setIsSubmittingReview(false);
     }
   };
 
-  // --- Mensajes de estado (Carga, No encontrado, Error) ---
-  if (loading || userLoading) { // userLoading es del useAdminAuth
+
+  if (loading || userLoading) {
     return (
       <div className="container py-12 text-center flex justify-center items-center h-64">
         <Loader2 className="mr-2 h-8 w-8 animate-spin" />
@@ -293,7 +295,6 @@ export default function PublicProfilePage() {
     return <div className="container py-12 text-center">Profesional no encontrado.</div>;
   }
   
-  // --- Resto del componente de renderizado (mantener sin cambios) ---
   const getWhatsAppLink = (phone?: string, categoryName?: string) => {
     if (!phone) return '#';
     const cleanedPhone = phone.replace(/[^0-9]/g, '');
@@ -308,7 +309,6 @@ export default function PublicProfilePage() {
         <div className="container mx-auto px-4 py-12 md:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
-              {/* Header section */}
               <Card className="overflow-hidden shadow-lg">
                 <CardContent className="p-6">
                   <div className="flex flex-col sm:flex-row items-start gap-6">
@@ -326,7 +326,7 @@ export default function PublicProfilePage() {
                         ) : (
                           <Shield className="w-7 h-7 text-muted-foreground" />
                         )}
-                        {professional.subscription?.tier === 'premium' && ( // Acceder al tier a través del objeto subscription
+                        {professional.subscription?.tier === 'premium' && (
                           <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">
                             <PremiumIcon className="w-4 h-4 mr-1 text-purple-600" />
                             Premium
@@ -341,10 +341,10 @@ export default function PublicProfilePage() {
                           })}
                       </div>
                       <div className="mt-2">
-                        {professional.testimonials && professional.testimonials.length > 0 ? ( // Añadir verificación professional.testimonials
+                        {professional.totalReviews > 0 ? (
                           <StarRatingDisplay
                             rating={professional.avgRating}
-                            totalReviews={professional.testimonials.length}
+                            totalReviews={professional.totalReviews}
                           />
                         ) : (
                           <p className="text-sm text-muted-foreground">
@@ -360,7 +360,6 @@ export default function PublicProfilePage() {
                     </div>
                     <div className="flex flex-col sm:flex-row gap-2">
                       <Button asChild>
-                         {/* Asegurarse de que professional.phone existe */}
                          <a href={getWhatsAppLink(professional.phone, CATEGORIES.find(c => c.id === professional.categoryIds[0])?.name)} target="_blank" rel="noopener noreferrer">
                             <Phone className="mr-2" /> Whatsapp
                         </a>
@@ -374,7 +373,6 @@ export default function PublicProfilePage() {
                 </CardContent>
               </Card>
 
-              {/* About and Details */}
                <Card className="shadow-lg">
                   <CardHeader>
                     <CardTitle>Sobre Mí</CardTitle>
@@ -392,19 +390,15 @@ export default function PublicProfilePage() {
                         <ul className="space-y-3 text-sm">
                            <li className="flex items-center gap-3"><Trophy className="w-4 h-4 text-primary" /> <span>Top Pro actual</span></li>
                            <li className="flex items-center gap-3"><Briefcase className="w-4 h-4 text-primary" /> <span>Contratado 0 veces</span></li>
-                           {/* Considera si professional.location existe */}
                            <li className="flex items-center gap-3"><MapPin className="w-4 h-4 text-primary" /> <span>Sirve a Bahía Blanca</span></li>
                            <li className="flex items-center gap-3"><CheckCircle className="w-4 h-4 text-primary" /> <span>Antecedentes no verificados</span></li>
-                           {/* Asegurarse de que professional.employees exista y sea numérico */}
                            <li className="flex items-center gap-3"><Users className="w-4 h-4 text-primary" /> <span>{(professional as any).employees || 0} empleados</span></li> 
-                           {/* Asegurarse de que professional.yearsInBusiness exista y sea numérico */}
                            <li className="flex items-center gap-3"><Clock className="w-4 h-4 text-primary" /> <span>{(professional as any).yearsInBusiness || 0} años en el negocio</span></li>
                         </ul>
                       </div>
                       <div>
                         <h4 className="font-semibold mb-3">Horarios</h4>
                          <ul className="space-y-2 text-sm text-muted-foreground">
-                           {/* Iterar sobre professional.schedule si está disponible */}
                            {professional.schedule && professional.schedule.length > 0 ? (
                                 professional.schedule.map((s, index) => (
                                     <li key={index} className="flex justify-between">
@@ -421,65 +415,30 @@ export default function PublicProfilePage() {
                   </CardContent>
                 </Card>
 
-              {/* Reviews */}
                  <Card className="shadow-lg">
                   <CardHeader>
                     <CardTitle>
-                      Reseñas de Clientes ({professional.testimonials ? professional.testimonials.length : 0})
+                      Reseñas de Clientes ({professional.totalReviews || 0})
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    {professional.testimonials && professional.testimonials.length > 0 ? (
-                        professional.testimonials.map((t, index) => ( // Añadir 'index' como key temporal si no hay otro ID único
-                        <div key={t.id || index} className="flex items-start gap-4">
-                            <Avatar>
-                            <AvatarImage
-                                src={t.clientPhotoUrl}
-                                alt={t.clientName}
-                            />
-                            <AvatarFallback>
-                                {t.clientName.charAt(0)}
-                            </AvatarFallback>
-                            </Avatar>
-                            <div>
-                            <div className="flex items-center gap-2">
-                                <h5 className="font-semibold">{t.clientName}</h5>
-                            </div>
-                            <div className="flex mt-1">
-                                {[...Array(5)].map((_, i) => (
-                                    <Star
-                                    key={i}
-                                    className={`w-4 h-4 ${
-                                        i < t.rating
-                                        ? 'text-yellow-400 fill-yellow-400'
-                                        : 'text-gray-300'
-                                    }`}
-                                    />
-                                ))}
-                                </div>
-                            <p className="text-sm text-muted-foreground italic mt-2">
-                                &quot;{t.text}&quot;
-                            </p>
-                            </div>
-                        </div>
-                        ))
+                    {/* Aca va la logica para mostrar las reseñas desde la coleccion 'reviews' */}
+                    {professional.totalReviews > 0 ? (
+                      <p className="text-muted-foreground">Aquí se mostrarán las reseñas.</p>
                     ) : (
-                        <p className="text-muted-foreground">Aún no hay reseñas. ¡Sé el primero en dejar una!</p>
+                      <p className="text-muted-foreground">Aún no hay reseñas. ¡Sé el primero en dejar una!</p>
                     )}
                   </CardContent>
                 </Card>
              
-              {/* Review Form for clients */}
-              {!userLoading && user && !isProfessional && ( // Usar userLoading
+              {!userLoading && user && !isProfessional && (
                 <ReviewForm 
                     onReviewSubmit={handleNewReview} 
-                    clientName={user.displayName || user.email || 'Cliente'}
-                    clientPhotoUrl={user.photoURL || ''}
+                    isSubmitting={isSubmittingReview}
                 />
               )}
             </div>
 
-            {/* Right Sidebar */}
             <div className="space-y-8">
                 <Card>
                   <CardHeader>

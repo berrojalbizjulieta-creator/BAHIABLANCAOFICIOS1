@@ -48,7 +48,7 @@ import {Separator} from '@/components/ui/separator';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Textarea} from '@/components/ui/textarea';
-import type { Professional, WorkPhoto, Schedule } from '@/lib/types';
+import type { Professional, WorkPhoto, Schedule } from '@/lib/types'; // ¡ATENCIÓN: Tendrás que modificar la interfaz Professional en este archivo!
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {useToast} from '@/hooks/use-toast';
 import {Switch} from '@/components/ui/switch';
@@ -99,8 +99,9 @@ function StarRating({
         ))}
       </div>
       <span className="font-bold text-lg">{rating.toFixed(1)}</span>
+      {/* // CAMBIO AQUÍ: Ahora usamos totalReviews directamente del profesional */}
       <span className="text-sm text-muted-foreground">
-        ({totalReviews} reviews)
+        ({totalReviews} reseñas)
       </span>
     </div>
   );
@@ -112,8 +113,9 @@ const getImage = (id: string) =>
     imageHint: '',
   };
 
+// === INICIO DE MODIFICACIÓN ===
 const initialProfessionalData: Professional = {
-    id: 0,
+    id: '', // Cambiamos de '0' a '' para que sea compatible con user.uid (string)
     name: "Nombre del Profesional",
     description: "",
     phone: "",
@@ -123,14 +125,26 @@ const initialProfessionalData: Professional = {
     specialties: [],
     avgRating: 0,
     categoryIds: [],
-    testimonials: [],
+    // testimonials: [], // <--- ¡ELIMINAMOS ESTA LÍNEA! Las reseñas irán en su propia colección.
     workPhotos: placeholderImages.filter(p => p.id.startsWith('work-')),
     isVerified: false,
     subscriptionTier: 'standard',
     registrationDate: new Date(),
     isActive: true,
     schedule: defaultSchedule,
-}
+    // --- ¡NUEVOS CAMPOS AÑADIDOS! ---
+    totalReviews: 0,        // Inicializamos en 0
+    dayAvailability: {      // Inicializamos con todos los días a 'false'
+        "Dom": false,
+        "Lun": false,
+        "Mar": false,
+        "Mie": false,
+        "Jue": false,
+        "Vie": false,
+        "Sab": false
+    }
+};
+// === FIN DE MODIFICACIÓN ===
 
 
 export default function ProfilePage() {
@@ -188,16 +202,22 @@ export default function ProfilePage() {
             setIsEditing(false); // Profile exists and is filled, start in view mode
             setIsFirstEdit(false);
         } else {
-             const existingData = docSnap.exists() ? docSnap.data() as Professional : {};
-             const newProfessional: Professional = {
-                ...initialProfessionalData,
-                ...existingData,
-                id: user.uid,
+            // === INICIO DE MODIFICACIÓN DENTRO DE useEffect ===
+            const existingData = docSnap.exists() ? docSnap.data() as Partial<Professional> : {}; // Usamos Partial<Professional> para manejar datos incompletos
+            const newProfessional: Professional = {
+                ...initialProfessionalData, // Empezamos con los datos iniciales completos
+                ...existingData,            // Sobreescribimos con cualquier dato existente del snapshot
+                id: user.uid,               // Aseguramos que el ID sea el del usuario autenticado
                 name: user.displayName || 'Nuevo Profesional',
                 email: user.email || '',
                 photoUrl: user.photoURL || '',
                 registrationDate: (existingData.registrationDate as any)?.toDate ? (existingData.registrationDate as any).toDate() : new Date(),
+                // Aseguramos que avgRating, totalReviews y dayAvailability estén presentes si no lo estaban antes
+                avgRating: existingData.avgRating ?? initialProfessionalData.avgRating,
+                totalReviews: existingData.totalReviews ?? initialProfessionalData.totalReviews,
+                dayAvailability: existingData.dayAvailability ?? initialProfessionalData.dayAvailability,
             };
+            // === FIN DE MODIFICACIÓN DENTRO DE useEffect ===
             setProfessional(newProfessional);
             setSchedule(newProfessional.schedule || defaultSchedule);
             setIsEditing(true); // New or empty profile, start in edit mode
@@ -299,6 +319,16 @@ export default function ProfilePage() {
             })
         );
 
+        // === INICIO DE MODIFICACIÓN DENTRO DE handleSave ===
+        const newDayAvailability: { [key: string]: boolean } = {};
+        // Recorremos el 'schedule' para construir el mapa 'dayAvailability'.
+        schedule.forEach(dayEntry => { // Usamos el estado 'schedule' que es el que se actualiza
+            if (dayEntry.day && typeof dayEntry.enabled === 'boolean') {
+                newDayAvailability[dayEntry.day] = dayEntry.enabled;
+            }
+        });
+        // === FIN DE MODIFICACIÓN DENTRO DE handleSave ===
+
         const finalProfessionalData = {
             ...professional,
             photoUrl: finalAvatarUrl,
@@ -310,11 +340,15 @@ export default function ProfilePage() {
                 ...(professional.subscription || {}), 
                 isSubscriptionActive: professional.subscription?.isSubscriptionActive || false,
             },
-            avgRating: professional.avgRating !== undefined ? professional.avgRating : 0, 
+            // avgRating: professional.avgRating !== undefined ? professional.avgRating : 0, // Esta línea ya no es necesaria aquí, se mantendrá desde 'professional'
+            // === AÑADIMOS avgRating, totalReviews y dayAvailability para asegurar que se guarden ===
+            avgRating: professional.avgRating, 
+            totalReviews: professional.totalReviews,
+            dayAvailability: newDayAvailability, // <-- ¡Añadimos el nuevo campo aquí!
         };
         
         const professionalDocRef = doc(db, 'professionalsDetails', user.uid);
-        await setDoc(professionalDocRef, finalProfessionalData, { merge: true });
+        await setDoc(professionalDocRef, finalProfessionalData, { merge: true }); // 'merge: true' es CLAVE aquí para no borrar otros campos
 
         const userDocRef = doc(db, 'users', user.uid);
         await updateDoc(userDocRef, {
@@ -603,10 +637,11 @@ export default function ProfilePage() {
                       )}
                     </div>
                     <div className="mt-2">
-                      {professional.testimonials.length > 0 ? (
+                      {/* // CAMBIO AQUÍ: Ahora usamos totalReviews directamente del profesional */}
+                      {professional.totalReviews > 0 ? (
                         <StarRating
                           rating={professional.avgRating}
-                          totalReviews={professional.testimonials.length}
+                          totalReviews={professional.totalReviews}
                         />
                       ) : (
                         <p className="text-sm text-muted-foreground">Aún no hay reseñas.</p>
@@ -762,45 +797,17 @@ export default function ProfilePage() {
               <TabsContent value="reviews" className="mt-6">
                 <Card className="shadow-lg">
                   <CardHeader>
+                    {/* // CAMBIO AQUÍ: Ahora usamos totalReviews directamente del profesional */}
                     <CardTitle>
-                      Reseñas ({professional.testimonials.length})
+                      Reseñas ({professional.totalReviews}) 
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {professional.testimonials.length > 0 ? (
-                        professional.testimonials.map((t) => (
-                          <div key={t.id} className="flex items-start gap-4">
-                            <Avatar>
-                              <AvatarImage
-                                src={t.clientPhotoUrl}
-                                alt={t.clientName}
-                              />
-                              <AvatarFallback>
-                                {t.clientName.charAt(0)}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <h5 className="font-semibold">{t.clientName}</h5>
-                                <div className="flex">
-                                  {[...Array(5)].map((_, i) => (
-                                    <Star
-                                      key={i}
-                                      className={`w-4 h-4 ${
-                                        i < t.rating
-                                          ? 'text-yellow-400 fill-yellow-400'
-                                          : 'text-gray-300'
-                                      }`}
-                                    />
-                                  ))}
-                                </div>
-                              </div>
-                              <p className="text-sm text-muted-foreground italic mt-1">
-                                &quot;{t.text}&quot;
-                              </p>
-                            </div>
-                          </div>
-                        ))
+                    {/* // CAMBIO AQUÍ: professional.testimonials ya no se usará. Deberás cargar las reseñas de la colección 'reviews' */}
+                    {professional.totalReviews > 0 ? (
+                        <p className="text-muted-foreground">Las reseñas se cargarán desde la colección 'reviews'.</p>
+                        // Aquí deberás implementar la lógica para cargar las reseñas desde la colección 'reviews'
+                        // y mostrarlas de manera similar a como lo hacías con professional.testimonials
                     ) : (
                       <p className="text-muted-foreground">Aún no hay reseñas.</p>
                     )
@@ -1009,3 +1016,4 @@ export default function ProfilePage() {
     </>
   );
 }
+

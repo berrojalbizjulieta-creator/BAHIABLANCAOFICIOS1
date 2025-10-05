@@ -30,6 +30,7 @@
       "description": "Plomero con más de 10 años de experiencia...",
       "specialties": ["Reparación de Fugas", "Instalación de Grifería"],
       "avgRating": 4.8,
+      "totalReviews": 1,
       "categoryIds": [11, 12],
       "isVerified": false,
       "priceInfo": "Hora de trabajo desde $2500 ARS. Presupuestos sin cargo.",
@@ -41,16 +42,18 @@
       },
       "workPhotos": [
         { "id": "work-3", "imageUrl": "https://.../work-3.jpg", "description": "Instalación de lavabo" }
-      ],
-      "testimonials": [
-        { 
-          "id": 1, 
-          "clientName": "Ana Gomez", 
-          "clientUid": "USER_UID_2",
-          "rating": 5, 
-          "text": "Excelente servicio. Rápido y muy profesional." 
-        }
       ]
+    }
+  },
+  "reviews": {
+    "REVIEW_ID_1": {
+        "professionalId": "USER_UID_1",
+        "userId": "USER_UID_2",
+        "clientName": "Ana Gomez",
+        "clientPhotoUrl": "https://.../client-1.jpg",
+        "rating": 5,
+        "comment": "Excelente servicio. Rápido y muy profesional.",
+        "createdAt": "2023-11-20T14:00:00.000Z"
     }
   }
 }
