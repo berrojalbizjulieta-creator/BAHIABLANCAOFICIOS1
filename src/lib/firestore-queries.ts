@@ -21,15 +21,7 @@ export async function getProfessionalsFilteredAndSorted(
 ): Promise<Professional[]> {
     let professionalsQuery: Query<DocumentData> = collection(firestore, 'professionalsDetails');
 
-    // 1. Filtrar solo por profesionales activos y con suscripción activa
-     professionalsQuery = query(
-        professionalsQuery,
-        where('isActive', '==', true),
-        where('subscription.isSubscriptionActive', '==', true)
-    );
-
-
-    // 2. Filtrar por CATEGORÍA (si el usuario ha seleccionado alguna)
+    // 1. Filtrar por CATEGORÍA (si el usuario ha seleccionado alguna)
     if (selectedCategoryIds.length > 0) {
         // 'array-contains-any' busca documentos que tengan CUALQUIERA de las categorías seleccionadas.
         professionalsQuery = query(
@@ -38,7 +30,7 @@ export async function getProfessionalsFilteredAndSorted(
         );
     }
 
-    // 3. Filtrar por DISPONIBILIDAD del día actual (si no se pidió incluir los no disponibles)
+    // 2. Filtrar por DISPONIBILIDAD del día actual (si no se pidió incluir los no disponibles)
     if (!includeUnavailable) {
         const today = new Date();
         // Esto obtiene el día de la semana abreviado en español (ej. "Dom", "Lun", "Mar").
@@ -51,31 +43,33 @@ export async function getProfessionalsFilteredAndSorted(
         );
     }
 
-    // 4. Ordenar los resultados por PUNTUACIÓN PROMEDIO (avgRating).
+    // 3. Ordenar los resultados por PUNTUACIÓN PROMEDIO (avgRating).
     // 'desc' significa descendente, es decir, los profesionales con más estrellas aparecerán primero.
     professionalsQuery = query(
         professionalsQuery,
         orderBy('avgRating', 'desc')
     );
 
-    // 5. Ejecutar la Consulta en Firestore.
+    // 4. Ejecutar la Consulta en Firestore.
     const querySnapshot = await getDocs(professionalsQuery);
 
-    // 6. Mapear (convertir) los resultados a un formato que tu aplicación pueda usar.
-    const professionals = querySnapshot.docs.map(doc => {
-        const data = doc.data();
-        // Es importante convertir los Timestamps de Firestore a objetos Date de JS
-        if (data.registrationDate && data.registrationDate.toDate) {
-            data.registrationDate = data.registrationDate.toDate();
-        }
-        if (data.lastPaymentDate && data.lastPaymentDate.toDate) {
-            data.lastPaymentDate = data.lastPaymentDate.toDate();
-        }
-        return {
-            id: doc.id,
-            ...data
-        } as Professional;
-    });
+    // 5. Mapear (convertir) los resultados y filtrar en el cliente.
+    const professionals = querySnapshot.docs
+        .map(doc => {
+            const data = doc.data();
+            // Es importante convertir los Timestamps de Firestore a objetos Date de JS
+            if (data.registrationDate && data.registrationDate.toDate) {
+                data.registrationDate = data.registrationDate.toDate();
+            }
+            if (data.lastPaymentDate && data.lastPaymentDate.toDate) {
+                data.lastPaymentDate = data.lastPaymentDate.toDate();
+            }
+            return {
+                id: doc.id,
+                ...data
+            } as Professional;
+        })
+        .filter(prof => prof.isActive && prof.subscription?.isSubscriptionActive); // Filtrado en el cliente
 
     return professionals;
 }
