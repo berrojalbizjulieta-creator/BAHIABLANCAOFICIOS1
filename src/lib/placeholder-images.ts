@@ -1,4 +1,4 @@
-import { placeholderImages as allImages } from './placeholder-images.json';
+import allImages from './placeholder-images.json';
 
 export type ImagePlaceholder = {
   id: string;
@@ -7,4 +7,7 @@ export type ImagePlaceholder = {
   imageHint: string;
 };
 
-export const placeholderImages: ImagePlaceholder[] = allImages;
+// Asegurarse de que sea realmente un array
+export const placeholderImages: ImagePlaceholder[] = Array.isArray(allImages)
+  ? allImages
+  : []; // <-- fallback si allImages no es un array

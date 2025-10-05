@@ -1,17 +1,11 @@
-
-import type {NextConfig} from 'next';
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
   typescript: {
     ignoreBuildErrors: true,
   },
   eslint: {
     ignoreDuringBuilds: true,
-  },
-   experimental: {
-    // This is required to allow requests from the development environment.
-    allowedDevOrigins: ["https://6000-firebase-studio-1758597332933.cluster-udxxdyopu5c7cwhhtg6mmadhvs.cloudworkstations.dev"],
   },
   images: {
     remotePatterns: [
@@ -53,7 +47,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'px.cdn.lanueva.com',
+        hostname: 'px.cdn.lanueva.com', // corregido
         port: '',
         pathname: '/**',
       },
@@ -80,7 +74,7 @@ const nextConfig: NextConfig = {
         hostname: 'i.postimg.cc',
         port: '',
         pathname: '/**',
-      }
+      },
     ],
   },
 };

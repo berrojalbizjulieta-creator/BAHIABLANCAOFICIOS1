@@ -17,7 +17,7 @@ import { Input } from '../ui/input';
 import { Edit, Save, X, Upload, Check, Search, PlusCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { updateProfile } from 'firebase/auth';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { auth, db, storage } from '@/lib/firebase';
 import { Separator } from '../ui/separator';
@@ -93,12 +93,12 @@ export default function ClientDashboard({ user }: ClientDashboardProps) {
       }
 
 
-      // 3. Update user document in Firestore
+      // 3. Update user document in Firestore using setDoc with merge
       const userDocRef = doc(db, 'users', user.uid);
-      await updateDoc(userDocRef, {
+      await setDoc(userDocRef, {
         name: displayName,
         photoUrl: finalPhotoURL,
-      });
+      }, { merge: true });
 
       toast({
         title: '¡Perfil Actualizado!',
