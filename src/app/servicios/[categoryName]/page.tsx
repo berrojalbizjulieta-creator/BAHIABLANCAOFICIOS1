@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useParams } from 'next/navigation';
@@ -15,8 +13,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useEffect, useState, useMemo } from 'react';
 import type { Professional, Schedule } from '@/lib/types';
-import { collection, query, where, getDocs, DocumentData } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { getProfessionalsFilteredAndSorted } from '@/lib/firestore-queries'; // Importar la nueva función
 
 const PAGE_SIZE = 12;
 
@@ -77,30 +75,23 @@ export default function CategoryPage() {
       setError(null);
 
       try {
-        const professionalsRef = collection(db, 'professionalsDetails');
-        const q = query(
-          professionalsRef,
-          where('categoryIds', 'array-contains', category.id),
-          where('subscription.isSubscriptionActive', '==', true),
-          where('isActive', '==', true)
-        );
-
-        const querySnapshot = await getDocs(q);
-        const fetchedProfessionals = querySnapshot.docs.map(doc => {
-            const data = doc.data();
-            // Convert Firestore Timestamps to JS Dates
+        // Usamos la nueva función centralizada
+        const fetchedProfessionals = await getProfessionalsFilteredAndSorted(db, [category.id], false);
+        
+        // El mapeo para convertir Timestamps a Dates sigue siendo importante
+        const processedProfessionals = fetchedProfessionals.map(prof => {
+            const data = prof as any; // Usar 'any' temporalmente para acceder a propiedades sin tipo
             if (data.registrationDate && data.registrationDate.toDate) {
                 data.registrationDate = data.registrationDate.toDate();
             }
             if (data.lastPaymentDate && data.lastPaymentDate.toDate) {
                 data.lastPaymentDate = data.lastPaymentDate.toDate();
             }
-            return {
-              id: doc.id,
-              ...data
-            } as Professional;
+            return data as Professional;
         });
-        setProfessionals(fetchedProfessionals);
+
+        setProfessionals(processedProfessionals);
+
       } catch (err: any) {
         console.error("Error al obtener profesionales:", err);
         setError('No se pudieron cargar los profesionales. Por favor, inténtalo de nuevo.');
