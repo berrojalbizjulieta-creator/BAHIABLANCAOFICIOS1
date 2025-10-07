@@ -75,8 +75,8 @@ export default function CategoryPage() {
       setError(null);
 
       try {
-        // Usamos la nueva función centralizada
-        const fetchedProfessionals = await getProfessionalsFilteredAndSorted(db, [category.id], false);
+        // Usamos la nueva función centralizada y simplificada
+        const fetchedProfessionals = await getProfessionalsFilteredAndSorted(db, [category.id]);
         
         // El mapeo para convertir Timestamps a Dates sigue siendo importante
         const processedProfessionals = fetchedProfessionals.map(prof => {
