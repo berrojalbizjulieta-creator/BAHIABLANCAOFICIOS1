@@ -3,39 +3,55 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Professionals can edit their own profile.
-    // ANY authenticated user can UPDATE the avgRating and totalReviews fields.
-    // This is necessary for the cloud function to work when a client leaves a review.
-    match /professionalsDetails/{professionalId} {
-      allow read: if true;
-      allow create: if request.auth.uid == professionalId;
-      allow update: if request.auth.uid == professionalId || (request.auth != null && request.resource.data.keys().hasOnly(['avgRating', 'totalReviews']));
-    }
-
-    // Allow public read access to users (for names, photos) but restrict write
+    // Reglas para la colección 'users'
     match /users/{userId} {
+      // Cualquiera puede leer la información pública de un usuario.
       allow read: if true;
-      allow write: if request.auth.uid == userId; // Only the user can edit their own data
-    }
-    
-    // Allow public read access to job requests
-    match /jobRequests/{jobRequestId} {
-      allow read: if true;
-      allow create: if request.auth != null; // Any authenticated user can create a job request
-      allow update: if resource.data.clientId == request.auth.uid; // Only the creator can update (e.g., to close)
+      // Solo el propio usuario puede crear o modificar su documento.
+      allow write: if request.auth.uid == userId;
     }
 
-    // Allow any authenticated user to create a review
-    // Allow public read access to reviews
-    match /reviews/{reviewId} {
+    // Reglas para la colección 'professionalsDetails'
+    match /professionalsDetails/{profId} {
       allow read: if true;
+      allow create: if request.auth.uid == profId; // Solo el dueño puede crear su perfil
+      allow update: if
+        // El dueño del perfil puede actualizar cualquier campo
+        request.auth.uid == profId ||
+        // O un usuario autenticado puede actualizar *solo* avgRating y totalReviews.
+        (request.auth != null &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['avgRating', 'totalReviews'])
+        );
+      allow delete: if request.auth.uid == profId; // Solo el dueño puede eliminar su perfil
+    }
+
+    // Reglas para la colección 'reviews'
+    match /reviews/{reviewId} {
+      // Cualquiera puede leer las reseñas.
+      allow read: if true;
+      // Solo un usuario autenticado puede crear una reseña.
       allow create: if request.auth != null;
+      // El autor de la reseña o un admin pueden actualizarla o borrarla.
+      allow update, delete: if request.auth.uid == resource.data.userId;
     }
     
-    // Allow admin to manage ad banners
-    match /adBanners/{bannerId} {
+    // Reglas para la colección 'jobRequests'
+    match /jobRequests/{jobId} {
+        // Cualquiera puede leer los anuncios de trabajo
         allow read: if true;
-        allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+        // Solo un usuario autenticado puede crear un anuncio
+        allow create: if request.auth != null;
+        // Solo el autor del anuncio puede actualizarlo (ej. para cerrarlo) o borrarlo
+        allow update, delete: if request.auth.uid == resource.data.clientId;
+    }
+    
+    // Reglas para la colección 'adBanners'
+    match /adBanners/{bannerId} {
+        // Cualquiera puede leer los banners
+        allow read: if true;
+        // Nadie (excepto desde la consola de Firebase) puede escribir directamente aquí.
+        // La gestión se debe hacer con credenciales de administrador.
+        allow write: if false;
     }
   }
 }
