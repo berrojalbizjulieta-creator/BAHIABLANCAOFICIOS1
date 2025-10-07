@@ -45,17 +45,11 @@ export const updateProfessionalAvgRating = onDocumentWritten(
 
     // Aquí obtenemos la ID del profesional y la calificación de la reseña.
     const professionalId = reviewData.professionalId;
-    const rating = reviewData.rating;
 
-    // Verificaciones básicas
-    if (
-      !professionalId ||
-      typeof professionalId !== "string" ||
-      !rating ||
-      typeof rating !== "number"
-    ) {
+    // Verificación de professionalId
+    if (!professionalId || typeof professionalId !== "string") {
       functions.logger.error(
-        "Review document is missing valid professionalId or rating number:",
+        "Review document is missing a valid professionalId:",
         reviewData,
       );
       return null;
@@ -86,12 +80,15 @@ export const updateProfessionalAvgRating = onDocumentWritten(
     const professionalRef = db.collection("professionalsDetails").doc(professionalId);
 
     try {
-      await professionalRef.update({
+      // Usamos set con { merge: true } en lugar de update.
+      // Esto crea el documento si no existe o lo actualiza si ya existe.
+      await professionalRef.set({
         avgRating: parseFloat(avgRating.toFixed(2)),
         totalReviews: numberOfReviews,
-      });
+      }, { merge: true });
+
       functions.logger.log(
-        `Professional ${professionalId} avgRating updated to ${avgRating.toFixed(2)} with ${numberOfReviews} reviews.`,
+        `Professional ${professionalId} avgRating/totalReviews updated to ${avgRating.toFixed(2)} with ${numberOfReviews} reviews.`,
       );
     } catch (error) {
       functions.logger.error(

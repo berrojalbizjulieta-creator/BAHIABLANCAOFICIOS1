@@ -1,43 +1,41 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Permite que cualquiera (autenticado o no) lea los datos de los profesionales y usuarios
-    // Esto es necesario para que los perfiles públicos y la información general sean visibles
-    match /users/{userId} {
-      allow read: if true;
-      allow write: if request.auth.uid == userId;
-    }
-
+    // Professionals can edit their own profile.
+    // ANY authenticated user can UPDATE the avgRating and totalReviews fields.
+    // This is necessary for the cloud function to work when a client leaves a review.
     match /professionalsDetails/{professionalId} {
       allow read: if true;
-      allow write: if request.auth.uid == professionalId;
+      allow create: if request.auth.uid == professionalId;
+      allow update: if request.auth.uid == professionalId || (request.auth != null && request.resource.data.keys().hasOnly(['avgRating', 'totalReviews']));
     }
 
-    // Permite que solo los usuarios autenticados puedan crear reseñas.
-    // Nadie puede actualizarlas o borrarlas desde el cliente para mantener la integridad.
+    // Allow public read access to users (for names, photos) but restrict write
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if request.auth.uid == userId; // Only the user can edit their own data
+    }
+    
+    // Allow public read access to job requests
+    match /jobRequests/{jobRequestId} {
+      allow read: if true;
+      allow create: if request.auth != null; // Any authenticated user can create a job request
+      allow update: if resource.data.clientId == request.auth.uid; // Only the creator can update (e.g., to close)
+    }
+
+    // Allow any authenticated user to create a review
+    // Allow public read access to reviews
     match /reviews/{reviewId} {
       allow read: if true;
       allow create: if request.auth != null;
-      allow update, delete: if false; // Por seguridad, no permitir editar/borrar reseñas desde el cliente
     }
-
-    // Permite leer las solicitudes de trabajo (jobRequests) a cualquiera.
-    // Solo el dueño del post puede crearlo o actualizarlo (ej. para cerrarlo).
-    match /jobRequests/{jobId} {
-      allow read: if true;
-      allow create: if request.auth != null;
-      allow update: if request.auth.uid == resource.data.clientId;
-    }
-
-    // Permite que cualquiera lea los banners publicitarios.
+    
+    // Allow admin to manage ad banners
     match /adBanners/{bannerId} {
-      allow read: if true;
-      // La escritura de banners se debe manejar desde un panel de admin con privilegios.
-      // Por ahora la dejamos cerrada desde el cliente.
-      allow write: if false;
+        allow read: if true;
+        allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
   }
 }
