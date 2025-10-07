@@ -181,7 +181,7 @@ export default function ProfilePage() {
         const docRef = doc(db, 'professionalsDetails', user.uid);
         const docSnap = await getDoc(docRef);
 
-        if (docSnap.exists() && docSnap.data().description) {
+        if (docSnap.exists()) {
             const data = docSnap.data() as Professional;
              // Ensure dates are converted correctly from Firestore Timestamps
             if (data.lastPaymentDate && (data.lastPaymentDate as any).toDate) {
