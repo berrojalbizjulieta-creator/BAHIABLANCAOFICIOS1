@@ -49,8 +49,6 @@ function StarRating({ rating, count }: { rating: number, count: number }) {
 export default function ProfessionalCard({
   professional,
 }: ProfessionalCardProps) {
-  const firstTestimonial = professional.testimonials[0];
-
   const getWhatsAppLink = (phone?: string) => {
     if (!phone) return '#';
     const cleanedPhone = phone.replace(/[^0-9]/g, '');
@@ -79,7 +77,7 @@ export default function ProfessionalCard({
           </CardHeader>
            <p className="text-sm text-muted-foreground mt-1">{primaryCategory?.name}</p>
           <div className="mt-1">
-            <StarRating rating={professional.avgRating} count={professional.testimonials.length} />
+            <StarRating rating={professional.avgRating} count={professional.totalReviews} />
           </div>
         </div>
         <div className="p-6 pt-0 md:pt-6 border-t md:border-t-0 md:border-l w-full md:w-2/3">
@@ -92,16 +90,15 @@ export default function ProfessionalCard({
                 </Badge>
               ))}
             </div>
-            {firstTestimonial && (
-              <div className="relative mt-4">
-                <div className="flex items-start gap-3 text-sm text-muted-foreground italic">
-                  <MessageSquare className="w-5 h-5 flex-shrink-0" />
-                  <p>
-                      &quot;{firstTestimonial.text}&quot;
-                      <span className="font-semibold not-italic"> - {firstTestimonial.clientName}</span>
-                  </p>
+            {professional.totalReviews === 0 && (
+                 <div className="relative mt-4">
+                     <div className="flex items-start gap-3 text-sm text-muted-foreground italic">
+                        <MessageSquare className="w-5 h-5 flex-shrink-0" />
+                        <p>
+                           Aún no tiene reseñas. ¡Sé el primero en dejar una!
+                        </p>
+                    </div>
                 </div>
-              </div>
             )}
           </CardContent>
           <CardFooter className="p-0 pt-4 flex justify-between items-center">
@@ -128,7 +125,7 @@ export default function ProfessionalCard({
                   </Popover>
                   )}
               </div>
-            {professional.testimonials.length > 0 && (
+            {professional.totalReviews > 0 && (
                   <Button variant="link" size="sm" asChild>
                       <Link href={`/profesional/${professional.id}`} target="_blank">Ver más</Link>
                   </Button>
