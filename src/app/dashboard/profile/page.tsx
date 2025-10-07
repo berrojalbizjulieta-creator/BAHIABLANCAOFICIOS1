@@ -48,7 +48,7 @@ import {Separator} from '@/components/ui/separator';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Textarea} from '@/components/ui/textarea';
-import type { Professional, WorkPhoto, Schedule } from '@/lib/types'; // ¡ATENCIÓN: Tendrás que modificar la interfaz Professional en este archivo!
+import type { Professional, WorkPhoto, Schedule, Review } from '@/lib/types';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {useToast} from '@/hooks/use-toast';
 import {Switch} from '@/components/ui/switch';
@@ -62,7 +62,8 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import PaymentDialog from '@/components/professionals/payment-dialog';
-import { subMonths } from 'date-fns';
+import { subMonths, formatDistanceToNow } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CATEGORIES, PROFESSIONALS, CATEGORY_SPECIALTIES, defaultSchedule } from '@/lib/data';
 import SpecialtiesDialog from '@/components/professionals/specialties-dialog';
@@ -70,6 +71,7 @@ import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { storage, db } from '@/lib/firebase';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { getReviewsForProfessional } from '@/lib/firestore-queries';
 
 const MAX_AVATAR_SIZE_MB = 2;
 const MAX_WORK_PHOTO_SIZE_MB = 5;
@@ -99,12 +101,38 @@ function StarRating({
         ))}
       </div>
       <span className="font-bold text-lg">{rating.toFixed(1)}</span>
-      {/* // CAMBIO AQUÍ: Ahora usamos totalReviews directamente del profesional */}
       <span className="text-sm text-muted-foreground">
         ({totalReviews} reseñas)
       </span>
     </div>
   );
+}
+
+const ReviewCard = ({ review }: { review: Review }) => {
+  return (
+    <div className="flex gap-4">
+      <Avatar>
+        <AvatarImage src={review.clientPhotoUrl} alt={review.clientName} />
+        <AvatarFallback>{review.clientName?.charAt(0) || 'U'}</AvatarFallback>
+      </Avatar>
+      <div className="flex-1">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="font-semibold">{review.clientName}</p>
+            <p className="text-xs text-muted-foreground">
+              {formatDistanceToNow(review.createdAt, { addSuffix: true, locale: es })}
+            </p>
+          </div>
+          <div className="flex items-center">
+            {[...Array(5)].map((_, i) => (
+              <Star key={i} className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
+            ))}
+          </div>
+        </div>
+        <p className="mt-2 text-sm text-muted-foreground">{review.comment}</p>
+      </div>
+    </div>
+  )
 }
 
 const getImage = (id: string) =>
@@ -113,9 +141,8 @@ const getImage = (id: string) =>
     imageHint: '',
   };
 
-// === INICIO DE MODIFICACIÓN ===
 const initialProfessionalData: Professional = {
-    id: '', // Cambiamos de '0' a '' para que sea compatible con user.uid (string)
+    id: '', 
     name: "Nombre del Profesional",
     description: "",
     phone: "",
@@ -125,16 +152,14 @@ const initialProfessionalData: Professional = {
     specialties: [],
     avgRating: 0,
     categoryIds: [],
-    // testimonials: [], // <--- ¡ELIMINAMOS ESTA LÍNEA! Las reseñas irán en su propia colección.
     workPhotos: placeholderImages.filter(p => p.id.startsWith('work-')),
     isVerified: false,
     subscriptionTier: 'standard',
     registrationDate: new Date(),
     isActive: true,
     schedule: defaultSchedule,
-    // --- ¡NUEVOS CAMPOS AÑADIDOS! ---
-    totalReviews: 0,        // Inicializamos en 0
-    dayAvailability: {      // Inicializamos con todos los días a 'false'
+    totalReviews: 0,
+    dayAvailability: {
         "Dom": false,
         "Lun": false,
         "Mar": false,
@@ -144,7 +169,6 @@ const initialProfessionalData: Professional = {
         "Sab": false
     }
 };
-// === FIN DE MODIFICACIÓN ===
 
 
 export default function ProfilePage() {
@@ -152,16 +176,15 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isFirstEdit, setIsFirstEdit] = useState(false);
   const [professional, setProfessional] = useState<Professional | null>(null);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [paymentMethods, setPaymentMethods] = useState('');
   const [price, setPrice] = useState({ type: 'Por Hora', amount: '', details: '' });
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   
-  // States for subscription status
   const [lastPaymentDate, setLastPaymentDate] = useState<Date | undefined>(); 
   const [isSubscriptionActive, setIsSubscriptionActive] = useState(false);
 
-  // State for specialties dialog
   const [isSpecialtiesDialogOpen, setIsSpecialtiesDialogOpen] = useState(false);
   const [currentCategoryForSpecialties, setCurrentCategoryForSpecialties] = useState<number | null>(null);
   const [activePhoto, setActivePhoto] = useState<WorkPhoto | null>(null);
@@ -174,17 +197,20 @@ export default function ProfilePage() {
 
 
   useEffect(() => {
-    if (loading) return;
-    if (!user) return;
+    if (loading || !user) return;
 
     const fetchProfile = async () => {
         const docRef = doc(db, 'professionalsDetails', user.uid);
-        const docSnap = await getDoc(docRef);
+        const [docSnap, reviewsData] = await Promise.all([
+          getDoc(docRef),
+          getReviewsForProfessional(db, user.uid)
+        ]);
+
+        setReviews(reviewsData);
 
         if (docSnap.exists()) {
             const data = docSnap.data() as Professional;
-             // Ensure dates are converted correctly from Firestore Timestamps
-            if (data.lastPaymentDate && (data.lastPaymentDate as any).toDate) {
+             if (data.lastPaymentDate && (data.lastPaymentDate as any).toDate) {
                 data.lastPaymentDate = (data.lastPaymentDate as any).toDate();
             }
              if (data.registrationDate && (data.registrationDate as any).toDate) {
@@ -199,28 +225,23 @@ export default function ProfilePage() {
                 const amount = amountPart ? amountPart.split(' ')[0] : '';
                 setPrice({ type: type || 'Por Hora', amount: amount || '', details: '' });
             }
-            setIsEditing(false); // Profile exists and is filled, start in view mode
+            setIsEditing(false); 
             setIsFirstEdit(false);
         } else {
-            // === INICIO DE MODIFICACIÓN DENTRO DE useEffect ===
-            const existingData = docSnap.exists() ? docSnap.data() as Partial<Professional> : {}; // Usamos Partial<Professional> para manejar datos incompletos
             const newProfessional: Professional = {
-                ...initialProfessionalData, // Empezamos con los datos iniciales completos
-                ...existingData,            // Sobreescribimos con cualquier dato existente del snapshot
-                id: user.uid,               // Aseguramos que el ID sea el del usuario autenticado
+                ...initialProfessionalData,
+                id: user.uid,
                 name: user.displayName || 'Nuevo Profesional',
                 email: user.email || '',
                 photoUrl: user.photoURL || '',
-                registrationDate: (existingData.registrationDate as any)?.toDate ? (existingData.registrationDate as any).toDate() : new Date(),
-                // Aseguramos que avgRating, totalReviews y dayAvailability estén presentes si no lo estaban antes
-                avgRating: existingData.avgRating ?? initialProfessionalData.avgRating,
-                totalReviews: existingData.totalReviews ?? initialProfessionalData.totalReviews,
-                dayAvailability: existingData.dayAvailability ?? initialProfessionalData.dayAvailability,
+                registrationDate: new Date(),
+                avgRating: initialProfessionalData.avgRating,
+                totalReviews: reviewsData.length,
+                dayAvailability: initialProfessionalData.dayAvailability,
             };
-            // === FIN DE MODIFICACIÓN DENTRO DE useEffect ===
             setProfessional(newProfessional);
             setSchedule(newProfessional.schedule || defaultSchedule);
-            setIsEditing(true); // New or empty profile, start in edit mode
+            setIsEditing(true);
             setIsFirstEdit(true);
         }
     };
@@ -230,7 +251,6 @@ export default function ProfilePage() {
 
 
   useEffect(() => {
-    // Check if the last payment was within the last month
     if (!lastPaymentDate) {
         setIsSubscriptionActive(false);
         return;
@@ -257,7 +277,6 @@ export default function ProfilePage() {
         newCategoryIds[index] = categoryIdNum;
         return { ...prev, categoryIds: newCategoryIds };
     });
-    // Open specialties dialog if the category has specialties defined
     if (CATEGORY_SPECIALTIES[categoryIdNum]) {
         setCurrentCategoryForSpecialties(categoryIdNum);
         setIsSpecialtiesDialogOpen(true);
@@ -275,7 +294,6 @@ export default function ProfilePage() {
     setProfessional(prev => {
         if (!prev) return null;
         const newCategoryIds = prev.categoryIds.filter((_, i) => i !== index);
-        // Also remove specialties associated with this category if needed
         return { ...prev, categoryIds: newCategoryIds };
     });
   };
@@ -289,7 +307,7 @@ export default function ProfilePage() {
   }
 
   const uploadImage = async (fileDataUrl: string, path: string): Promise<string> => {
-    if (fileDataUrl.startsWith('http')) return fileDataUrl; // Already a URL
+    if (fileDataUrl.startsWith('http')) return fileDataUrl; 
     const storageRef = ref(storage, path);
     const uploadTask = await uploadString(storageRef, fileDataUrl, 'data_url');
     return await getDownloadURL(uploadTask.ref);
@@ -319,15 +337,12 @@ export default function ProfilePage() {
             })
         );
 
-        // === INICIO DE MODIFICACIÓN DENTRO DE handleSave ===
         const newDayAvailability: { [key: string]: boolean } = {};
-        // Recorremos el 'schedule' para construir el mapa 'dayAvailability'.
-        schedule.forEach(dayEntry => { // Usamos el estado 'schedule' que es el que se actualiza
+        schedule.forEach(dayEntry => {
             if (dayEntry.day && typeof dayEntry.enabled === 'boolean') {
                 newDayAvailability[dayEntry.day] = dayEntry.enabled;
             }
         });
-        // === FIN DE MODIFICACIÓN DENTRO DE handleSave ===
 
         const finalProfessionalData = {
             ...professional,
@@ -340,15 +355,13 @@ export default function ProfilePage() {
                 ...(professional.subscription || {}), 
                 isSubscriptionActive: professional.subscription?.isSubscriptionActive || false,
             },
-            // avgRating: professional.avgRating !== undefined ? professional.avgRating : 0, // Esta línea ya no es necesaria aquí, se mantendrá desde 'professional'
-            // === AÑADIMOS avgRating, totalReviews y dayAvailability para asegurar que se guarden ===
             avgRating: professional.avgRating, 
             totalReviews: professional.totalReviews,
-            dayAvailability: newDayAvailability, // <-- ¡Añadimos el nuevo campo aquí!
+            dayAvailability: newDayAvailability,
         };
         
         const professionalDocRef = doc(db, 'professionalsDetails', user.uid);
-        await setDoc(professionalDocRef, finalProfessionalData, { merge: true }); // 'merge: true' es CLAVE aquí para no borrar otros campos
+        await setDoc(professionalDocRef, finalProfessionalData, { merge: true });
 
         const userDocRef = doc(db, 'users', user.uid);
         await updateDoc(userDocRef, {
@@ -359,8 +372,8 @@ export default function ProfilePage() {
         setProfessional(finalProfessionalData);
 
         if (isFirstEdit) {
-            setIsPaymentDialogOpen(true); // For first time users, go straight to payment
-            setIsFirstEdit(false); // No longer first edit
+            setIsPaymentDialogOpen(true);
+            setIsFirstEdit(false);
         } else {
             toast({
                 title: "Perfil Actualizado",
@@ -382,7 +395,6 @@ export default function ProfilePage() {
 }
   
   const handleSpecialtiesSave = (newSpecialties: string[]) => {
-    // Logic to merge new specialties with existing ones, avoiding duplicates
     if (professional) {
         const updatedSpecialties = Array.from(new Set(newSpecialties));
         handleInputChange('specialties', updatedSpecialties);
@@ -441,7 +453,6 @@ export default function ProfilePage() {
   const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file && professional) {
-          // Validation
           if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
               toast({ title: "Formato no permitido", description: "Por favor, sube una imagen en formato JPG, PNG o WebP.", variant: "destructive" });
               return;
@@ -485,11 +496,11 @@ export default function ProfilePage() {
       for (const file of filesArray) {
          if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
             toast({ title: "Formato no permitido", description: `El archivo '${file.name}' no es un formato de imagen válido (JPG, PNG, WebP).`, variant: "destructive" });
-            continue; // Skip this file
+            continue;
         }
         if (file.size > MAX_WORK_PHOTO_SIZE_MB * 1024 * 1024) {
             toast({ title: "Archivo muy grande", description: `La foto '${file.name}' supera el límite de ${MAX_WORK_PHOTO_SIZE_MB}MB.`, variant: "destructive" });
-            continue; // Skip this file
+            continue;
         }
         validFilesCount++;
 
@@ -502,7 +513,6 @@ export default function ProfilePage() {
             imageHint: "professional work"
           });
 
-          // When the last valid file is read, update the state
           if (newPhotos.length === validFilesCount) {
             setProfessional(prev => prev ? { ...prev, workPhotos: [...(prev.workPhotos || []), ...newPhotos] } : null);
              if (newPhotos.length > 0) {
@@ -541,7 +551,6 @@ export default function ProfilePage() {
       <div className="container mx-auto px-4 py-12 md:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
-            {/* Header section */}
             <Card className="overflow-hidden shadow-lg">
               <CardContent className="p-6">
                 <div className="flex flex-col sm:flex-row items-start gap-6">
@@ -637,7 +646,6 @@ export default function ProfilePage() {
                       )}
                     </div>
                     <div className="mt-2">
-                      {/* // CAMBIO AQUÍ: Ahora usamos totalReviews directamente del profesional */}
                       {professional.totalReviews > 0 ? (
                         <StarRating
                           rating={professional.avgRating}
@@ -677,7 +685,6 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
 
-            {/* About and Details */}
             <Tabs defaultValue="about" className="w-full">
               <TabsList>
                 <TabsTrigger value="about">Sobre Mí</TabsTrigger>
@@ -707,7 +714,6 @@ export default function ProfilePage() {
                     )}
                     <Separator />
                     
-                    {/* Specialties Section */}
                     <div>
                          <div className="flex items-center gap-4 mb-3">
                             <h4 className="font-semibold">Especialidades</h4>
@@ -797,21 +803,21 @@ export default function ProfilePage() {
               <TabsContent value="reviews" className="mt-6">
                 <Card className="shadow-lg">
                   <CardHeader>
-                    {/* // CAMBIO AQUÍ: Ahora usamos totalReviews directamente del profesional */}
                     <CardTitle>
-                      Reseñas ({professional.totalReviews}) 
+                      Reseñas ({reviews.length}) 
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    {/* // CAMBIO AQUÍ: professional.testimonials ya no se usará. Deberás cargar las reseñas de la colección 'reviews' */}
-                    {professional.totalReviews > 0 ? (
-                        <p className="text-muted-foreground">Las reseñas se cargarán desde la colección 'reviews'.</p>
-                        // Aquí deberás implementar la lógica para cargar las reseñas desde la colección 'reviews'
-                        // y mostrarlas de manera similar a como lo hacías con professional.testimonials
+                  <CardContent className="space-y-6">
+                    {reviews.length > 0 ? (
+                        reviews.map((review, index) => (
+                           <React.Fragment key={review.id}>
+                             <ReviewCard review={review} />
+                             {index < reviews.length - 1 && <Separator />}
+                          </React.Fragment>
+                        ))
                     ) : (
                       <p className="text-muted-foreground">Aún no hay reseñas.</p>
-                    )
-                    }
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -904,7 +910,6 @@ export default function ProfilePage() {
             </Tabs>
           </div>
 
-          {/* Right Sidebar */}
           <div className="space-y-8">
             <Card>
               <CardHeader>

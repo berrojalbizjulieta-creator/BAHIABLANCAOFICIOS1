@@ -9,6 +9,18 @@ export interface Testimonial {
   text: string;
 }
 
+export interface Review {
+  id: string;
+  professionalId: string;
+  userId: string;
+  clientName: string;
+  clientPhotoUrl: string;
+  rating: number;
+  comment: string;
+  createdAt: Date;
+}
+
+
 export interface WorkPhoto {
     id: string;
     imageUrl: string;

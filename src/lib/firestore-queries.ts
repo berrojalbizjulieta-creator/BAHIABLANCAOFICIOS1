@@ -2,7 +2,7 @@
 
 import { collection, query, where, orderBy, getDocs, Firestore, Query, DocumentData } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { Professional } from '@/lib/types';
+import type { Professional, Testimonial, Review } from '@/lib/types';
 
 
 /**
@@ -55,4 +55,37 @@ export async function getProfessionalsFilteredAndSorted(
         });
 
     return professionals;
+}
+
+
+/**
+ * Obtiene todas las reseñas para un profesional específico.
+ * @param firestore La instancia de Firestore.
+ * @param professionalId El ID del profesional.
+ * @returns Una promesa que resuelve con un array de objetos de reseña (Review).
+ */
+export async function getReviewsForProfessional(firestore: Firestore, professionalId: string): Promise<Review[]> {
+    if (!professionalId) {
+        return [];
+    }
+
+    const reviewsRef = collection(firestore, 'reviews');
+    const q = query(
+        reviewsRef,
+        where('professionalId', '==', professionalId),
+        orderBy('createdAt', 'desc')
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    const reviews = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+            id: doc.id,
+            ...data,
+            createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
+        } as Review;
+    });
+
+    return reviews;
 }

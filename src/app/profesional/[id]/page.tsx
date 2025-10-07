@@ -35,7 +35,7 @@ import {
 } from "@/components/ui/dialog"
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import type { Professional, Testimonial, WorkPhoto } from '@/lib/types';
+import type { Professional, Review, WorkPhoto } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -49,10 +49,13 @@ import { useParams } from 'next/navigation';
 import { CATEGORIES } from '@/lib/data'; // Mantenemos CATEGORIES si aún las usas para mapear IDs a nombres
 import { Textarea } from '@/components/ui/textarea';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { formatDistanceToNow } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 // IMPORTACIONES DE FIRESTORE
 import { doc, getDoc, collection, addDoc, serverTimestamp, DocumentData } from 'firebase/firestore';
 import { db } from '@/lib/firebase'; // Asegúrate de que esta ruta sea correcta para tu instancia de db
+import { getReviewsForProfessional } from '@/lib/firestore-queries';
 
 // --- Funciones auxiliares (mantener sin cambios) ---
 function StarRatingDisplay({
@@ -165,6 +168,33 @@ function ReviewForm({ onReviewSubmit, isSubmitting }: ReviewFormProps) {
     </Card>
   );
 }
+
+const ReviewCard = ({ review }: { review: Review }) => {
+  return (
+    <div className="flex gap-4">
+      <Avatar>
+        <AvatarImage src={review.clientPhotoUrl} alt={review.clientName} />
+        <AvatarFallback>{review.clientName?.charAt(0) || 'U'}</AvatarFallback>
+      </Avatar>
+      <div className="flex-1">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="font-semibold">{review.clientName}</p>
+            <p className="text-xs text-muted-foreground">
+              {formatDistanceToNow(review.createdAt, { addSuffix: true, locale: es })}
+            </p>
+          </div>
+          <div className="flex items-center">
+            {[...Array(5)].map((_, i) => (
+              <Star key={i} className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
+            ))}
+          </div>
+        </div>
+        <p className="mt-2 text-sm text-muted-foreground">{review.comment}</p>
+      </div>
+    </div>
+  )
+}
 // --- Fin funciones auxiliares ---
 
 
@@ -174,6 +204,7 @@ export default function PublicProfilePage() {
   const professionalId = params.id as string;
 
   const [professional, setProfessional] = useState<Professional | undefined>(undefined);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [professionalFound, setProfessionalFound] = useState<boolean>(false);
@@ -182,7 +213,7 @@ export default function PublicProfilePage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchProfessional = async () => {
+    const fetchProfessionalData = async () => {
       if (!professionalId) {
         setLoading(false);
         setProfessionalFound(false);
@@ -193,11 +224,18 @@ export default function PublicProfilePage() {
       setError(null);
 
       try {
-        const docRef = doc(db, 'professionalsDetails', professionalId);
-        const docSnap = await getDoc(docRef);
+        const professionalDocRef = doc(db, 'professionalsDetails', professionalId);
+        
+        // Fetch professional data and reviews in parallel
+        const [profDocSnap, reviewsData] = await Promise.all([
+          getDoc(professionalDocRef),
+          getReviewsForProfessional(db, professionalId)
+        ]);
+        
+        setReviews(reviewsData);
 
-        if (docSnap.exists()) {
-          const data = docSnap.data() as DocumentData;
+        if (profDocSnap.exists()) {
+          const data = profDocSnap.data() as DocumentData;
 
           if (data.registrationDate && data.registrationDate.toDate) {
               data.registrationDate = data.registrationDate.toDate();
@@ -213,7 +251,7 @@ export default function PublicProfilePage() {
           }
 
           const finalProfessionalData: Professional = {
-            id: docSnap.id,
+            id: profDocSnap.id,
             ...data,
             phone: data.phone || '',
           };
@@ -234,7 +272,7 @@ export default function PublicProfilePage() {
       }
     };
 
-    fetchProfessional();
+    fetchProfessionalData();
   }, [professionalId]);
   
   const handleNewReview = async (rating: number, comment: string) => {
@@ -246,7 +284,7 @@ export default function PublicProfilePage() {
     setIsSubmittingReview(true);
     
     try {
-        await addDoc(collection(db, 'reviews'), {
+        const newReviewData = {
             professionalId: professional.id,
             rating: rating,
             comment: comment,
@@ -254,7 +292,18 @@ export default function PublicProfilePage() {
             clientName: user.displayName || 'Anónimo',
             clientPhotoUrl: user.photoURL || '',
             createdAt: serverTimestamp() 
-        });
+        };
+
+        const docRef = await addDoc(collection(db, 'reviews'), newReviewData);
+        
+        const localNewReview = {
+            ...newReviewData,
+            id: docRef.id,
+            createdAt: new Date(),
+        }
+        
+        // Optimistically update the UI
+        setReviews(prev => [localNewReview, ...prev]);
 
         toast({
             title: '¡Reseña Enviada!',
@@ -418,13 +467,17 @@ export default function PublicProfilePage() {
                  <Card className="shadow-lg">
                   <CardHeader>
                     <CardTitle>
-                      Reseñas de Clientes ({professional.totalReviews || 0})
+                      Reseñas de Clientes ({reviews.length})
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    {/* Aca va la logica para mostrar las reseñas desde la coleccion 'reviews' */}
-                    {professional.totalReviews > 0 ? (
-                      <p className="text-muted-foreground">Aquí se mostrarán las reseñas.</p>
+                     {reviews.length > 0 ? (
+                        reviews.map((review, index) => (
+                           <React.Fragment key={review.id}>
+                             <ReviewCard review={review} />
+                             {index < reviews.length - 1 && <Separator />}
+                          </React.Fragment>
+                        ))
                     ) : (
                       <p className="text-muted-foreground">Aún no hay reseñas. ¡Sé el primero en dejar una!</p>
                     )}
