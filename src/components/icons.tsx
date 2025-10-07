@@ -126,30 +126,3 @@ export const Icons = {
     </svg>
   ),
 }
-```
-</file_content>
-<file_content>
-/app/(auth)/login/page.tsx
-</file_content>
-<file_content>
-"use client";
-
-import { useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
-import * as React from "react";
-import { Button } from "@/components/ui/button";
-
-export default function LoginPage() {
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl");
-
-  return (
-    <div className="flex h-screen w-full items-center justify-center">
-      <Button onClick={() => signIn("google", { callbackUrl: callbackUrl || "/" })}>
-        Login with Google
-      </Button>
-    </div>
-  );
-}
-</file_content>
-```

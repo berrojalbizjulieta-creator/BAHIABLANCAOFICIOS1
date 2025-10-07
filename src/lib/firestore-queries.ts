@@ -29,20 +29,7 @@ export async function getProfessionalsFilteredAndSorted(
             where('categoryIds', 'array-contains-any', selectedCategoryIds)
         );
     }
-
-    // 2. Filtrar por DISPONIBILIDAD del día actual (si no se pidió incluir los no disponibles)
-    if (!includeUnavailable) {
-        const today = new Date();
-        // Esto obtiene el día de la semana abreviado en español (ej. "Dom", "Lun", "Mar").
-        const shortDay = today.toLocaleString('es-ES', { weekday: 'short' }).slice(0, 3);
-
-        // Añadimos el filtro por día si existe en dayAvailability y está en 'true'
-        professionalsQuery = query(
-            professionalsQuery,
-            where(`dayAvailability.${shortDay}`, '==', true) 
-        );
-    }
-
+    
     // 3. Ordenar los resultados por PUNTUACIÓN PROMEDIO (avgRating).
     // 'desc' significa descendente, es decir, los profesionales con más estrellas aparecerán primero.
     professionalsQuery = query(
@@ -69,7 +56,20 @@ export async function getProfessionalsFilteredAndSorted(
                 ...data
             } as Professional;
         })
-        .filter(prof => prof.isActive && prof.subscription?.isSubscriptionActive); // Filtrado en el cliente
+        .filter(prof => {
+            // Filtrado por activo y suscripción
+            const isActiveAndSubscribed = prof.isActive && prof.subscription?.isSubscriptionActive;
+            if (!isActiveAndSubscribed) return false;
+
+            // Filtrado por disponibilidad del día (si es necesario)
+            if (!includeUnavailable) {
+                const today = new Date();
+                const shortDay = today.toLocaleString('es-ES', { weekday: 'short' }).slice(0, 3);
+                return prof.dayAvailability?.[shortDay] === true;
+            }
+
+            return true;
+        });
 
     return professionals;
 }
