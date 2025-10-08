@@ -78,24 +78,33 @@ export const updateProfessionalAvgRating = onDocumentWritten(
 
     // Actualizar el "libro" del profesional en 'professionalsDetails'.
     const professionalRef = db.collection("professionalsDetails").doc(professionalId);
-
+    
     try {
-      // Usamos set con { merge: true } en lugar de update.
-      // Esto crea el documento si no existe o lo actualiza si ya existe.
-      await professionalRef.set({
-        avgRating: parseFloat(avgRating.toFixed(2)),
-        totalReviews: numberOfReviews,
-      }, { merge: true });
+        const professionalDoc = await professionalRef.get();
 
-      functions.logger.log(
-        `Professional ${professionalId} avgRating/totalReviews updated to ${avgRating.toFixed(2)} with ${numberOfReviews} reviews.`,
-      );
+        const dataToUpdate = {
+            avgRating: parseFloat(avgRating.toFixed(2)),
+            totalReviews: numberOfReviews,
+        };
+
+        if (professionalDoc.exists) {
+            // Si el documento existe, lo actualizamos.
+            await professionalRef.update(dataToUpdate);
+        } else {
+            // Si no existe, lo creamos.
+            await professionalRef.set(dataToUpdate);
+        }
+
+        functions.logger.log(
+            `Professional ${professionalId} avgRating/totalReviews updated to ${avgRating.toFixed(2)} with ${numberOfReviews} reviews.`,
+        );
     } catch (error) {
-      functions.logger.error(
-        `Error updating professional ${professionalId} rating:`,
-        error,
-      );
+        functions.logger.error(
+            `Error updating professional ${professionalId} rating:`,
+            error,
+        );
     }
+
 
     return null;
   },

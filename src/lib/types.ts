@@ -44,7 +44,7 @@ export interface ProfessionalSubscription {
 
 
 export interface Professional {
-  id: string; // <--- MODIFICADO: Cambiado de 'string | number' a solo 'string' para user.uid
+  id: string;
   name: string;
   description?: string;
   phone?: string;
@@ -54,24 +54,22 @@ export interface Professional {
   specialties: string[];
   avgRating: number;
   categoryIds: number[];
-  // testimonials: Testimonial[]; // <--- ¡ELIMINADO! Las reseñas ahora van en su propia colección.
   workPhotos?: WorkPhoto[];
   isVerified: boolean;
   priceInfo?: string;
   subscription?: ProfessionalSubscription;
-  subscriptionTier?: 'standard' | 'premium'; // Legacy, prefer subscription.tier
-  isSubscriptionActive?: boolean; // Legacy, prefer subscription.isSubscriptionActive
+  subscriptionTier?: 'standard' | 'premium';
+  isSubscriptionActive?: boolean; 
   registrationDate: Date;
   lastPaymentDate?: Date;
   isActive: boolean;
   schedule?: Schedule[];
-  // --- ¡CAMPOS NUEVOS AÑADIDOS! ---
-  totalReviews: number; // <--- NUEVO: Para el conteo de reseñas
-  dayAvailability: { [key: string]: boolean }; // <--- NUEVO: Para la disponibilidad por días de la semana
+  totalReviews: number; 
+  dayAvailability: { [key: string]: boolean };
 }
 
 export interface Client {
-  id: number; // Podrías considerar cambiar esto a 'string' si usas user.uid para clientes también
+  id: number; 
   name: string;
   email: string;
   photoUrl: string;

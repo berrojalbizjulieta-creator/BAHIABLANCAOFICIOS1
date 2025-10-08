@@ -1,11 +1,10 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
 
     // Reglas para la colección 'users'
     match /users/{userId} {
-      // Cualquiera puede leer la información pública de un usuario.
+      // Cualquiera puede leer un perfil de usuario (nombre, foto).
       allow read: if true;
       // Solo el propio usuario puede crear o modificar su documento.
       allow write: if request.auth.uid == userId;
@@ -14,44 +13,43 @@ service cloud.firestore {
     // Reglas para la colección 'professionalsDetails'
     match /professionalsDetails/{profId} {
       allow read: if true;
-      allow create: if request.auth.uid == profId; // Solo el dueño puede crear su perfil
+      allow create: if request.auth.uid == profId ||
+                      (request.auth != null && request.resource.data.keys().hasOnly(['avgRating', 'totalReviews']));
       allow update: if
-        // El dueño del perfil puede actualizar cualquier campo
         request.auth.uid == profId ||
-        // O un usuario autenticado puede actualizar *solo* avgRating y totalReviews.
-        (request.auth != null &&
-         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['avgRating', 'totalReviews'])
-        );
-      allow delete: if request.auth.uid == profId; // Solo el dueño puede eliminar su perfil
+        (request.auth != null && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['avgRating', 'totalReviews']));
+      allow delete: if request.auth.uid == profId;
     }
-
+    
     // Reglas para la colección 'reviews'
     match /reviews/{reviewId} {
       // Cualquiera puede leer las reseñas.
       allow read: if true;
       // Solo un usuario autenticado puede crear una reseña.
       allow create: if request.auth != null;
-      // El autor de la reseña o un admin pueden actualizarla o borrarla.
-      allow update, delete: if request.auth.uid == resource.data.userId;
+      // Nadie puede actualizar o borrar reseñas (por seguridad).
+      allow update, delete: if false;
     }
-    
+
     // Reglas para la colección 'jobRequests'
     match /jobRequests/{jobId} {
-        // Cualquiera puede leer los anuncios de trabajo
+        // Cualquiera puede leer las solicitudes de trabajo.
         allow read: if true;
-        // Solo un usuario autenticado puede crear un anuncio
+        // Solo usuarios autenticados pueden crear solicitudes.
         allow create: if request.auth != null;
-        // Solo el autor del anuncio puede actualizarlo (ej. para cerrarlo) o borrarlo
-        allow update, delete: if request.auth.uid == resource.data.clientId;
+        // Solo el creador de la solicitud puede actualizarla (ej: para cerrarla).
+        allow update: if request.auth.uid == resource.data.clientId;
+        // Solo el creador puede eliminarla.
+        allow delete: if request.auth.uid == resource.data.clientId;
     }
-    
-    // Reglas para la colección 'adBanners'
+
+    // Reglas para 'adBanners' (banners de publicidad)
     match /adBanners/{bannerId} {
-        // Cualquiera puede leer los banners
+        // Cualquiera puede leer los banners.
         allow read: if true;
-        // Nadie (excepto desde la consola de Firebase) puede escribir directamente aquí.
-        // La gestión se debe hacer con credenciales de administrador.
-        allow write: if false;
+        // Nadie (excepto desde la consola de Firebase) puede escribir, actualizar o borrar.
+        // Esto asume que los banners los gestiona un administrador desde el backend o la consola.
+        allow write, update, delete: if false; 
     }
   }
 }
