@@ -2,9 +2,6 @@
 
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import allImages from '@/lib/placeholder-images.json';
-
-const celularImg = allImages.placeholderImages.find(p => p.id === 'app-promo-mockup-new');
 
 export default function AppPromoSection() {
   const textVariants = {
@@ -62,16 +59,15 @@ export default function AppPromoSection() {
             viewport={{ once: true, amount: 0.5 }}
             variants={imageVariants}
           >
-             {celularImg && (
-                <Image
-                    src={celularImg.imageUrl}
-                    alt={celularImg.description}
-                    width={350}
-                    height={700}
-                    className="object-contain max-w-xs md:max-w-sm"
-                    data-ai-hint={celularImg.imageHint}
-                />
-             )}
+             <Image
+                src="/celular-transparente-grande.png"
+                alt="Aplicación móvil de BahiaBlancaOficios"
+                width={350}
+                height={700}
+                className="object-contain max-w-xs md:max-w-sm"
+                data-ai-hint="phone app mockup"
+                priority
+             />
           </motion.div>
 
         </div>
