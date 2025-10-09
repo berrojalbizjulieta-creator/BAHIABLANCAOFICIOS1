@@ -216,7 +216,16 @@ export default function ProfilePage() {
              if (data.registrationDate && (data.registrationDate as any).toDate) {
                 data.registrationDate = (data.registrationDate as any).toDate();
             }
-            setProfessional(data);
+            
+            const fetchedProfessional: Professional = {
+                ...initialProfessionalData,
+                ...data,
+                id: docSnap.id,
+                totalReviews: data.totalReviews ?? reviewsData.length,
+                avgRating: data.avgRating ?? 0,
+            };
+
+            setProfessional(fetchedProfessional);
             setLastPaymentDate(data.lastPaymentDate);
             setSchedule(data.schedule || defaultSchedule);
             if (data.priceInfo) {
@@ -235,8 +244,8 @@ export default function ProfilePage() {
                 email: user.email || '',
                 photoUrl: user.photoURL || '',
                 registrationDate: new Date(),
-                avgRating: initialProfessionalData.avgRating,
-                totalReviews: reviewsData.length,
+                avgRating: 0,
+                totalReviews: 0,
                 dayAvailability: initialProfessionalData.dayAvailability,
             };
             setProfessional(newProfessional);
@@ -355,8 +364,8 @@ export default function ProfilePage() {
                 ...(professional.subscription || {}), 
                 isSubscriptionActive: professional.subscription?.isSubscriptionActive || false,
             },
-            avgRating: professional.avgRating, 
-            totalReviews: professional.totalReviews,
+            avgRating: professional.avgRating ?? 0,
+            totalReviews: professional.totalReviews ?? 0,
             dayAvailability: newDayAvailability,
         };
         
@@ -382,11 +391,11 @@ export default function ProfilePage() {
         }
         setIsEditing(false);
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error saving profile:", error);
         toast({
             title: "Error al Guardar",
-            description: "No se pudieron subir las imágenes o guardar los datos. Por favor, intenta de nuevo.",
+            description: error.message || "No se pudieron subir las imágenes o guardar los datos. Por favor, intenta de nuevo.",
             variant: "destructive"
         });
     } finally {
