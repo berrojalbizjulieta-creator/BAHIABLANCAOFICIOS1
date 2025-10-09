@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { placeholderImages } from '@/lib/placeholder-images';
 
-const celularImg = placeholderImages.find(p => p.id === 'app-promo-mockup-new');
+const celularImg = placeholderImages.find(p => p.id === 'app-promo-mockup');
 
 export default function AppPromoSection() {
   return (
