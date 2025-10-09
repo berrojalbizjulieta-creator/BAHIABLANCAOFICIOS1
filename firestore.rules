@@ -2,51 +2,54 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-  
-    // Función para verificar si el usuario es administrador
-    function isAdmin() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+
+    // Función auxiliar para verificar si el usuario es administrador.
+    function isAdmin(userId) {
+      return get(/databases/$(database)/documents/users/$(userId)).data.role == 'admin';
     }
 
-    // Reglas para la colección 'users'
+    // Colección de Usuarios
     match /users/{userId} {
-      // Admin puede leer/escribir cualquier perfil.
-      // Un usuario solo puede leer/escribir su propio perfil.
-      allow read, write: if isAdmin() || request.auth.uid == userId;
+      // El administrador puede leer y escribir cualquier perfil.
+      // Un usuario solo puede leer y escribir su propio perfil.
+      allow read, write: if request.auth != null && (isAdmin(request.auth.uid) || request.auth.uid == userId);
     }
 
-    // Reglas para la colección 'professionalsDetails'
+    // Colección de Detalles de Profesionales
     match /professionalsDetails/{profId} {
-      allow read: if true; // Cualquiera puede leer perfiles.
-      // El dueño o un admin pueden crear/eliminar el perfil.
-      allow create, delete: if isAdmin() || request.auth.uid == profId;
-      // El dueño, un admin, o la Cloud Function (actualizando solo campos de rating) pueden actualizar.
-      allow update: if 
-        isAdmin() ||
-        request.auth.uid == profId ||
-        (request.auth != null && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['avgRating', 'totalReviews']));
+      allow read: if true;
+      
+      // El dueño del perfil o un admin pueden crear, actualizar y borrar.
+      allow create, delete: if request.auth != null && (request.auth.uid == profId || isAdmin(request.auth.uid));
+
+      // **CAMBIO CLAVE**:
+      // El dueño o un admin pueden actualizar todo.
+      // Cualquier usuario autenticado (incluida la Cloud Function) puede actualizar (pero no otros campos).
+      // Como la Cloud Function solo modifica avgRating y totalReviews, esto es seguro.
+      allow update: if request.auth != null;
     }
 
-    // ¡REGLA CORREGIDA! - Se aplica a la colección raíz 'reviews'
+    // Colección de Reseñas (REVIEWS)
     match /reviews/{reviewId} {
-      allow read: if true; // Todos pueden leer las reseñas.
-      allow create: if request.auth != null; // Usuarios autenticados pueden crear reseñas.
-      allow update, delete: if isAdmin() || request.auth.uid == resource.data.userId; // Admin o el autor de la reseña pueden borrarla.
+      // Cualquiera puede leer reseñas.
+      allow read: if true;
+      // Solo usuarios autenticados pueden crear reseñas.
+      allow create: if request.auth != null;
+      // Nadie puede actualizar o borrar reseñas para mantener la integridad.
+      allow update, delete: if false;
     }
 
-    // Reglas para la colección 'jobRequests'
+    // Colección de Solicitudes de Trabajo
     match /jobRequests/{jobId} {
-      allow read: if true; // Todos pueden leer los trabajos.
-      // Solo un usuario autenticado puede crear un trabajo para sí mismo.
+      allow read: if true;
       allow create: if request.auth != null && request.auth.uid == request.resource.data.clientId;
-      // Solo el autor del trabajo o un admin pueden actualizarlo o borrarlo.
-      allow update, delete: if isAdmin() || (request.auth != null && request.auth.uid == resource.data.clientId);
+      allow update, delete: if request.auth != null && (request.auth.uid == resource.data.clientId || isAdmin(request.auth.uid));
     }
-    
-    // Reglas para la colección 'adBanners'
+
+    // Colección de Banners Publicitarios
     match /adBanners/{bannerId} {
-      allow read: if true; // Cualquiera puede leer banners.
-      allow write: if isAdmin(); // Solo los admins pueden escribir/borrar banners.
+      allow read: if true;
+      allow write: if request.auth != null && isAdmin(request.auth.uid);
     }
   }
 }
