@@ -102,8 +102,8 @@ export default function SignupPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       const user = userCredential.user;
 
-      // **SOLUCIÓN**: Actualizar el perfil de autenticación del usuario con el nombre completo.
-      // Esto asegura que `user.displayName` esté disponible inmediatamente en toda la app.
+      // **SOLUCIÓN (Parte 1):** Forzar la actualización del perfil de autenticación del usuario.
+      // Esto es crucial para que `user.displayName` esté disponible lo antes posible en toda la app.
       await updateProfile(user, { displayName: data.fullName });
 
       // 2. Prepare user data for Firestore
@@ -118,6 +118,7 @@ export default function SignupPage() {
       };
 
       // 3. Save user data to 'users' collection in Firestore
+      // Esta escritura también puede tener un pequeño retraso de propagación.
       await setDoc(doc(db, 'users', user.uid), userData);
 
       // 4. If professional, save additional details
@@ -150,11 +151,15 @@ export default function SignupPage() {
       });
 
       // 5. Redirect user after signup
-      if (isProfessional) {
-        router.push('/dashboard/profile');
-      } else {
-        router.push('/dashboard');
-      }
+      // Pequeño retardo para dar tiempo a la sincronización antes de redirigir.
+      setTimeout(() => {
+        if (isProfessional) {
+          router.push('/dashboard/profile');
+        } else {
+          router.push('/dashboard');
+        }
+      }, 500);
+
 
     } catch (error: any) {
       console.error("Error creating user:", error);
@@ -168,6 +173,7 @@ export default function SignupPage() {
         variant: "destructive",
       });
     } finally {
+      // El setIsLoading se mantiene, pero la redirección se retrasa.
       setIsLoading(false);
     }
   };

@@ -105,20 +105,24 @@ export default function JobRequestsPage() {
     setIsSubmitting(true);
     
     try {
-        // SOLUCIÓN DEFINITIVA: Obtener el nombre directamente del documento del usuario en Firestore.
+        // **SOLUCIÓN (Parte 2):** Obtener el nombre directamente del documento del usuario en Firestore.
+        // Esta es la fuente de verdad más confiable, especialmente para usuarios nuevos.
         const userDocRef = doc(db, 'users', user.uid);
         const userDocSnap = await getDoc(userDocRef);
         
         let clientName = 'Cliente Anónimo'; // Valor por defecto
         if (userDocSnap.exists()) {
-            // Se usa el nombre del documento de Firestore, que es la fuente de verdad.
+            // Se usa el nombre del documento de Firestore.
             clientName = userDocSnap.data().name || user.displayName || 'Cliente Anónimo';
+        } else {
+            // Como fallback, si el documento aún no se ha creado, usamos el displayName.
+            clientName = user.displayName || 'Cliente Anónimo';
         }
 
         const newRequestData = {
             ...data,
             clientId: user.uid,
-            clientName: clientName, // Usamos el nombre obtenido de Firestore.
+            clientName: clientName, // Usamos el nombre obtenido (de Firestore o Auth).
             clientPhotoUrl: user.photoURL || '',
             createdAt: serverTimestamp(),
             status: 'open' as 'open',
