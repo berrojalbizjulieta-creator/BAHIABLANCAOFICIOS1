@@ -102,11 +102,10 @@ export default function SignupPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       const user = userCredential.user;
 
-      // **SOLUCIÓN (Parte 1):** Forzar la actualización del perfil de autenticación del usuario.
-      // Esto es crucial para que `user.displayName` esté disponible lo antes posible en toda la app.
+      // 2. Update Firebase Auth profile
       await updateProfile(user, { displayName: data.fullName });
 
-      // 2. Prepare user data for Firestore
+      // 3. Prepare user data for Firestore
       const isProfessional = accountType === 'professional';
       const userData = {
         name: data.fullName,
@@ -117,11 +116,10 @@ export default function SignupPage() {
         photoUrl: '', // Default empty photo
       };
 
-      // 3. Save user data to 'users' collection in Firestore
-      // Esta escritura también puede tener un pequeño retraso de propagación.
+      // 4. Save user data to 'users' collection in Firestore
       await setDoc(doc(db, 'users', user.uid), userData);
 
-      // 4. If professional, save additional details
+      // 5. If professional, save additional details
       if (isProfessional) {
         const professionalData = data as ProfessionalFormValues;
         const professionalDetails = {
@@ -150,16 +148,12 @@ export default function SignupPage() {
         description: `Tu cuenta de ${accountType === 'client' ? 'cliente' : 'profesional'} ha sido creada exitosamente.`,
       });
 
-      // 5. Redirect user after signup
-      // Pequeño retardo para dar tiempo a la sincronización antes de redirigir.
-      setTimeout(() => {
-        if (isProfessional) {
-          router.push('/dashboard/profile');
-        } else {
-          router.push('/dashboard');
-        }
-      }, 500);
-
+      // 6. Redirect user after signup
+      if (isProfessional) {
+        router.push('/dashboard/profile');
+      } else {
+        router.push('/dashboard');
+      }
 
     } catch (error: any) {
       console.error("Error creating user:", error);
@@ -173,7 +167,6 @@ export default function SignupPage() {
         variant: "destructive",
       });
     } finally {
-      // El setIsLoading se mantiene, pero la redirección se retrasa.
       setIsLoading(false);
     }
   };
