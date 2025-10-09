@@ -31,7 +31,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import type { JobRequest } from '@/lib/types';
 import JobRequestCard from './job-request-card';
 import { db } from '@/lib/firebase';
-import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, updateDoc, getDoc } from 'firebase/firestore';
 
 
 const jobRequestSchema = z.object({
@@ -100,18 +100,23 @@ export default function JobRequestsPage() {
     if (!user) return;
     
     setIsSubmitting(true);
-
-    const newRequestData = {
-        ...data,
-        clientId: user.uid,
-        clientName: user.displayName || 'Cliente Anónimo',
-        clientPhotoUrl: user.photoURL || '',
-        createdAt: serverTimestamp(),
-        status: 'open' as 'open',
-        comments: [],
-    };
     
     try {
+        // Fetch user data from 'users' collection to get the correct name
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        const clientName = userDocSnap.exists() ? userDocSnap.data().name : 'Cliente Anónimo';
+
+        const newRequestData = {
+            ...data,
+            clientId: user.uid,
+            clientName: clientName,
+            clientPhotoUrl: user.photoURL || '',
+            createdAt: serverTimestamp(),
+            status: 'open' as 'open',
+            comments: [],
+        };
+
         const docRef = await addDoc(collection(db, "jobRequests"), newRequestData);
         const localNewRequest = {
             ...newRequestData,
