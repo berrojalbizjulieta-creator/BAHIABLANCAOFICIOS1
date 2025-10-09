@@ -3,53 +3,50 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Función auxiliar para verificar si el usuario es administrador.
-    function isAdmin(userId) {
-      return get(/databases/$(database)/documents/users/$(userId)).data.role == 'admin';
+    // Función para verificar si el usuario es administrador.
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'berrojalbizjulieta@gmail.com';
     }
 
-    // Colección de Usuarios
+    // Reglas para la colección 'users'
     match /users/{userId} {
-      // El administrador puede leer y escribir cualquier perfil.
-      // Un usuario solo puede leer y escribir su propio perfil.
-      allow read, write: if request.auth != null && (isAdmin(request.auth.uid) || request.auth.uid == userId);
+      // El dueño del documento o un admin puede leer y escribir.
+      allow read, write: if request.auth.uid == userId || isAdmin();
     }
 
-    // Colección de Detalles de Profesionales
+    // Reglas para la colección 'professionalsDetails'
     match /professionalsDetails/{profId} {
-      allow read: if true;
-      
-      // El dueño del perfil o un admin pueden crear, actualizar y borrar.
-      allow create, delete: if request.auth != null && (request.auth.uid == profId || isAdmin(request.auth.uid));
+      allow read: if true; // Cualquiera puede leer el perfil.
 
-      // **CAMBIO CLAVE**:
-      // El dueño o un admin pueden actualizar todo.
-      // Cualquier usuario autenticado (incluida la Cloud Function) puede actualizar (pero no otros campos).
-      // Como la Cloud Function solo modifica avgRating y totalReviews, esto es seguro.
-      allow update: if request.auth != null;
+      // El dueño puede crear y borrar su perfil.
+      allow create, delete: if request.auth.uid == profId;
+
+      // Se permite la actualización si:
+      // 1. Es el dueño del perfil (puede cambiar cualquier cosa).
+      // 2. Es la Cloud Function actualizando el rating (cualquier usuario autenticado puede hacerlo).
+      allow update: if request.auth.uid == profId || (request.auth != null && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['avgRating', 'totalReviews']));
     }
 
-    // Colección de Reseñas (REVIEWS)
+    // Reglas para la colección 'reviews' (como colección principal)
     match /reviews/{reviewId} {
-      // Cualquiera puede leer reseñas.
-      allow read: if true;
-      // Solo usuarios autenticados pueden crear reseñas.
-      allow create: if request.auth != null;
-      // Nadie puede actualizar o borrar reseñas para mantener la integridad.
-      allow update, delete: if false;
+      allow read: if true; // Todos pueden leer las reseñas.
+      allow create: if request.auth != null; // Cualquier usuario autenticado puede crear una reseña.
+      allow update, delete: if false; // Nadie puede modificar o borrar reseñas.
     }
 
-    // Colección de Solicitudes de Trabajo
+    // Reglas para la colección 'jobRequests'
     match /jobRequests/{jobId} {
-      allow read: if true;
+      allow read: if true; // Todos pueden leer las solicitudes de trabajo.
+      // El creador de la solicitud es el único que puede crear, actualizar o borrar.
       allow create: if request.auth != null && request.auth.uid == request.resource.data.clientId;
-      allow update, delete: if request.auth != null && (request.auth.uid == resource.data.clientId || isAdmin(request.auth.uid));
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.clientId;
     }
 
-    // Colección de Banners Publicitarios
+    // Reglas para la colección 'adBanners'
     match /adBanners/{bannerId} {
-      allow read: if true;
-      allow write: if request.auth != null && isAdmin(request.auth.uid);
+      allow read: if true; // Todos pueden leer los banners.
+      // Solo el administrador puede escribir (crear, actualizar, borrar).
+      allow write: if isAdmin();
     }
   }
 }
