@@ -7,7 +7,5 @@ export type ImagePlaceholder = {
   imageHint: string;
 };
 
-// Asegurarse de que sea realmente un array
-export const placeholderImages: ImagePlaceholder[] = Array.isArray(allImages)
-  ? allImages
-  : []; // <-- fallback si allImages no es un array
+// Accede directamente a la propiedad 'placeholderImages' del JSON importado.
+export const placeholderImages: ImagePlaceholder[] = allImages.placeholderImages || [];

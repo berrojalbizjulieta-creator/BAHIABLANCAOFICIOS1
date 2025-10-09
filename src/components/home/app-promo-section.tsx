@@ -1,11 +1,12 @@
 'use client';
 
 import Image from 'next/image';
-import { placeholderImages } from '@/lib/placeholder-images';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
+// Importa directamente el JSON para evitar problemas de carga.
+import allImages from '@/lib/placeholder-images.json';
 
-const celularImg = placeholderImages.find(p => p.id === 'app-promo-mockup');
+const celularImg = allImages.placeholderImages.find(p => p.id === 'app-promo-mockup');
 
 export default function AppPromoSection() {
   const sectionRef = useRef(null);
