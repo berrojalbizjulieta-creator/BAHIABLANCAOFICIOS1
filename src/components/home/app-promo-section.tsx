@@ -6,7 +6,7 @@ import { useRef } from 'react';
 // Importa directamente el JSON para evitar problemas de carga.
 import allImages from '@/lib/placeholder-images.json';
 
-const celularImg = allImages.placeholderImages.find(p => p.id === 'app-promo-mockup');
+const celularImg = allImages.placeholderImages.find(p => p.id === 'app-promo-mockup-new');
 
 export default function AppPromoSection() {
   const sectionRef = useRef(null);
@@ -58,7 +58,7 @@ export default function AppPromoSection() {
           
           <motion.div 
             style={{ x }}
-            className="absolute top-1/2 left-1/2 -translate-y-1/2 w-[250px] md:w-[350px] z-0 opacity-80 md:opacity-100"
+            className="absolute top-1/2 left-1/2 -translate-y-1/2 w-[350px] md:w-[450px] z-0 opacity-80 md:opacity-100"
           >
              {celularImg && (
                 <Image
