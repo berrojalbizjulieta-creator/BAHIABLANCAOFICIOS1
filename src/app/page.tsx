@@ -1,3 +1,4 @@
+// Restoration Point: Fri Jul 26 2024 18:23:44 GMT+0000 (Coordinated Universal Time)
 
 import CategoriesGrid from '@/components/home/categories-grid';
 import HeroSection from '@/components/home/hero-section';
