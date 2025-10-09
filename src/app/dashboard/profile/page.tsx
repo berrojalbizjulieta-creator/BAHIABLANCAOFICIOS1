@@ -359,9 +359,10 @@ export default function ProfilePage() {
             priceInfo: `${price.type}: $${price.amount}`, 
             schedule,
             isActive: true,
+            // DO NOT set isSubscriptionActive here, it will be handled by onPaymentSuccess
             subscription: {
                 ...professional.subscription,
-                isSubscriptionActive: professional.subscription?.isSubscriptionActive || isSubscriptionActive,
+                isSubscriptionActive: professional.subscription?.isSubscriptionActive || false,
             },
             avgRating: professional.avgRating ?? 0,
             totalReviews: professional.totalReviews ?? 0,
@@ -696,7 +697,7 @@ export default function ProfilePage() {
             <Tabs defaultValue="about" className="w-full">
               <TabsList>
                 <TabsTrigger value="about">Sobre Mí</TabsTrigger>
-                <TabsTrigger value="reviews">Reseñas</TabsTrigger>
+                <TabsTrigger value="reviews">Reseñas ({reviews.length})</TabsTrigger>
                 <TabsTrigger value="photos">Fotos</TabsTrigger>
                 <TabsTrigger value="credentials">Credenciales</TabsTrigger>
                 <TabsTrigger value="verification">Verificación</TabsTrigger>
@@ -812,7 +813,7 @@ export default function ProfilePage() {
                 <Card className="shadow-lg">
                   <CardHeader>
                     <CardTitle>
-                      Reseñas ({reviews.length}) 
+                      Reseñas de Clientes ({reviews.length}) 
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
