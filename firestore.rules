@@ -2,49 +2,51 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+  
+    // Función para verificar si el usuario es administrador
+    function isAdmin() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
     // Reglas para la colección 'users'
     match /users/{userId} {
-      // Cualquiera puede leer la información pública de un usuario
-      allow read: if true;
-      // Solo el propio usuario o un admin puede crear, actualizar o eliminar su perfil.
-      allow write: if request.auth.uid == userId || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      // Admin puede leer/escribir cualquier perfil.
+      // Un usuario solo puede leer/escribir su propio perfil.
+      allow read, write: if isAdmin() || request.auth.uid == userId;
     }
 
     // Reglas para la colección 'professionalsDetails'
     match /professionalsDetails/{profId} {
-        allow read: if true;
-        allow create: if (request.auth.uid == profId) || (request.auth != null && request.resource.data.keys().hasOnly(['avgRating', 'totalReviews']));
-        allow update: if
-            request.auth.uid == profId ||
-            (request.auth != null &&
-            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['avgRating', 'totalReviews']));
-        allow delete: if request.auth.uid == profId;
-    }
-    
-    // Reglas para la colección 'reviews'
-    match /reviews/{reviewId} {
-        // Cualquiera puede leer las reseñas
-        allow read: if true;
-        // Solo un usuario autenticado puede crear una reseña
-        allow create: if request.auth != null;
-        // El autor de la reseña o un admin pueden actualizarla o eliminarla
-        allow update, delete: if resource.data.userId == request.auth.uid || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      allow read: if true; // Cualquiera puede leer perfiles.
+      // El dueño o un admin pueden crear/eliminar el perfil.
+      allow create, delete: if isAdmin() || request.auth.uid == profId;
+      // El dueño, un admin, o la Cloud Function (actualizando solo campos de rating) pueden actualizar.
+      allow update: if 
+        isAdmin() ||
+        request.auth.uid == profId ||
+        (request.auth != null && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['avgRating', 'totalReviews']));
     }
 
-    // Reglas para la colección 'adBanners'
-    match /adBanners/{bannerId} {
-      // Cualquiera puede leer los banners
-      allow read: if true;
-      // Solo los administradores pueden crear, actualizar o eliminar banners
-      allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    // ¡REGLA CORREGIDA! - Se aplica a la colección raíz 'reviews'
+    match /reviews/{reviewId} {
+      allow read: if true; // Todos pueden leer las reseñas.
+      allow create: if request.auth != null; // Usuarios autenticados pueden crear reseñas.
+      allow update, delete: if isAdmin() || request.auth.uid == resource.data.userId; // Admin o el autor de la reseña pueden borrarla.
     }
 
     // Reglas para la colección 'jobRequests'
     match /jobRequests/{jobId} {
-      allow read: if true;
-      allow create: if request.auth != null;
-      allow update: if request.auth.uid == resource.data.clientId || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-      allow delete: if request.auth.uid == resource.data.clientId || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      allow read: if true; // Todos pueden leer los trabajos.
+      // Solo un usuario autenticado puede crear un trabajo para sí mismo.
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.clientId;
+      // Solo el autor del trabajo o un admin pueden actualizarlo o borrarlo.
+      allow update, delete: if isAdmin() || (request.auth != null && request.auth.uid == resource.data.clientId);
+    }
+    
+    // Reglas para la colección 'adBanners'
+    match /adBanners/{bannerId} {
+      allow read: if true; // Cualquiera puede leer banners.
+      allow write: if isAdmin(); // Solo los admins pueden escribir/borrar banners.
     }
   }
 }
