@@ -31,7 +31,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import type { JobRequest } from '@/lib/types';
 import JobRequestCard from './job-request-card';
 import { db } from '@/lib/firebase';
-import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, updateDoc, getDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, updateDoc, getDoc, DocumentData } from 'firebase/firestore';
 
 
 const jobRequestSchema = z.object({
@@ -105,7 +105,12 @@ export default function JobRequestsPage() {
         // Fetch user data from 'users' collection to get the correct name
         const userDocRef = doc(db, 'users', user.uid);
         const userDocSnap = await getDoc(userDocRef);
-        const clientName = userDocSnap.exists() ? userDocSnap.data().name : 'Cliente Anónimo';
+        
+        let clientName = 'Cliente Anónimo';
+        if (userDocSnap.exists()) {
+            const userData = userDocSnap.data() as DocumentData;
+            clientName = userData.name || user.displayName || 'Cliente Anónimo';
+        }
 
         const newRequestData = {
             ...data,
