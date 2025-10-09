@@ -1,22 +1,12 @@
 'use client';
 
 import Image from 'next/image';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
-// Importa directamente el JSON para evitar problemas de carga.
+import { motion } from 'framer-motion';
 import allImages from '@/lib/placeholder-images.json';
 
 const celularImg = allImages.placeholderImages.find(p => p.id === 'app-promo-mockup-new');
 
 export default function AppPromoSection() {
-  const sectionRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start end', 'end start'],
-  });
-
-  const x = useTransform(scrollYProgress, [0, 1], ['50%', '-50%']);
-
   const textVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -29,16 +19,25 @@ export default function AppPromoSection() {
     },
   };
 
+  const imageVariants = {
+    hidden: { opacity: 0, scale: 0.9 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        duration: 0.8,
+        ease: "easeOut",
+      },
+    },
+  };
 
   return (
-    <section 
-        ref={sectionRef} 
-        className="relative py-20 md:py-32 overflow-hidden"
-    >
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="grid md:grid-cols-2 gap-8 items-center">
+    <section className="relative py-20 md:py-32 overflow-hidden">
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="grid md:grid-cols-2 gap-12 items-center">
+          
           <motion.div 
-            className="text-center md:text-left"
+            className="text-center md:text-left z-10"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.5 }}
@@ -52,21 +51,24 @@ export default function AppPromoSection() {
           >
             <div className="flex flex-col font-headline tracking-tighter text-foreground">
                 <motion.span variants={textVariants} className="text-3xl md:text-4xl font-bold">PRÓXIMAMENTE...</motion.span>
-                <motion.span variants={textVariants} className="text-2xl md:text-3xl font-medium self-end">Tus soluciones en la palma de la mano</motion.span>
+                <motion.span variants={textVariants} className="text-2xl md:text-3xl font-medium self-start md:self-end">Tus soluciones en la palma de la mano</motion.span>
             </div>
           </motion.div>
           
           <motion.div 
-            style={{ x }}
-            className="absolute top-1/2 left-1/2 -translate-y-1/2 w-[350px] md:w-[450px] z-0 opacity-80 md:opacity-100"
+            className="flex justify-center items-center"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.5 }}
+            variants={imageVariants}
           >
              {celularImg && (
                 <Image
                     src={celularImg.imageUrl}
                     alt={celularImg.description}
-                    width={800}
-                    height={1600}
-                    className="object-contain"
+                    width={350}
+                    height={700}
+                    className="object-contain max-w-xs md:max-w-sm"
                     data-ai-hint={celularImg.imageHint}
                 />
              )}
