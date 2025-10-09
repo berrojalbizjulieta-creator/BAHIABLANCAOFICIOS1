@@ -1,36 +1,8 @@
 rules_version = '2';
-
 service firebase.storage {
   match /b/{bucket}/o {
-    
-    // Las imágenes de banners y trabajos de profesionales son públicas para leer.
-    match /adBanners/{fileName} {
-      allow read: if true;
-      allow write: if request.auth != null; // Asumiendo que solo admins suben (controlado por la app)
-    }
-    
-    match /professional-work-photos/{userId}/{fileName} {
-      allow read: if true;
-      // Solo el usuario dueño de esa carpeta puede escribir.
-      allow write: if request.auth != null && request.auth.uid == userId;
-    }
-
-    // Los avatares de perfil son públicos para leer.
-    match /professional-avatars/{userId} {
-      allow read: if true;
-      // Solo el usuario dueño de ese avatar puede escribir/actualizarlo.
-      allow write: if request.auth != null && request.auth.uid == userId;
-    }
-    
-    match /user-avatars/{userId} {
-      allow read: if true;
-      // Solo el usuario dueño de ese avatar puede escribir/actualizarlo.
-      allow write: if request.auth != null && request.auth.uid == userId;
-    }
-
-    // Por defecto, denegar todo lo demás.
     match /{allPaths=**} {
-      allow read, write: if false;
+      allow read, write: if true;
     }
   }
 }
