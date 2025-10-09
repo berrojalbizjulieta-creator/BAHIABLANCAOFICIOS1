@@ -65,7 +65,7 @@ import PaymentDialog from '@/components/professionals/payment-dialog';
 import { subMonths, formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CATEGORIES, PROFESSIONALS, CATEGORY_SPECIALTIES, defaultSchedule } from '@/lib/data';
+import { CATEGORIES, CATEGORY_SPECIALTIES, defaultSchedule } from '@/lib/data';
 import SpecialtiesDialog from '@/components/professionals/specialties-dialog';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { storage, db } from '@/lib/firebase';
@@ -134,12 +134,6 @@ const ReviewCard = ({ review }: { review: Review }) => {
     </div>
   )
 }
-
-const getImage = (id: string) =>
-  placeholderImages.find((img) => img.id === id) || {
-    imageUrl: '',
-    imageHint: '',
-  };
 
 const initialProfessionalData: Professional = {
     id: '', 

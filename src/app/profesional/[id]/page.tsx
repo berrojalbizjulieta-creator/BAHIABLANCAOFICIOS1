@@ -46,7 +46,7 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { useParams } from 'next/navigation';
-import { CATEGORIES } from '@/lib/data'; // Mantenemos CATEGORIES si aún las usas para mapear IDs a nombres
+import { CATEGORIES } from '@/lib/data';
 import { Textarea } from '@/components/ui/textarea';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { formatDistanceToNow } from 'date-fns';
@@ -54,7 +54,7 @@ import { es } from 'date-fns/locale';
 
 // IMPORTACIONES DE FIRESTORE
 import { doc, getDoc, collection, addDoc, serverTimestamp, DocumentData } from 'firebase/firestore';
-import { db } from '@/lib/firebase'; // Asegúrate de que esta ruta sea correcta para tu instancia de db
+import { db } from '@/lib/firebase';
 import { getReviewsForProfessional } from '@/lib/firestore-queries';
 
 // --- Funciones auxiliares (mantener sin cambios) ---
@@ -203,11 +203,10 @@ export default function PublicProfilePage() {
   const { user, loading: userLoading, isProfessional } = useAdminAuth();
   const professionalId = params.id as string;
 
-  const [professional, setProfessional] = useState<Professional | undefined>(undefined);
+  const [professional, setProfessional] = useState<Professional | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [professionalFound, setProfessionalFound] = useState<boolean>(false);
   const [activePhoto, setActivePhoto] = useState<WorkPhoto | null>(null);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const { toast } = useToast();
@@ -216,7 +215,6 @@ export default function PublicProfilePage() {
     const fetchProfessionalData = async () => {
       if (!professionalId) {
         setLoading(false);
-        setProfessionalFound(false);
         return;
       }
 
@@ -226,7 +224,6 @@ export default function PublicProfilePage() {
       try {
         const professionalDocRef = doc(db, 'professionalsDetails', professionalId);
         
-        // Fetch professional data and reviews in parallel
         const [profDocSnap, reviewsData] = await Promise.all([
           getDoc(professionalDocRef),
           getReviewsForProfessional(db, professionalId)
@@ -253,20 +250,19 @@ export default function PublicProfilePage() {
           const finalProfessionalData: Professional = {
             id: profDocSnap.id,
             ...data,
+            totalReviews: data.totalReviews ?? reviewsData.length,
+            avgRating: data.avgRating ?? 0,
             phone: data.phone || '',
           };
 
           setProfessional(finalProfessionalData);
-          setProfessionalFound(true);
         } else {
-          setProfessional(undefined);
-          setProfessionalFound(false);
+          setProfessional(null);
         }
       } catch (err: any) {
         console.error("Error al obtener el profesional:", err);
         setError('Error al cargar el perfil. Por favor, intenta de nuevo.');
-        setProfessional(undefined);
-        setProfessionalFound(false);
+        setProfessional(null);
       } finally {
         setLoading(false);
       }
@@ -340,7 +336,7 @@ export default function PublicProfilePage() {
     );
   }
 
-  if (!professionalFound || !professional) {
+  if (!professional) {
     return <div className="container py-12 text-center">Profesional no encontrado.</div>;
   }
   
