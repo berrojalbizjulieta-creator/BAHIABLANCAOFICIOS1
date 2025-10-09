@@ -25,7 +25,7 @@ import { DollarSign, Users, Briefcase, UserPlus, Loader2 } from 'lucide-react';
 import ProfessionalsTable from '@/components/admin/professionals-table';
 import VerificationRequests from '@/components/admin/verification-requests';
 import AdManagement from '@/components/admin/ad-management';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Professional, User as AppUser } from '@/lib/types';
 import { subMonths } from 'date-fns';
@@ -53,18 +53,34 @@ function AdminDashboard() {
                 const usersSnapshot = await getDocs(collection(db, 'users'));
                 const professionalsSnapshot = await getDocs(collection(db, 'professionalsDetails'));
 
-                const allUsers = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AppUser));
-                const allProfessionals = professionalsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Professional));
+                const allUsers = usersSnapshot.docs.map(doc => {
+                    const data = doc.data() as AppUser;
+                    if (data.registrationDate instanceof Timestamp) {
+                        data.registrationDate = data.registrationDate.toDate();
+                    }
+                    return { id: doc.id, ...data };
+                });
+
+                const allProfessionals = professionalsSnapshot.docs.map(doc => {
+                    const data = doc.data() as Professional;
+                    if (data.registrationDate instanceof Timestamp) {
+                        data.registrationDate = data.registrationDate.toDate();
+                    }
+                    if (data.lastPaymentDate instanceof Timestamp) {
+                        data.lastPaymentDate = data.lastPaymentDate.toDate();
+                    }
+                    return { id: doc.id, ...data };
+                });
 
                 const now = new Date();
                 const oneMonthAgo = subMonths(now, 1);
                 const twoMonthsAgo = subMonths(now, 2);
-
-                const newClients = allUsers.filter(u => u.role === 'client' && u.registrationDate > oneMonthAgo).length;
-                const prevMonthNewClients = allUsers.filter(u => u.role === 'client' && u.registrationDate > twoMonthsAgo && u.registrationDate <= oneMonthAgo).length;
                 
-                const newProfessionals = allProfessionals.filter(p => p.registrationDate > oneMonthAgo).length;
-                const prevMonthNewProfessionals = allProfessionals.filter(p => p.registrationDate > twoMonthsAgo && p.registrationDate <= oneMonthAgo).length;
+                const newClients = allUsers.filter(u => u.role === 'client' && u.registrationDate && (u.registrationDate as Date) > oneMonthAgo).length;
+                const prevMonthNewClients = allUsers.filter(u => u.role === 'client' && u.registrationDate && (u.registrationDate as Date) > twoMonthsAgo && (u.registrationDate as Date) <= oneMonthAgo).length;
+                
+                const newProfessionals = allProfessionals.filter(p => p.registrationDate && (p.registrationDate as Date) > oneMonthAgo).length;
+                const prevMonthNewProfessionals = allProfessionals.filter(p => p.registrationDate && (p.registrationDate as Date) > twoMonthsAgo && (p.registrationDate as Date) <= oneMonthAgo).length;
 
                 const activeSubscriptions = allProfessionals.filter(p => p.subscription?.isSubscriptionActive).length;
                 
@@ -81,15 +97,23 @@ function AdminDashboard() {
 
                 allProfessionals.forEach(prof => {
                     if (prof.registrationDate) {
-                        const monthIndex = 11 - (now.getMonth() - prof.registrationDate.getMonth() + 12) % 12;
+                        const regDate = prof.registrationDate as Date;
+                        const monthIndex = 11 - (now.getMonth() - regDate.getMonth() + 12) % 12;
                         if(monthIndex >= 0 && monthIndex < 12) {
                             overviewData[monthIndex].total += 1;
                         }
                     }
                 });
 
+                const totalRevenue = allProfessionals.reduce((acc, p) => {
+                    if (p.subscription?.isSubscriptionActive) {
+                        return acc + (p.subscriptionTier === 'premium' ? 15000 : 9000);
+                    }
+                    return acc;
+                }, 0);
+
                 setStats({
-                    totalRevenue: allProfessionals.reduce((acc, p) => acc + (p.subscriptionTier === 'premium' ? 15000 : 9000), 0),
+                    totalRevenue: totalRevenue,
                     revenueChange: 20.1, // Placeholder
                     newClients,
                     newClientsChange: calculatePercentageChange(newClients, prevMonthNewClients),
