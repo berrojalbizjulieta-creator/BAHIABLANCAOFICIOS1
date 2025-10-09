@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { placeholderImages } from '@/lib/placeholder-images';
 
 // Usamos una imagen que sabemos que existe en el JSON de placeholders.
-const celularImg = placeholderImages.find(p => p.id === 'app-promo-mockup');
+const celularImg = placeholderImages.find(p => p.id === 'app-promo-mockup-new');
 
 export default function AppPromoSection() {
   const textVariants = {
@@ -21,10 +21,11 @@ export default function AppPromoSection() {
   };
 
   const imageVariants = {
-    hidden: { opacity: 0, scale: 0.9 },
+    hidden: { opacity: 0, scale: 0.9, y: 50 },
     visible: {
       opacity: 1,
       scale: 1,
+      y: 0,
       transition: {
         duration: 0.8,
         ease: "easeOut",
@@ -67,9 +68,9 @@ export default function AppPromoSection() {
                 <Image
                     src={celularImg.imageUrl}
                     alt="Aplicación móvil de BahiaBlancaOficios"
-                    width={350}
-                    height={700}
-                    className="object-contain max-w-xs md:max-w-sm"
+                    width={400}
+                    height={800}
+                    className="object-contain max-w-xs md:max-w-sm drop-shadow-2xl"
                     data-ai-hint={celularImg.imageHint}
                 />
              )}
