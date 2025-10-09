@@ -70,10 +70,10 @@ export async function getReviewsForProfessional(firestore: Firestore, profession
     }
 
     const reviewsRef = collection(firestore, 'reviews');
+    // Se elimina el orderBy para evitar la necesidad de un índice compuesto mientras se construye.
     const q = query(
         reviewsRef,
-        where('professionalId', '==', professionalId),
-        orderBy('createdAt', 'desc')
+        where('professionalId', '==', professionalId)
     );
 
     const querySnapshot = await getDocs(q);
@@ -86,6 +86,9 @@ export async function getReviewsForProfessional(firestore: Firestore, profession
             createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
         } as Review;
     });
+
+    // Se ordena manualmente en el lado del cliente (servidor de Next.js en este caso).
+    reviews.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
     return reviews;
 }
