@@ -94,7 +94,7 @@ export default function ClientsTable() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Clientes Registrados</CardTitle>
+        <CardTitle>Clientes Registrados ({clients.length})</CardTitle>
         <CardDescription>
           Gestiona los clientes de la plataforma.
         </CardDescription>
@@ -159,4 +159,3 @@ export default function ClientsTable() {
     </Card>
   );
 }
-
