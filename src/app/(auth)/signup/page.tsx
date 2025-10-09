@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -101,6 +101,10 @@ export default function SignupPage() {
       // 1. Create user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       const user = userCredential.user;
+
+      // **SOLUCIÓN**: Actualizar el perfil de autenticación del usuario con el nombre completo.
+      // Esto asegura que `user.displayName` esté disponible inmediatamente en toda la app.
+      await updateProfile(user, { displayName: data.fullName });
 
       // 2. Prepare user data for Firestore
       const isProfessional = accountType === 'professional';
