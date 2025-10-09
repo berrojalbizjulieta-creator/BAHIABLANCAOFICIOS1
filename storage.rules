@@ -1,8 +1,48 @@
 rules_version = '2';
+
 service firebase.storage {
   match /b/{bucket}/o {
+
+    // --- Helper Functions ---
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'berrojalbizjulieta@gmail.com';
+    }
+
+    // Regla por defecto: Nadie puede leer o escribir, para mayor seguridad.
     match /{allPaths=**} {
-      allow read, write: if true;
+      allow read, write: if false;
+    }
+
+    // Avatares de Profesionales
+    // Lectura: Pública para que todos puedan ver las fotos de perfil.
+    // Escritura: Solo el profesional dueño del perfil o un administrador.
+    match /professional-avatars/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null && (request.auth.uid == userId || isAdmin());
+    }
+
+    // Fotos de Trabajos de Profesionales
+    // Lectura: Pública.
+    // Escritura: Solo el profesional dueño o un admin puede subir/borrar fotos en su carpeta.
+    match /professional-work-photos/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null && (request.auth.uid == userId || isAdmin());
+    }
+    
+    // Avatares de Usuarios (Clientes)
+    // Lectura: Pública.
+    // Escritura: Solo el usuario dueño de la cuenta.
+    match /user-avatars/{userId} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Banners Publicitarios
+    // Lectura: Pública.
+    // Escritura: Solo administradores.
+    match /adBanners/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
   }
 }

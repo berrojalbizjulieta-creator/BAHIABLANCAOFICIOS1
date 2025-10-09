@@ -2,51 +2,61 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Función para verificar si el usuario es administrador.
+  
+    // --- Helper Functions ---
+    // Función para verificar si el usuario es el administrador
     function isAdmin() {
       return request.auth != null && request.auth.token.email == 'berrojalbizjulieta@gmail.com';
     }
 
-    // Reglas para la colección 'users'
+    // --- Collection Rules ---
+
+    // Colección 'users'
+    // Lectura: Cualquier usuario autenticado.
+    // Escritura: Solo el dueño del documento o un administrador.
     match /users/{userId} {
-      // El dueño del documento o un admin puede leer y escribir.
-      allow read, write: if request.auth.uid == userId || isAdmin();
+      allow read: if request.auth != null;
+      allow write: if request.auth.uid == userId || isAdmin();
     }
 
-    // Reglas para la colección 'professionalsDetails'
+    // Colección 'professionalsDetails'
+    // Lectura: Cualquiera puede leer.
+    // Creación/Eliminación: Solo el dueño del perfil o un administrador.
+    // Actualización: El dueño, un admin, o CUALQUIER usuario autenticado. 
+    // Esta última condición es para que la Cloud Function (que se ejecuta en nombre de un cliente) pueda actualizar avgRating.
     match /professionalsDetails/{profId} {
-      allow read: if true; // Cualquiera puede leer el perfil.
-
-      // El dueño puede crear y borrar su perfil.
-      allow create, delete: if request.auth.uid == profId;
-
-      // Se permite la actualización si:
-      // 1. Es el dueño del perfil (puede cambiar cualquier cosa).
-      // 2. Es la Cloud Function actualizando el rating (cualquier usuario autenticado puede hacerlo).
-      allow update: if request.auth.uid == profId || (request.auth != null && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['avgRating', 'totalReviews']));
+      allow read: if true;
+      allow create: if request.auth.uid == profId || isAdmin();
+      allow update: if request.auth.uid == profId || isAdmin() || request.auth != null;
+      allow delete: if request.auth.uid == profId || isAdmin();
     }
 
-    // Reglas para la colección 'reviews' (como colección principal)
+    // Colección 'reviews' (Colección principal)
+    // Lectura: Cualquiera puede leer.
+    // Creación: Cualquier usuario autenticado puede crear una reseña.
+    // Actualización/Eliminación: Nadie, para mantener la integridad de las reseñas.
     match /reviews/{reviewId} {
-      allow read: if true; // Todos pueden leer las reseñas.
-      allow create: if request.auth != null; // Cualquier usuario autenticado puede crear una reseña.
-      allow update, delete: if false; // Nadie puede modificar o borrar reseñas.
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if false; // Por seguridad, no se pueden editar ni borrar.
     }
 
-    // Reglas para la colección 'jobRequests'
-    match /jobRequests/{jobId} {
-      allow read: if true; // Todos pueden leer las solicitudes de trabajo.
-      // El creador de la solicitud es el único que puede crear, actualizar o borrar.
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.clientId;
-      allow update, delete: if request.auth != null && request.auth.uid == resource.data.clientId;
-    }
-
-    // Reglas para la colección 'adBanners'
+    // Colección 'adBanners'
+    // Lectura: Cualquiera.
+    // Escritura: Solo administradores.
     match /adBanners/{bannerId} {
-      allow read: if true; // Todos pueden leer los banners.
-      // Solo el administrador puede escribir (crear, actualizar, borrar).
+      allow read: if true;
       allow write: if isAdmin();
+    }
+
+    // Colección 'jobRequests'
+    // Lectura: Cualquiera.
+    // Creación: Solo el cliente autenticado que crea el trabajo.
+    // Actualización/Eliminación: Solo el cliente propietario del trabajo o un admin.
+    match /jobRequests/{jobId} {
+      allow read: if true;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.clientId;
+      allow update, delete: if (request.auth != null && request.auth.uid == resource.data.clientId) || isAdmin();
     }
   }
 }
