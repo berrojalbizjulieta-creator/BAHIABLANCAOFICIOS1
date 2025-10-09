@@ -105,25 +105,30 @@ export default function JobRequestsPage() {
     setIsSubmitting(true);
     
     try {
-        // **SOLUCIÓN (Parte 2):** Obtener el nombre directamente del documento del usuario en Firestore.
-        // Esta es la fuente de verdad más confiable, especialmente para usuarios nuevos.
+        // **SOLUCIÓN DEFINITIVA:** Obtener el nombre y la foto directamente del documento del usuario en Firestore.
+        // Esta es la fuente de verdad más confiable, siempre.
         const userDocRef = doc(db, 'users', user.uid);
         const userDocSnap = await getDoc(userDocRef);
         
-        let clientName = 'Cliente Anónimo'; // Valor por defecto
+        let clientName = 'Cliente Anónimo';
+        let clientPhotoUrl = '';
+
         if (userDocSnap.exists()) {
-            // Se usa el nombre del documento de Firestore.
-            clientName = userDocSnap.data().name || user.displayName || 'Cliente Anónimo';
+            const userData = userDocSnap.data();
+            // Usamos el nombre y la foto del documento de Firestore.
+            clientName = userData?.name || user.displayName || 'Cliente Anónimo';
+            clientPhotoUrl = userData?.photoUrl || user.photoURL || '';
         } else {
-            // Como fallback, si el documento aún no se ha creado, usamos el displayName.
+            // Como fallback (si el doc. aún no existe), usamos los datos de Auth, aunque pueden estar desactualizados.
             clientName = user.displayName || 'Cliente Anónimo';
+            clientPhotoUrl = user.photoURL || '';
         }
 
         const newRequestData = {
             ...data,
             clientId: user.uid,
-            clientName: clientName, // Usamos el nombre obtenido (de Firestore o Auth).
-            clientPhotoUrl: user.photoURL || '',
+            clientName: clientName, // Usamos el nombre obtenido de forma segura.
+            clientPhotoUrl: clientPhotoUrl, // Usamos la foto obtenida de forma segura.
             createdAt: serverTimestamp(),
             status: 'open' as 'open',
             comments: [],
