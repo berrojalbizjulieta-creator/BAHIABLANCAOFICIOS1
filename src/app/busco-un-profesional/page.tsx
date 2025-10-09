@@ -97,25 +97,28 @@ export default function JobRequestsPage() {
   });
 
   const onSubmit: SubmitHandler<JobRequestFormValues> = async (data) => {
-    if (!user) return;
+    if (!user) {
+      toast({ title: "Error", description: "Debes iniciar sesión para publicar.", variant: "destructive" });
+      return;
+    }
     
     setIsSubmitting(true);
     
     try {
-        // Fetch user data from 'users' collection to get the correct name
+        // SOLUCIÓN DEFINITIVA: Obtener el nombre directamente del documento del usuario en Firestore.
         const userDocRef = doc(db, 'users', user.uid);
         const userDocSnap = await getDoc(userDocRef);
         
-        let clientName = 'Cliente Anónimo';
+        let clientName = 'Cliente Anónimo'; // Valor por defecto
         if (userDocSnap.exists()) {
-            const userData = userDocSnap.data() as DocumentData;
-            clientName = userData.name || user.displayName || 'Cliente Anónimo';
+            // Se usa el nombre del documento de Firestore, que es la fuente de verdad.
+            clientName = userDocSnap.data().name || user.displayName || 'Cliente Anónimo';
         }
 
         const newRequestData = {
             ...data,
             clientId: user.uid,
-            clientName: clientName,
+            clientName: clientName, // Usamos el nombre obtenido de Firestore.
             clientPhotoUrl: user.photoURL || '',
             createdAt: serverTimestamp(),
             status: 'open' as 'open',
@@ -123,6 +126,8 @@ export default function JobRequestsPage() {
         };
 
         const docRef = await addDoc(collection(db, "jobRequests"), newRequestData);
+        
+        // Actualizamos el estado local con los datos correctos para que se vea bien al instante.
         const localNewRequest = {
             ...newRequestData,
             id: docRef.id,
