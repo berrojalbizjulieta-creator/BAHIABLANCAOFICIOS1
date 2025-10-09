@@ -134,7 +134,7 @@ export default function ProfessionalsTable() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Profesionales Registrados</CardTitle>
+        <CardTitle>Profesionales Registrados ({professionals.length})</CardTitle>
         <CardDescription>
           Gestiona los profesionales de la plataforma.
         </CardDescription>
