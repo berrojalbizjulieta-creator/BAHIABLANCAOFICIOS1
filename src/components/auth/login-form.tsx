@@ -15,8 +15,10 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from 'firebase/auth';
+import { auth, db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+
 
 export default function LoginForm() {
   const router = useRouter();
@@ -31,7 +33,24 @@ export default function LoginForm() {
     setIsLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // **NUEVO**: Verificar el estado del usuario en Firestore
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists() && userDocSnap.data().isActive === false) {
+          // Si el usuario está inactivo, cerrar sesión y mostrar error
+          await signOut(auth);
+          toast({
+              title: 'Cuenta Desactivada',
+              description: 'Tu cuenta ha sido desactivada. Por favor, contacta al administrador.',
+              variant: 'destructive',
+          });
+          setIsLoading(false);
+          return;
+      }
       
       toast({
         title: '¡Bienvenido de vuelta!',
