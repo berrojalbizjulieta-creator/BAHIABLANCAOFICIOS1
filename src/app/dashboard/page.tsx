@@ -23,6 +23,7 @@ import { RecentSales } from '@/components/admin/recent-sales';
 import { Overview } from '@/components/admin/overview';
 import { DollarSign, Users, Briefcase, UserPlus, Loader2 } from 'lucide-react';
 import ProfessionalsTable from '@/components/admin/professionals-table';
+import ClientsTable from '@/components/admin/clients-table';
 import VerificationRequests from '@/components/admin/verification-requests';
 import AdManagement from '@/components/admin/ad-management';
 import { collection, getDocs, query, where, Timestamp } from 'firebase/firestore';
@@ -144,6 +145,7 @@ function AdminDashboard() {
           <TabsList>
             <TabsTrigger value="overview">Resumen</TabsTrigger>
             <TabsTrigger value="professionals">Profesionales</TabsTrigger>
+            <TabsTrigger value="clients">Clientes</TabsTrigger>
             <TabsTrigger value="verifications">Verificaciones</TabsTrigger>
             <TabsTrigger value="ads">Publicidad</TabsTrigger>
             <TabsTrigger value="analytics" disabled>
@@ -240,6 +242,10 @@ function AdminDashboard() {
 
           <TabsContent value="professionals" className="space-y-4">
              <ProfessionalsTable />
+          </TabsContent>
+
+           <TabsContent value="clients" className="space-y-4">
+             <ClientsTable />
           </TabsContent>
           
           <TabsContent value="verifications" className="space-y-4">
