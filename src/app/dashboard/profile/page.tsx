@@ -168,7 +168,6 @@ const initialProfessionalData: Professional = {
 export default function ProfilePage() {
   const { user, loading } = useAdminAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [isFirstEdit, setIsFirstEdit] = useState(false);
   const [professional, setProfessional] = useState<Professional | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [paymentMethods, setPaymentMethods] = useState('');
@@ -194,10 +193,13 @@ export default function ProfilePage() {
 
     const fetchProfile = async () => {
         const docRef = doc(db, 'professionalsDetails', user.uid);
-        const reviewsData = await getReviewsForProfessional(db, user.uid);
+        
+        const [docSnap, reviewsData] = await Promise.all([
+          getDoc(docRef),
+          getReviewsForProfessional(db, user.uid)
+        ]);
+        
         setReviews(reviewsData);
-
-        const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
             const data = docSnap.data() as Professional;
@@ -228,7 +230,6 @@ export default function ProfilePage() {
                 setPrice({ type: type || 'Por Hora', amount: amount || '', details: '' });
             }
             setIsEditing(false); 
-            setIsFirstEdit(false);
         } else {
             const newProfessional: Professional = {
                 ...initialProfessionalData,
@@ -244,7 +245,6 @@ export default function ProfilePage() {
             setProfessional(newProfessional);
             setSchedule(newProfessional.schedule || defaultSchedule);
             setIsEditing(true);
-            setIsFirstEdit(true);
         }
     };
 
@@ -315,12 +315,12 @@ export default function ProfilePage() {
 
   const handleSave = async () => {
     if (!professional || !user) {
-        toast({ title: "Error", description: "No se pudieron guardar los cambios, no hay datos de profesional.", variant: "destructive" });
+        toast({ title: "Error", description: "No se pudieron guardar los cambios.", variant: "destructive" });
         return;
     }
     
     setIsSaving(true);
-    const wasFirstEdit = isFirstEdit;
+    const wasFirstEdit = !professional.subscription?.isSubscriptionActive;
 
     try {
         let finalAvatarUrl = professional.photoUrl;
@@ -352,10 +352,6 @@ export default function ProfilePage() {
             priceInfo: `${price.type}: $${price.amount}`, 
             schedule,
             isActive: true,
-            subscription: {
-                ...professional.subscription,
-                isSubscriptionActive: wasFirstEdit ? false : professional.subscription?.isSubscriptionActive || false,
-            },
             avgRating: professional.avgRating ?? 0,
             totalReviews: professional.totalReviews ?? reviews.length,
             dayAvailability: newDayAvailability,
@@ -372,22 +368,21 @@ export default function ProfilePage() {
 
         setProfessional(finalProfessionalData);
         setIsEditing(false);
-        if (isFirstEdit) setIsFirstEdit(false);
         
+        toast({
+            title: "Perfil Actualizado",
+            description: "Tus cambios han sido guardados."
+        });
+
         if (wasFirstEdit) {
-            setIsPaymentDialogOpen(true);
-        } else {
-            toast({
-                title: "Perfil Actualizado",
-                description: "Tus cambios han sido guardados."
-            });
+            setTimeout(() => setIsPaymentDialogOpen(true), 300);
         }
 
     } catch (error: any) {
-        console.error("Error saving profile:", error);
+        console.error("Error al guardar el perfil:", error);
         toast({
             title: "Error al Guardar",
-            description: error.message || "No se pudieron subir las imágenes o guardar los datos. Por favor, intenta de nuevo.",
+            description: error.message || "No se pudieron guardar los datos.",
             variant: "destructive"
         });
     } finally {
@@ -402,41 +397,41 @@ export default function ProfilePage() {
     }
   };
 
-
   const handlePaymentSuccess = async (plan: 'standard' | 'premium') => {
     if (!professional || !user) return;
-
-    const newLastPaymentDate = new Date();
     
-    const updatedProfessionalData: Professional = {
+    const updatedData: Professional = {
         ...professional,
         subscriptionTier: plan,
         subscription: {
             ...professional.subscription,
             isSubscriptionActive: true,
+            lastPaymentDate: new Date(),
         },
-        lastPaymentDate: newLastPaymentDate,
     };
     
     try {
         const professionalDocRef = doc(db, 'professionalsDetails', user.uid);
-        await updateDoc(professionalDocRef, {
+        await setDoc(professionalDocRef, { 
             subscriptionTier: plan,
-            'subscription.isSubscriptionActive': true,
-            lastPaymentDate: newLastPaymentDate,
-        });
+            subscription: {
+                isSubscriptionActive: true,
+                lastPaymentDate: new Date(),
+            },
+        }, { merge: true });
 
-        setProfessional(updatedProfessionalData);
+        setProfessional(updatedData);
         setIsSubscriptionActive(true);
+        setIsPaymentDialogOpen(false);
 
         toast({
-            title: "¡Publicación Exitosa!",
-            description: `Tu perfil ahora está visible para nuevos clientes con el plan ${plan === 'premium' ? 'Premium' : 'Estándar'}.`,
+            title: "¡Suscripción Activada!",
+            description: `Tu perfil ahora está visible para nuevos clientes con el plan ${plan}.`,
         });
-        setIsEditing(false);
+
     } catch(error) {
-        console.error("Error updating payment status:", error);
-        toast({ title: "Error", description: "No se pudo actualizar tu plan. Por favor, contacta a soporte.", variant: "destructive" });
+        console.error("Error al activar la suscripción:", error);
+        toast({ title: "Error", description: "No se pudo actualizar tu plan.", variant: "destructive" });
     }
   }
 
@@ -667,13 +662,13 @@ export default function ProfilePage() {
                             <Button onClick={handleSave} disabled={isSaving}>
                               {isSaving ? <><Loader2 className="mr-2 animate-spin" /> Guardando...</> : <><Save className="mr-2" /> Guardar Cambios</>}
                             </Button>
-                            {!isFirstEdit && (
+                            {professional.subscription?.isSubscriptionActive && (
                                 <Button variant="outline" onClick={() => setIsEditing(false)}><X className="mr-2"/> Cancelar</Button>
                             )}
                         </>
                     ) : (
                         <Button onClick={() => setIsEditing(true)}>
-                            <Edit className="mr-2" /> {isFirstEdit ? 'Rellena tu Perfil' : 'Editar Perfil'}
+                            <Edit className="mr-2" /> {professional.subscription?.isSubscriptionActive ? 'Editar Perfil' : 'Rellena tu Perfil'}
                         </Button>
                     )}
                     <Button variant="outline">
