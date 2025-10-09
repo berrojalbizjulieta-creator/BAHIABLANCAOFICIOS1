@@ -30,7 +30,7 @@ export default function AppPromoSection() {
   };
 
   return (
-    <section className="py-20 md:py-32 overflow-hidden">
+    <section className="py-20 md:py-24 overflow-hidden">
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           
@@ -65,7 +65,7 @@ export default function AppPromoSection() {
                 alt="Aplicación móvil de BahiaBlancaOficios"
                 width={400}
                 height={800}
-                className="object-contain max-w-xs md:max-w-sm drop-shadow-2xl"
+                className="object-contain max-w-[250px] md:max-w-[320px]"
                 data-ai-hint="phone app mockup"
             />
           </motion.div>
