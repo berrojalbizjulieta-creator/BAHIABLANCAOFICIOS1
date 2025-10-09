@@ -176,7 +176,6 @@ export default function ProfilePage() {
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   
-  const [lastPaymentDate, setLastPaymentDate] = useState<Date | undefined>(); 
   const [isSubscriptionActive, setIsSubscriptionActive] = useState(false);
 
   const [isSpecialtiesDialogOpen, setIsSpecialtiesDialogOpen] = useState(false);
@@ -218,7 +217,6 @@ export default function ProfilePage() {
             };
 
             setProfessional(fetchedProfessional);
-            setLastPaymentDate(data.lastPaymentDate);
             setSchedule(data.schedule || defaultSchedule);
              if(data.subscription?.isSubscriptionActive) {
                 setIsSubscriptionActive(true);
@@ -259,13 +257,7 @@ export default function ProfilePage() {
         setIsSubscriptionActive(true);
         return;
     };
-    if (!lastPaymentDate) {
-        setIsSubscriptionActive(false);
-        return;
-    };
-    const oneMonthAgo = subMonths(new Date(), 1);
-    setIsSubscriptionActive(lastPaymentDate > oneMonthAgo);
-  }, [lastPaymentDate, professional]);
+  }, [professional]);
 
 
   if (loading || !professional) {
@@ -328,6 +320,7 @@ export default function ProfilePage() {
     }
     
     setIsSaving(true);
+    const wasFirstEdit = isFirstEdit;
 
     try {
         let finalAvatarUrl = professional.photoUrl;
@@ -359,13 +352,12 @@ export default function ProfilePage() {
             priceInfo: `${price.type}: $${price.amount}`, 
             schedule,
             isActive: true,
-            // DO NOT set isSubscriptionActive here, it will be handled by onPaymentSuccess
             subscription: {
                 ...professional.subscription,
-                isSubscriptionActive: professional.subscription?.isSubscriptionActive || false,
+                isSubscriptionActive: wasFirstEdit ? false : professional.subscription?.isSubscriptionActive || false,
             },
             avgRating: professional.avgRating ?? 0,
-            totalReviews: professional.totalReviews ?? 0,
+            totalReviews: professional.totalReviews ?? reviews.length,
             dayAvailability: newDayAvailability,
         };
         
@@ -379,17 +371,17 @@ export default function ProfilePage() {
         });
 
         setProfessional(finalProfessionalData);
-
-        if (isFirstEdit) {
+        setIsEditing(false);
+        if (isFirstEdit) setIsFirstEdit(false);
+        
+        if (wasFirstEdit) {
             setIsPaymentDialogOpen(true);
-            setIsFirstEdit(false);
         } else {
             toast({
                 title: "Perfil Actualizado",
                 description: "Tus cambios han sido guardados."
             });
         }
-        setIsEditing(false);
 
     } catch (error: any) {
         console.error("Error saving profile:", error);
@@ -435,7 +427,6 @@ export default function ProfilePage() {
         });
 
         setProfessional(updatedProfessionalData);
-        setLastPaymentDate(newLastPaymentDate);
         setIsSubscriptionActive(true);
 
         toast({
