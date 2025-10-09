@@ -195,12 +195,10 @@ export default function ProfilePage() {
 
     const fetchProfile = async () => {
         const docRef = doc(db, 'professionalsDetails', user.uid);
-        const [docSnap, reviewsData] = await Promise.all([
-          getDoc(docRef),
-          getReviewsForProfessional(db, user.uid)
-        ]);
-
+        const reviewsData = await getReviewsForProfessional(db, user.uid);
         setReviews(reviewsData);
+
+        const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
             const data = docSnap.data() as Professional;
@@ -222,6 +220,9 @@ export default function ProfilePage() {
             setProfessional(fetchedProfessional);
             setLastPaymentDate(data.lastPaymentDate);
             setSchedule(data.schedule || defaultSchedule);
+             if(data.subscription?.isSubscriptionActive) {
+                setIsSubscriptionActive(true);
+            }
             if (data.priceInfo) {
                 const [typePart, amountPart] = data.priceInfo.split(': $');
                 const type = typePart?.trim();
@@ -254,13 +255,17 @@ export default function ProfilePage() {
 
 
   useEffect(() => {
+    if (professional?.subscription?.isSubscriptionActive) {
+        setIsSubscriptionActive(true);
+        return;
+    };
     if (!lastPaymentDate) {
         setIsSubscriptionActive(false);
         return;
     };
     const oneMonthAgo = subMonths(new Date(), 1);
     setIsSubscriptionActive(lastPaymentDate > oneMonthAgo);
-  }, [lastPaymentDate]);
+  }, [lastPaymentDate, professional]);
 
 
   if (loading || !professional) {
@@ -347,7 +352,7 @@ export default function ProfilePage() {
             }
         });
 
-        const finalProfessionalData = {
+        const finalProfessionalData: Professional = {
             ...professional,
             photoUrl: finalAvatarUrl,
             workPhotos: uploadedWorkPhotos,
@@ -355,8 +360,8 @@ export default function ProfilePage() {
             schedule,
             isActive: true,
             subscription: {
-                ...(professional.subscription || {}), 
-                isSubscriptionActive: professional.subscription?.isSubscriptionActive || false,
+                ...professional.subscription,
+                isSubscriptionActive: professional.subscription?.isSubscriptionActive || isSubscriptionActive,
             },
             avgRating: professional.avgRating ?? 0,
             totalReviews: professional.totalReviews ?? 0,
@@ -410,7 +415,7 @@ export default function ProfilePage() {
 
     const newLastPaymentDate = new Date();
     
-    const updatedProfessionalData = {
+    const updatedProfessionalData: Professional = {
         ...professional,
         subscriptionTier: plan,
         subscription: {
@@ -649,10 +654,10 @@ export default function ProfilePage() {
                       )}
                     </div>
                     <div className="mt-2">
-                      {professional.totalReviews > 0 ? (
+                      {reviews.length > 0 ? (
                         <StarRating
                           rating={professional.avgRating}
-                          totalReviews={professional.totalReviews}
+                          totalReviews={reviews.length}
                         />
                       ) : (
                         <p className="text-sm text-muted-foreground">Aún no hay reseñas.</p>
