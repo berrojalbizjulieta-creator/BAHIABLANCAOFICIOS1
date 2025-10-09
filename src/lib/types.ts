@@ -1,4 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
+import type { Timestamp } from 'firebase/firestore';
+
 
 export interface Testimonial {
   id: number;
@@ -38,8 +40,8 @@ export interface Schedule {
 export interface ProfessionalSubscription {
     tier?: 'standard' | 'premium';
     isSubscriptionActive?: boolean;
-    lastPaymentDate?: Date;
-    nextPaymentDate?: Date;
+    lastPaymentDate?: Date | Timestamp;
+    nextPaymentDate?: Date | Timestamp;
 }
 
 
@@ -60,13 +62,25 @@ export interface Professional {
   subscription?: ProfessionalSubscription;
   subscriptionTier?: 'standard' | 'premium';
   isSubscriptionActive?: boolean; 
-  registrationDate: Date;
-  lastPaymentDate?: Date;
+  registrationDate: Date | Timestamp;
+  lastPaymentDate?: Date | Timestamp;
   isActive: boolean;
   schedule?: Schedule[];
   totalReviews: number; 
   dayAvailability: { [key: string]: boolean };
 }
+
+// Representa la estructura de un documento en la colección 'users'
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  photoUrl?: string;
+  role: 'client' | 'professional' | 'admin';
+  registrationDate: Date | Timestamp;
+  isActive: boolean;
+}
+
 
 export interface Client {
   id: number; 

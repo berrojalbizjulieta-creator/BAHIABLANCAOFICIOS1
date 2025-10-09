@@ -1,18 +1,16 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, XCircle, User, FileText, Camera } from 'lucide-react';
+import { CheckCircle, XCircle, User, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { PROFESSIONALS } from '@/lib/data';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,31 +22,75 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import type { Professional } from '@/lib/types';
 
-// Simulating professionals who have submitted verification requests
-const professionalsToVerify = PROFESSIONALS.filter(p => p.id % 2 === 0).map(p => ({...p, isVerified: false}));
 
 export default function VerificationRequests() {
-  const [requests, setRequests] = useState(professionalsToVerify);
+  const [requests, setRequests] = useState<Professional[]>([]);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const handleApprove = (id: number) => {
+  useEffect(() => {
+      const fetchRequests = async () => {
+          setLoading(true);
+          try {
+            const q = query(collection(db, 'professionalsDetails'), where('isVerified', '==', false));
+            const querySnapshot = await getDocs(q);
+            const pendingRequests = querySnapshot.docs.map(doc => ({id: doc.id, ...doc.data()} as Professional));
+            // We only show professionals who are active and have a subscription
+            const activeRequests = pendingRequests.filter(p => p.isActive && p.subscription?.isSubscriptionActive)
+            setRequests(activeRequests);
+          } catch(error) {
+              console.error("Error fetching verification requests:", error);
+              toast({ title: 'Error', description: 'No se pudieron cargar las solicitudes.'});
+          } finally {
+              setLoading(false);
+          }
+      }
+      fetchRequests();
+  }, [toast]);
+
+  const handleApprove = async (id: string) => {
+    // Optimistic update
     setRequests(prev => prev.filter(req => req.id !== id));
-    // In a real app, you'd update the professional's isVerified status in Firestore
-    toast({
-      title: 'Verificación Aprobada',
-      description: 'El profesional ha sido verificado y ahora tiene la insignia.',
-    });
+    
+    try {
+        const profDocRef = doc(db, 'professionalsDetails', id);
+        await updateDoc(profDocRef, { isVerified: true });
+        toast({
+        title: 'Verificación Aprobada',
+        description: 'El profesional ha sido verificado y ahora tiene la insignia.',
+        });
+    } catch(error) {
+        console.error("Error approving verification:", error);
+        toast({ title: 'Error', description: 'No se pudo aprobar la solicitud.', variant: 'destructive'});
+        // Note: No rollback implemented for simplicity, a refetch would be better.
+    }
   };
 
-  const handleReject = (id: number) => {
+  const handleReject = (id: string) => {
     setRequests(prev => prev.filter(req => req.id !== id));
      toast({
       title: 'Verificación Rechazada',
-      description: 'La solicitud ha sido rechazada.',
+      description: 'La solicitud ha sido rechazada. No se realizarán cambios en la base de datos.',
       variant: 'destructive',
     });
   };
+
+  if (loading) {
+    return (
+         <Card>
+            <CardHeader>
+                <CardTitle>Verificaciones Pendientes</CardTitle>
+            </CardHeader>
+            <CardContent className="flex justify-center items-center h-40">
+                <Loader2 className="animate-spin h-8 w-8 text-primary" />
+            </CardContent>
+        </Card>
+    )
+  }
 
   if (requests.length === 0) {
     return (
@@ -66,7 +108,7 @@ export default function VerificationRequests() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Verificaciones Pendientes</CardTitle>
+        <CardTitle>Verificaciones Pendientes ({requests.length})</CardTitle>
         <CardDescription>
           Revisa y aprueba las solicitudes de verificación de identidad de los profesionales.
         </CardDescription>
@@ -91,7 +133,7 @@ export default function VerificationRequests() {
                     <AlertDialogHeader>
                     <AlertDialogTitle>Documentos de {pro.name}</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Revisa que los documentos sean legibles y coincidan.
+                        Revisa que los documentos sean legibles y coincidan. (Imágenes de prueba)
                     </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto p-4">
@@ -115,11 +157,11 @@ export default function VerificationRequests() {
                 </AlertDialog>
 
 
-              <Button variant="ghost" size="icon" onClick={() => handleApprove(pro.id)} className="text-green-600 hover:text-green-700">
+              <Button variant="ghost" size="icon" onClick={() => handleApprove(pro.id as string)} className="text-green-600 hover:text-green-700">
                 <CheckCircle className="h-6 w-6" />
                 <span className="sr-only">Aprobar</span>
               </Button>
-               <Button variant="ghost" size="icon" onClick={() => handleReject(pro.id)} className="text-red-600 hover:text-red-700">
+               <Button variant="ghost" size="icon" onClick={() => handleReject(pro.id as string)} className="text-red-600 hover:text-red-700">
                 <XCircle className="h-6 w-6" />
                  <span className="sr-only">Rechazar</span>
               </Button>

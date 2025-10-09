@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -26,36 +26,103 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal } from 'lucide-react';
-import { PROFESSIONALS, CATEGORIES } from '@/lib/data';
-import type { Professional } from '@/lib/types';
+import { MoreHorizontal, Loader2 } from 'lucide-react';
+import type { Professional, User as AppUser } from '@/lib/types';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import { isAfter, subMonths } from 'date-fns';
+import { collection, getDocs, doc, updateDoc, writeBatch } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { CATEGORIES } from '@/lib/data';
+import Link from 'next/link';
+
+interface CombinedProfessionalData extends Professional {
+  userIsActive?: boolean;
+}
 
 export default function ProfessionalsTable() {
-  const [professionals, setProfessionals] = useState<Professional[]>(PROFESSIONALS);
+  const [professionals, setProfessionals] = useState<CombinedProfessionalData[]>([]);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const handleToggleActive = (id: number, isActive: boolean) => {
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [profSnap, usersSnap] = await Promise.all([
+            getDocs(collection(db, 'professionalsDetails')),
+            getDocs(collection(db, 'users'))
+        ]);
+        
+        const usersData = new Map(usersSnap.docs.map(d => [d.id, d.data() as AppUser]));
+
+        const combinedData = profSnap.docs.map(profDoc => {
+            const profData = profDoc.data() as Professional;
+            const userData = usersData.get(profDoc.id);
+            return {
+                ...profData,
+                id: profDoc.id,
+                userIsActive: userData?.isActive ?? false,
+                registrationDate: profData.registrationDate?.toDate ? profData.registrationDate.toDate() : new Date(),
+                lastPaymentDate: profData.lastPaymentDate?.toDate ? profData.lastPaymentDate.toDate() : undefined,
+            }
+        });
+        
+        setProfessionals(combinedData);
+      } catch (error) {
+          console.error("Error fetching professionals:", error);
+          toast({ title: 'Error', description: 'No se pudieron cargar los profesionales.', variant: 'destructive'});
+      }
+      setLoading(false);
+    }
+    fetchData();
+  }, [toast]);
+
+
+  const handleToggleActive = async (id: string, isActive: boolean) => {
+    // Optimistic UI update
     setProfessionals(prev =>
-      prev.map(p => (p.id === id ? { ...p, isActive } : p))
+      prev.map(p => (p.id === id ? { ...p, userIsActive: isActive } : p))
     );
-    toast({
-      title: 'Estado Actualizado',
-      description: `El profesional ha sido ${isActive ? 'activado' : 'desactivado'}.`,
-    });
+    try {
+        const userDocRef = doc(db, 'users', id);
+        await updateDoc(userDocRef, { isActive: isActive });
+        toast({
+            title: 'Estado Actualizado',
+            description: `El profesional ha sido ${isActive ? 'activado' : 'desactivado'}.`,
+        });
+    } catch (error) {
+        console.error("Error toggling active state:", error);
+        // Rollback UI on error
+        setProfessionals(prev =>
+            prev.map(p => (p.id === id ? { ...p, userIsActive: !isActive } : p))
+        );
+        toast({ title: 'Error', description: 'No se pudo actualizar el estado.', variant: 'destructive'});
+    }
   };
   
-  const handleMarkAsPaid = (id: number) => {
+  const handleMarkAsPaid = async (id: string) => {
+    const newLastPaymentDate = new Date();
+    // Optimistic UI update
     setProfessionals(prev =>
-      prev.map(p => p.id === id ? {...p, lastPaymentDate: new Date(), isSubscriptionActive: true} : p)
+      prev.map(p => p.id === id ? {...p, lastPaymentDate: newLastPaymentDate, subscription: {...p.subscription, isSubscriptionActive: true}} : p)
     )
-     toast({
-      title: 'Pago Registrado',
-      description: `Se ha marcado el pago para el profesional.`,
-    });
+     try {
+        const profDocRef = doc(db, 'professionalsDetails', id);
+        await updateDoc(profDocRef, { 
+            lastPaymentDate: newLastPaymentDate,
+            'subscription.isSubscriptionActive': true,
+        });
+        toast({
+            title: 'Pago Registrado',
+            description: `Se ha marcado el pago para el profesional.`,
+        });
+     } catch (error) {
+         console.error("Error marking as paid:", error);
+         toast({ title: 'Error', description: 'No se pudo registrar el pago.', variant: 'destructive'});
+         // Rollback is more complex, might need to re-fetch
+     }
   }
 
   const isPaymentActive = (lastPaymentDate?: Date) => {
@@ -73,11 +140,16 @@ export default function ProfessionalsTable() {
         </CardDescription>
       </CardHeader>
       <CardContent>
+         {loading ? (
+            <div className="flex justify-center items-center h-64">
+                <Loader2 className="animate-spin h-8 w-8 text-primary" />
+            </div>
+         ) : (
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Nombre</TableHead>
-              <TableHead>Oficio</TableHead>
+              <TableHead>Oficio Principal</TableHead>
               <TableHead>Estado de Pago</TableHead>
               <TableHead>Miembro desde</TableHead>
               <TableHead>Activo</TableHead>
@@ -100,7 +172,7 @@ export default function ProfessionalsTable() {
                 <TableCell>{primaryCategory?.name || 'No especificado'}</TableCell>
                 <TableCell>
                   <Badge variant={paymentIsActive ? 'default' : 'destructive'} className={paymentIsActive ? 'bg-green-600' : ''}>
-                    {paymentIsActive ? 'Pagado' : 'Pendiente'}
+                    {paymentIsActive ? 'Al día' : 'Pendiente'}
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -108,8 +180,8 @@ export default function ProfessionalsTable() {
                 </TableCell>
                 <TableCell>
                   <Switch
-                    checked={pro.isActive}
-                    onCheckedChange={value => handleToggleActive(pro.id as number, value)}
+                    checked={pro.userIsActive}
+                    onCheckedChange={value => handleToggleActive(pro.id, value)}
                   />
                 </TableCell>
                 <TableCell>
@@ -122,8 +194,10 @@ export default function ProfessionalsTable() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                      <DropdownMenuItem onClick={() => handleMarkAsPaid(pro.id as number)}>Marcar como pagado</DropdownMenuItem>
-                      <DropdownMenuItem>Ver Perfil</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleMarkAsPaid(pro.id)}>Marcar como pagado</DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/profesional/${pro.id}`} target="_blank">Ver Perfil</Link>
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -131,6 +205,7 @@ export default function ProfessionalsTable() {
             )})}
           </TableBody>
         </Table>
+        )}
       </CardContent>
     </Card>
   );
