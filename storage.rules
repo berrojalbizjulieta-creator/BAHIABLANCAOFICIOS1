@@ -3,46 +3,29 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
 
-    // --- Helper Functions ---
-    function isAdmin() {
-      return request.auth != null && request.auth.token.email == 'berrojalbizjulieta@gmail.com';
-    }
-
-    // Regla por defecto: Nadie puede leer o escribir, para mayor seguridad.
-    match /{allPaths=**} {
-      allow read, write: if false;
-    }
-
-    // Avatares de Profesionales
-    // Lectura: Pública para que todos puedan ver las fotos de perfil.
-    // Escritura: Solo el profesional dueño del perfil o un administrador.
-    match /professional-avatars/{userId} {
+    // El dueño del perfil puede escribir, todos pueden leer.
+    match /professional-avatars/{userId}/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Fotos de Trabajos de Profesionales
-    // Lectura: Pública.
-    // Escritura: Solo el profesional dueño o un admin puede subir/borrar fotos en su carpeta.
+    // El dueño del perfil puede escribir, todos pueden leer.
     match /professional-work-photos/{userId}/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null && (request.auth.uid == userId || isAdmin());
-    }
-    
-    // Avatares de Usuarios (Clientes)
-    // Lectura: Pública.
-    // Escritura: Solo el usuario dueño de la cuenta.
-    match /user-avatars/{userId} {
-        allow read: if true;
-        allow write: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Banners Publicitarios
-    // Lectura: Pública.
-    // Escritura: Solo administradores.
+    // Los avatares de clientes genéricos siguen la misma lógica.
+    match /user-avatars/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Los banners publicitarios pueden ser leídos por todos.
+    // La escritura está permitida para cualquier usuario autenticado (solución temporal para el administrador).
     match /adBanners/{allPaths=**} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if request.auth != null;
     }
   }
 }
