@@ -2,6 +2,10 @@
 
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { placeholderImages } from '@/lib/placeholder-images';
+
+// Usamos una imagen que sabemos que existe en el JSON de placeholders.
+const celularImg = placeholderImages.find(p => p.id === 'app-promo-mockup');
 
 export default function AppPromoSection() {
   const textVariants = {
@@ -59,15 +63,16 @@ export default function AppPromoSection() {
             viewport={{ once: true, amount: 0.5 }}
             variants={imageVariants}
           >
-             <Image
-                src="/celular-transparente-grande.png"
-                alt="Aplicación móvil de BahiaBlancaOficios"
-                width={350}
-                height={700}
-                className="object-contain max-w-xs md:max-w-sm"
-                data-ai-hint="phone app mockup"
-                priority
-             />
+             {celularImg && (
+                <Image
+                    src={celularImg.imageUrl}
+                    alt="Aplicación móvil de BahiaBlancaOficios"
+                    width={350}
+                    height={700}
+                    className="object-contain max-w-xs md:max-w-sm"
+                    data-ai-hint={celularImg.imageHint}
+                />
+             )}
           </motion.div>
 
         </div>
