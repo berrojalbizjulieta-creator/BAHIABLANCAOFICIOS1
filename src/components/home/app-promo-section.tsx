@@ -33,7 +33,7 @@ export default function AppPromoSection() {
   return (
     <section 
         ref={sectionRef} 
-        className="relative py-20 md:py-32 overflow-hidden bg-muted/20"
+        className="relative py-20 md:py-32 overflow-hidden"
     >
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="grid md:grid-cols-2 gap-8 items-center">
