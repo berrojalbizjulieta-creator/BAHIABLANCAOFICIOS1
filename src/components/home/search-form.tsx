@@ -48,22 +48,12 @@ export default function SearchForm() {
     setIsLoading(true);
 
     try {
-      // Fetch both professionals and AI suggestions in parallel
-      const [profResults, suggResults] = await Promise.all([
-        fetch(`/api/search?q=${encodeURIComponent(query)}`),
-        fetch(`/api/sugerencia?q=${encodeURIComponent(query)}`)
-      ]);
-
+      const profResults = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
       const professionals: SearchResult[] = await profResults.json();
       setResults(professionals);
       
-      const aiSuggestions: { suggestedTrades: string[] } = await suggResults.json();
-
-      // Combine AI suggestions with unique categories from professional results
       const professionalCategories = Array.from(new Set(professionals.map(p => p.rubro)));
-      const combinedSuggestions = Array.from(new Set([...(aiSuggestions.suggestedTrades || []), ...professionalCategories]));
-
-      setSuggestions(combinedSuggestions.slice(0, 3)); // show max 3 suggestions
+      setSuggestions(professionalCategories.slice(0, 3));
 
       setIsDropdownOpen(true);
     } catch (e: any) {

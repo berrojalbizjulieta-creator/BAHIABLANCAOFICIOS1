@@ -1,8 +1,7 @@
 
-import { suggestTradesFromPrompt } from '@/ai/flows/suggest-trades-from-prompt';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('q');
 
@@ -14,8 +13,9 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const result = await suggestTradesFromPrompt({ prompt: query });
-    return NextResponse.json(result);
+    // La funcionalidad de Genkit ha sido eliminada temporalmente para estabilizar la app.
+    // Devolvemos un array vacío.
+    return NextResponse.json({ suggestedTrades: [] });
   } catch (error) {
     console.error('Error in suggestion flow:', error);
     return NextResponse.json(
