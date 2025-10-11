@@ -1,3 +1,4 @@
+// Force Rebuild: Sat Jul 27 2024 22:15:33 GMT+0000 (Coordinated Universal Time)
 // Restoration Point: Fri Jul 26 2024 18:23:44 GMT+0000 (Coordinated Universal Time)
 
 import CategoriesGrid from '@/components/home/categories-grid';
