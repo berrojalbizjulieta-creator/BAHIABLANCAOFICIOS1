@@ -20,19 +20,12 @@ export async function GET(request: Request) {
     return NextResponse.json([]);
   }
 
-  // Normalizar la consulta COMPLETA y también dividirla en palabras clave
   const normalizedQuery = normalizeText(q);
-  const searchKeywords = normalizedQuery.split(' ').filter(k => k.length > 2);
-
-  if (searchKeywords.length === 0 && normalizedQuery.length < 3) {
-      return NextResponse.json([]);
-  }
 
   try {
-    // Solo traemos profesionales activos y con suscripción activa desde Firestore
     const professionalsRef = collection(db, 'professionalsDetails');
     const qSnapshot = query(professionalsRef, 
-        where('isActive', '==', true), 
+        where('isActive', '==', true),
         where('subscription.isSubscriptionActive', '==', true)
     );
     
@@ -43,51 +36,25 @@ export async function GET(request: Request) {
         ...doc.data() 
     } as Professional));
 
-    const scoredResults: (Professional & { score: number })[] = [];
-
-    allProfessionals.forEach(prof => {
-      let score = 0;
+    const results = allProfessionals.filter(prof => {
       const professionalCategories = CATEGORIES.filter(c => prof.categoryIds?.includes(c.id));
 
-      const profName = normalizeText(prof.name);
-      const profDescription = normalizeText(prof.description);
-      const profSpecialties = prof.specialties?.map(normalizeText) || [];
-      const profCategoryNames = professionalCategories.map(c => normalizeText(c.name));
+      const name = normalizeText(prof.name);
+      const description = normalizeText(prof.description);
+      const specialties = prof.specialties?.map(normalizeText).join(' ') || '';
+      const categoryNames = professionalCategories.map(c => normalizeText(c.name)).join(' ');
 
-      // --- LÓGICA DE PUNTUACIÓN MEJORADA ---
-
-      // 1. Puntuación MÁXIMA para coincidencia de frase exacta en especialidades (tags)
-      if (profSpecialties.some(spec => spec.includes(normalizedQuery))) {
-        score += 50; 
-      }
-
-      // 2. Puntuación por palabras clave individuales
-      searchKeywords.forEach(keyword => {
-        // Puntuación alta para nombre y categorías
-        if (profName.includes(keyword)) score += 10;
-        if (profCategoryNames.some(cat => cat.includes(keyword))) score += 8;
-
-        // Puntuación media para especialidades
-        if (profSpecialties.some(spec => spec.includes(keyword))) score += 5;
-        
-        // Puntuación baja para descripción
-        if (profDescription.includes(keyword)) score += 1;
-      });
-
-      if (score > 0) {
-        scoredResults.push({ ...prof, score });
-      }
+      const searchableText = `${name} ${description} ${specialties} ${categoryNames}`;
+      
+      return searchableText.includes(normalizedQuery);
     });
-
-    // Ordenar resultados por puntuación (de mayor a menor)
-    const sortedResults = scoredResults.sort((a, b) => b.score - a.score);
     
-    if (sortedResults.length === 0) {
+    if (results.length === 0) {
       return NextResponse.json([]);
     }
     
     // Devolvemos solo los datos necesarios para la UI de resultados
-    return NextResponse.json(sortedResults.map(p => {
+    return NextResponse.json(results.map(p => {
       const primaryCategory = CATEGORIES.find(c => c.id === p.categoryIds[0]);
       return {
           id: p.id,
