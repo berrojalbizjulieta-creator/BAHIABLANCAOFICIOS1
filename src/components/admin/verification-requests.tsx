@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, XCircle, User, Loader2 } from 'lucide-react';
+import { CheckCircle, XCircle, User, Loader2, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
   AlertDialog,
@@ -36,12 +36,10 @@ export default function VerificationRequests() {
       const fetchRequests = async () => {
           setLoading(true);
           try {
-            const q = query(collection(db, 'professionalsDetails'), where('isVerified', '==', false));
+            const q = query(collection(db, 'professionalsDetails'), where('verificationStatus', '==', 'pending'));
             const querySnapshot = await getDocs(q);
             const pendingRequests = querySnapshot.docs.map(doc => ({id: doc.id, ...doc.data()} as Professional));
-            // We only show professionals who are active and have a subscription
-            const activeRequests = pendingRequests.filter(p => p.isActive && p.subscription?.isSubscriptionActive)
-            setRequests(activeRequests);
+            setRequests(pendingRequests);
           } catch(error) {
               console.error("Error fetching verification requests:", error);
               toast({ title: 'Error', description: 'No se pudieron cargar las solicitudes.'});
@@ -58,7 +56,10 @@ export default function VerificationRequests() {
     
     try {
         const profDocRef = doc(db, 'professionalsDetails', id);
-        await updateDoc(profDocRef, { isVerified: true });
+        await updateDoc(profDocRef, { 
+          isVerified: true,
+          verificationStatus: 'verified' 
+        });
         toast({
         title: 'Verificación Aprobada',
         description: 'El profesional ha sido verificado y ahora tiene la insignia.',
@@ -66,17 +67,27 @@ export default function VerificationRequests() {
     } catch(error) {
         console.error("Error approving verification:", error);
         toast({ title: 'Error', description: 'No se pudo aprobar la solicitud.', variant: 'destructive'});
-        // Note: No rollback implemented for simplicity, a refetch would be better.
+        // TODO: Rollback UI on error
     }
   };
 
-  const handleReject = (id: string) => {
+  const handleReject = async (id: string) => {
     setRequests(prev => prev.filter(req => req.id !== id));
-     toast({
-      title: 'Verificación Rechazada',
-      description: 'La solicitud ha sido rechazada. No se realizarán cambios en la base de datos.',
-      variant: 'destructive',
-    });
+     try {
+        const profDocRef = doc(db, 'professionalsDetails', id);
+        await updateDoc(profDocRef, { 
+          verificationStatus: 'not_started' 
+        });
+        toast({
+          title: 'Verificación Rechazada',
+          description: 'La solicitud ha sido rechazada y el profesional fue notificado (simulado).',
+          variant: 'destructive',
+        });
+     } catch(error) {
+        console.error("Error rejecting verification:", error);
+        toast({ title: 'Error', description: 'No se pudo rechazar la solicitud.', variant: 'destructive'});
+        // TODO: Rollback UI on error
+    }
   };
 
   if (loading) {
@@ -98,7 +109,8 @@ export default function VerificationRequests() {
         <CardHeader>
           <CardTitle>Verificaciones Pendientes</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col items-center justify-center text-center h-40">
+          <Info className="w-10 h-10 text-muted-foreground mb-3" />
           <p className="text-muted-foreground">No hay solicitudes de verificación pendientes.</p>
         </CardContent>
       </Card>

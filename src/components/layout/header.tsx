@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Skeleton } from '../ui/skeleton';
+import AdminNotifications from '../admin/admin-notifications';
 
 const navLinks = [
   { href: '/', label: 'Inicio' },
@@ -29,7 +30,7 @@ const navLinks = [
 ];
 
 export function Header() {
-  const { user, loading } = useAdminAuth();
+  const { user, isAdmin, loading } = useAdminAuth();
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();
 
@@ -60,25 +61,28 @@ export function Header() {
 
     if (user) {
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'Usuario'} />
-                <AvatarFallback>{user.email?.[0]?.toUpperCase()}</AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem asChild>
-              <Link href="/dashboard"><LayoutDashboard className="mr-2"/> Mi Panel</Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="text-red-500">
-             <LogOut className="mr-2"/> Cerrar Sesión
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <>
+          {isAdmin && <AdminNotifications />}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'Usuario'} />
+                  <AvatarFallback>{user.email?.[0]?.toUpperCase()}</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link href="/dashboard"><LayoutDashboard className="mr-2"/> Mi Panel</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="text-red-500">
+              <LogOut className="mr-2"/> Cerrar Sesión
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </>
       );
     }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { ShieldCheck, CheckCircle, Clock, Upload } from 'lucide-react';
+import { ShieldCheck, CheckCircle, Clock, Upload, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Checkbox } from '../ui/checkbox';
 import {
@@ -25,11 +25,14 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { ScrollArea } from '../ui/scroll-area';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 interface VerificationTabProps {
     isVerified?: boolean;
-    onVerify: () => void;
-    professionalName?: string;
+    verificationStatus?: 'not_started' | 'pending' | 'verified';
+    professionalId: string;
 }
 
 const policyText = `
@@ -58,12 +61,16 @@ El PROFESIONAL garantiza que los documentos subidos son auténticos y exactos. C
 `;
 
 
-export default function VerificationTab({ isVerified, onVerify, professionalName = "Profesional" }: VerificationTabProps) {
+export default function VerificationTab({ isVerified, verificationStatus, professionalId }: VerificationTabProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isPending, setIsPending] = useState(false);
+  const [status, setStatus] = useState(verificationStatus);
   const [cuil, setCuil] = useState('');
   const [policyAccepted, setPolicyAccepted] = useState(false);
+
+  useEffect(() => {
+    setStatus(verificationStatus);
+  }, [verificationStatus]);
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -78,19 +85,32 @@ export default function VerificationTab({ isVerified, onVerify, professionalName
     }
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    toast({
-      title: 'Solicitud Enviada',
-      description: 'Hemos recibido tu solicitud de verificación. Te notificaremos cuando el proceso haya finalizado.',
-    });
+    try {
+        const profDocRef = doc(db, 'professionalsDetails', professionalId);
+        await updateDoc(profDocRef, {
+            verificationStatus: 'pending',
+            // En un caso real, aquí subiríamos los archivos a Firebase Storage
+            // y guardaríamos las URLs. Por ahora, solo actualizamos el estado.
+        });
 
-    setIsPending(true);
-    setIsSubmitting(false);
+        toast({
+            title: 'Solicitud Enviada',
+            description: 'Hemos recibido tu solicitud de verificación. Te notificaremos cuando el proceso haya finalizado.',
+        });
+        setStatus('pending');
+    } catch (error) {
+        console.error("Error submitting verification request:", error);
+        toast({
+            title: 'Error al enviar',
+            description: 'No se pudo enviar tu solicitud. Inténtalo de nuevo.',
+            variant: 'destructive',
+        });
+    } finally {
+        setIsSubmitting(false);
+    }
   };
 
-  if (isVerified) {
+  if (isVerified || status === 'verified') {
       return (
         <Card className="shadow-lg bg-green-50 border-green-200">
             <CardHeader className="text-center">
@@ -106,7 +126,7 @@ export default function VerificationTab({ isVerified, onVerify, professionalName
       )
   }
 
-  if (isPending) {
+  if (status === 'pending') {
      return (
         <Card className="shadow-lg bg-blue-50 border-blue-200">
             <CardHeader className="text-center">
@@ -200,7 +220,7 @@ export default function VerificationTab({ isVerified, onVerify, professionalName
         </CardContent>
         <CardFooter>
             <Button type="submit" disabled={isSubmitting || !policyAccepted}>
-            {isSubmitting ? "Enviando..." : "Iniciar Verificación"}
+            {isSubmitting ? <><Loader2 className="mr-2 animate-spin"/> Enviando...</> : "Iniciar Verificación"}
             </Button>
         </CardFooter>
         </form>

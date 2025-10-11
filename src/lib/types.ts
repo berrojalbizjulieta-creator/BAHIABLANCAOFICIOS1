@@ -58,6 +58,7 @@ export interface Professional {
   categoryIds: number[];
   workPhotos?: WorkPhoto[];
   isVerified: boolean;
+  verificationStatus?: 'not_started' | 'pending' | 'verified';
   priceInfo?: string;
   subscription?: ProfessionalSubscription;
   subscriptionTier?: 'standard' | 'premium';

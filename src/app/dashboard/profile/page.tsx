@@ -148,6 +148,7 @@ const initialProfessionalData: Professional = {
     categoryIds: [],
     workPhotos: placeholderImages.filter(p => p.id.startsWith('work-')),
     isVerified: false,
+    verificationStatus: 'not_started',
     subscriptionTier: 'standard',
     registrationDate: new Date(),
     isActive: true,
@@ -175,8 +176,6 @@ export default function ProfilePage() {
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   
-  const [isSubscriptionActive, setIsSubscriptionActive] = useState(false);
-
   const [isSpecialtiesDialogOpen, setIsSpecialtiesDialogOpen] = useState(false);
   const [currentCategoryForSpecialties, setCurrentCategoryForSpecialties] = useState<number | null>(null);
   const [activePhoto, setActivePhoto] = useState<WorkPhoto | null>(null);
@@ -220,9 +219,6 @@ export default function ProfilePage() {
 
             setProfessional(fetchedProfessional);
             setSchedule(data.schedule || defaultSchedule);
-             if(data.subscription?.isSubscriptionActive) {
-                setIsSubscriptionActive(true);
-            }
             if (data.priceInfo) {
                 const [typePart, amountPart] = data.priceInfo.split(': $');
                 const type = typePart?.trim();
@@ -250,14 +246,6 @@ export default function ProfilePage() {
 
     fetchProfile();
   }, [user, loading]);
-
-
-  useEffect(() => {
-    if (professional?.subscription?.isSubscriptionActive) {
-        setIsSubscriptionActive(true);
-        return;
-    };
-  }, [professional]);
 
 
   if (loading || !professional) {
@@ -344,16 +332,16 @@ export default function ProfilePage() {
                 newDayAvailability[dayEntry.day] = dayEntry.enabled;
             }
         });
+        
+        const { avgRating, totalReviews, ...dataToSave } = professional;
 
-        const finalProfessionalData: Professional = {
-            ...professional,
-            photoUrl: finalAvatarUrl,
+        const finalProfessionalData = {
+            ...dataToSave,
+            photoUrl: finalAvatarUrl || '',
             workPhotos: uploadedWorkPhotos,
             priceInfo: `${price.type}: $${price.amount}`, 
             schedule,
             isActive: true,
-            avgRating: professional.avgRating ?? 0,
-            totalReviews: professional.totalReviews ?? reviews.length,
             dayAvailability: newDayAvailability,
         };
         
@@ -366,7 +354,7 @@ export default function ProfilePage() {
             photoUrl: finalAvatarUrl,
         });
 
-        setProfessional(finalProfessionalData);
+        setProfessional(prev => prev ? { ...prev, ...finalProfessionalData } : null);
         setIsEditing(false);
         
         toast({
@@ -400,11 +388,9 @@ export default function ProfilePage() {
   const handlePaymentSuccess = async (plan: 'standard' | 'premium') => {
     if (!professional || !user) return;
     
-    const updatedData: Professional = {
-        ...professional,
+    const updatedData = {
         subscriptionTier: plan,
         subscription: {
-            ...professional.subscription,
             isSubscriptionActive: true,
             lastPaymentDate: new Date(),
         },
@@ -412,16 +398,9 @@ export default function ProfilePage() {
     
     try {
         const professionalDocRef = doc(db, 'professionalsDetails', user.uid);
-        await setDoc(professionalDocRef, { 
-            subscriptionTier: plan,
-            subscription: {
-                isSubscriptionActive: true,
-                lastPaymentDate: new Date(),
-            },
-        }, { merge: true });
+        await setDoc(professionalDocRef, updatedData, { merge: true });
 
-        setProfessional(updatedData);
-        setIsSubscriptionActive(true);
+        setProfessional(prev => prev ? { ...prev, ...updatedData } : null);
         setIsPaymentDialogOpen(false);
 
         toast({
@@ -586,7 +565,7 @@ export default function ProfilePage() {
                         </h1>
                         )}
                         {professional.isVerified ? <ShieldCheck className="w-7 h-7 text-blue-500" /> : <Shield className="w-7 h-7 text-muted-foreground" />}
-                        {professional.subscriptionTier === 'premium' && isSubscriptionActive && (
+                        {professional.subscriptionTier === 'premium' && professional.subscription?.isSubscriptionActive && (
                             <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">
                                 <PremiumIcon className="w-4 h-4 mr-1 text-purple-600" />
                                 Premium
@@ -685,7 +664,6 @@ export default function ProfilePage() {
                 <TabsTrigger value="about">Sobre Mí</TabsTrigger>
                 <TabsTrigger value="reviews">Reseñas ({reviews.length})</TabsTrigger>
                 <TabsTrigger value="photos">Fotos</TabsTrigger>
-                <TabsTrigger value="credentials">Credenciales</TabsTrigger>
                 <TabsTrigger value="verification">Verificación</TabsTrigger>
               </TabsList>
 
@@ -898,8 +876,8 @@ export default function ProfilePage() {
               <TabsContent value="verification" className="mt-6">
                 <VerificationTab 
                   isVerified={professional.isVerified}
-                  onVerify={() => handleInputChange('isVerified', true)}
-                  professionalName={professional.name}
+                  verificationStatus={professional.verificationStatus}
+                  professionalId={professional.id}
                 />
               </TabsContent>
             </Tabs>
