@@ -19,7 +19,7 @@ import { useToast } from '@/hooks/use-toast';
 
 const PAGE_SIZE = 12;
 
-type SortType = 'default' | 'rating' | 'price' | 'availability';
+type SortType = 'rating' | 'verified' | 'availability';
 
 const isAvailableNow = (schedule?: Schedule[]): boolean => {
   if (!schedule) return false;
@@ -56,7 +56,7 @@ export default function CategoryPage() {
   const [allProfessionals, setAllProfessionals] = useState<Professional[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState<SortType>('default');
+  const [sortBy, setSortBy] = useState<SortType>('rating');
   const { toast } = useToast();
 
   const category = useMemo(
@@ -96,12 +96,10 @@ export default function CategoryPage() {
       case 'rating':
         sorted.sort((a, b) => b.avgRating - a.avgRating);
         break;
-      case 'price':
-        sorted.sort((a, b) => {
-          const priceA = a.priceInfo ? parseFloat(a.priceInfo.replace(/[^0-9.-]+/g, '')) : Infinity;
-          const priceB = b.priceInfo ? parseFloat(b.priceInfo.replace(/[^0-9.-]+/g, '')) : Infinity;
-          return priceA - priceB;
-        });
+      case 'verified':
+        sorted = sorted.filter(p => p.isVerified);
+        // Opcional: ordenar los verificados por rating
+        sorted.sort((a, b) => b.avgRating - a.avgRating);
         break;
       case 'availability':
         sorted.sort((a, b) => {
@@ -132,6 +130,11 @@ export default function CategoryPage() {
     window.scrollTo(0, 0);
   };
   
+  const handleSortChange = (sortValue: SortType) => {
+    setSortBy(sortValue);
+    setCurrentPage(1); // Reset page to 1 when sort order changes
+  }
+
   if (!category && !loading) {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
@@ -164,9 +167,9 @@ export default function CategoryPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem onSelect={() => setSortBy('rating')}>Mejor Rankeados</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setSortBy('price')}>Más Baratos</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setSortBy('availability')}>Disponibilidad</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => handleSortChange('rating')}>Mejor Rankeados</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => handleSortChange('verified')}>Solo Verificados</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => handleSortChange('availability')}>Disponibles Ahora</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -188,7 +191,10 @@ export default function CategoryPage() {
       ) : (
         <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-lg text-center p-4">
           <p className="text-lg font-medium text-muted-foreground">
-            Aún no hay profesionales en &quot;{category?.name}&quot;.
+             {sortBy === 'verified' 
+                ? `No se encontraron profesionales verificados en "${category?.name}".`
+                : `Aún no hay profesionales en "${category?.name}".`
+             }
           </p>
           <p className="text-sm text-muted-foreground mt-2">
             ¡Sé el primero en registrarte en esta categoría!
