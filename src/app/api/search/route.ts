@@ -5,8 +5,8 @@ import { CATEGORIES } from '@/lib/data';
 import type { Professional } from '@/lib/types';
 
 // Función para normalizar texto (quitar acentos y a minúsculas)
-const normalizeText = (text: string = ''): string => {
-    return text
+const normalizeText = (text: string | null | undefined): string => {
+    return (text || '')
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
@@ -54,7 +54,7 @@ export async function GET(request: Request) {
       const profSpecialties = prof.specialties?.map(normalizeText) || [];
       const profCategoryNames = professionalCategories.map(c => normalizeText(c.name));
 
-      // --- NUEVA LÓGICA DE PUNTUACIÓN ---
+      // --- LÓGICA DE PUNTUACIÓN MEJORADA ---
 
       // 1. Puntuación MÁXIMA para coincidencia de frase exacta en especialidades (tags)
       if (profSpecialties.some(spec => spec.includes(normalizedQuery))) {
