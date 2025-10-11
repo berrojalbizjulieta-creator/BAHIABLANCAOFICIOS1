@@ -20,22 +20,23 @@ export async function GET(request: Request) {
     return NextResponse.json([]);
   }
 
-  // Normalizar y dividir la consulta de búsqueda en palabras clave
-  const searchKeywords = normalizeText(q).split(' ').filter(k => k.length > 2);
+  // Normalizar la consulta COMPLETA y también dividirla en palabras clave
+  const normalizedQuery = normalizeText(q);
+  const searchKeywords = normalizedQuery.split(' ').filter(k => k.length > 2);
 
-  if (searchKeywords.length === 0) {
+  if (searchKeywords.length === 0 && normalizedQuery.length < 3) {
       return NextResponse.json([]);
   }
 
   try {
     // Solo traemos profesionales activos y con suscripción activa desde Firestore
     const professionalsRef = collection(db, 'professionalsDetails');
-    const q = query(professionalsRef, 
+    const qSnapshot = query(professionalsRef, 
         where('isActive', '==', true), 
         where('subscription.isSubscriptionActive', '==', true)
     );
     
-    const professionalsSnapshot = await getDocs(q);
+    const professionalsSnapshot = await getDocs(qSnapshot);
     
     const allProfessionals = professionalsSnapshot.docs.map(doc => ({ 
         id: doc.id, 
@@ -53,8 +54,16 @@ export async function GET(request: Request) {
       const profSpecialties = prof.specialties?.map(normalizeText) || [];
       const profCategoryNames = professionalCategories.map(c => normalizeText(c.name));
 
+      // --- NUEVA LÓGICA DE PUNTUACIÓN ---
+
+      // 1. Puntuación MÁXIMA para coincidencia de frase exacta en especialidades (tags)
+      if (profSpecialties.some(spec => spec.includes(normalizedQuery))) {
+        score += 50; 
+      }
+
+      // 2. Puntuación por palabras clave individuales
       searchKeywords.forEach(keyword => {
-        // Puntuación más alta para nombre y categorías
+        // Puntuación alta para nombre y categorías
         if (profName.includes(keyword)) score += 10;
         if (profCategoryNames.some(cat => cat.includes(keyword))) score += 8;
 
