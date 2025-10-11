@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Star, MessageSquare, DollarSign, Phone } from 'lucide-react';
+import { Star, MessageSquare, DollarSign, Phone, ShieldCheck } from 'lucide-react';
 import type { Professional } from '@/lib/types';
 import {
   Card,
@@ -71,7 +71,10 @@ export default function ProfessionalCard({
           <CardHeader className="p-0 pt-3">
             <Link href={`/profesional/${professional.id}`} passHref>
               <CardTitle className="text-lg font-headline hover:underline cursor-pointer">
-                {professional.name}
+                 <div className='flex items-center justify-center gap-2'>
+                    <span>{professional.name}</span>
+                    {professional.isVerified && <ShieldCheck className="h-5 w-5 text-blue-500" />}
+                 </div>
               </CardTitle>
             </Link>
           </CardHeader>
