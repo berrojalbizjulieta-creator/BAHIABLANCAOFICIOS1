@@ -59,6 +59,11 @@ export interface Professional {
   workPhotos?: WorkPhoto[];
   isVerified: boolean;
   verificationStatus?: 'not_started' | 'pending' | 'verified';
+  verificationDocs?: {
+    dniFrenteUrl?: string;
+    dniDorsoUrl?: string;
+    selfieDniUrl?: string;
+  };
   priceInfo?: string;
   subscription?: ProfessionalSubscription;
   subscriptionTier?: 'standard' | 'premium';

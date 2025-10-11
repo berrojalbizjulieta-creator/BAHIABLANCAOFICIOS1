@@ -145,22 +145,28 @@ export default function VerificationRequests() {
                     <AlertDialogHeader>
                     <AlertDialogTitle>Documentos de {pro.name}</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Revisa que los documentos sean legibles y coincidan. (Imágenes de prueba)
+                        Revisa que los documentos sean legibles y coincidan.
                     </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto p-4">
-                        <div className="flex flex-col items-center gap-2">
+                       {pro.verificationDocs?.dniFrenteUrl && (
+                         <div className="flex flex-col items-center gap-2">
                             <h4 className="font-medium">DNI Frente</h4>
-                            <Image src="https://picsum.photos/seed/dni-frente/400/250" width={400} height={250} alt="DNI Frente" data-ai-hint="id card" className="rounded-lg border"/>
+                            <Image src={pro.verificationDocs.dniFrenteUrl} width={400} height={250} alt="DNI Frente" className="rounded-lg border object-contain"/>
                         </div>
+                       )}
+                       {pro.verificationDocs?.dniDorsoUrl && (
                          <div className="flex flex-col items-center gap-2">
                             <h4 className="font-medium">DNI Dorso</h4>
-                            <Image src="https://picsum.photos/seed/dni-dorso/400/250" width={400} height={250} alt="DNI Dorso" data-ai-hint="id card back" className="rounded-lg border"/>
+                            <Image src={pro.verificationDocs.dniDorsoUrl} width={400} height={250} alt="DNI Dorso" className="rounded-lg border object-contain"/>
                         </div>
+                       )}
+                       {pro.verificationDocs?.selfieDniUrl && (
                          <div className="flex flex-col items-center gap-2 md:col-span-2">
                             <h4 className="font-medium">Selfie con DNI</h4>
-                            <Image src="https://picsum.photos/seed/selfie-dni/300/400" width={300} height={400} alt="Selfie con DNI" data-ai-hint="person holding id" className="rounded-lg border"/>
+                            <Image src={pro.verificationDocs.selfieDniUrl} width={300} height={400} alt="Selfie con DNI" className="rounded-lg border object-contain"/>
                         </div>
+                       )}
                     </div>
                     <AlertDialogFooter>
                     <AlertDialogCancel>Cerrar</AlertDialogCancel>

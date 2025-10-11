@@ -25,9 +25,9 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { ScrollArea } from '../ui/scroll-area';
-import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { doc, updateDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { db, storage } from '@/lib/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 interface VerificationTabProps {
     isVerified?: boolean;
@@ -67,18 +67,28 @@ export default function VerificationTab({ isVerified, verificationStatus, profes
   const [status, setStatus] = useState(verificationStatus);
   const [cuil, setCuil] = useState('');
   const [policyAccepted, setPolicyAccepted] = useState(false);
+  
+  const [dniFrenteFile, setDniFrenteFile] = useState<File | null>(null);
+  const [dniDorsoFile, setDniDorsoFile] = useState<File | null>(null);
+  const [selfieFile, setSelfieFile] = useState<File | null>(null);
 
   useEffect(() => {
     setStatus(verificationStatus);
   }, [verificationStatus]);
 
 
+  const uploadFile = async (file: File, path: string): Promise<string> => {
+    const storageRef = ref(storage, path);
+    const snapshot = await uploadBytes(storageRef, file);
+    return getDownloadURL(snapshot.ref);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!cuil) {
+    if (!cuil || !dniFrenteFile || !dniDorsoFile || !selfieFile) {
         toast({
             title: 'Error',
-            description: 'Por favor, completa tu número de CUIL.',
+            description: 'Por favor, completa tu CUIL y sube todos los archivos requeridos.',
             variant: 'destructive',
         });
         return;
@@ -86,11 +96,19 @@ export default function VerificationTab({ isVerified, verificationStatus, profes
     setIsSubmitting(true);
 
     try {
+        const basePath = `verification-docs/${professionalId}`;
+        const dniFrenteUrl = await uploadFile(dniFrenteFile, `${basePath}/dni_frente`);
+        const dniDorsoUrl = await uploadFile(dniDorsoFile, `${basePath}/dni_dorso`);
+        const selfieDniUrl = await uploadFile(selfieFile, `${basePath}/selfie_dni`);
+
         const profDocRef = doc(db, 'professionalsDetails', professionalId);
         await updateDoc(profDocRef, {
             verificationStatus: 'pending',
-            // En un caso real, aquí subiríamos los archivos a Firebase Storage
-            // y guardaríamos las URLs. Por ahora, solo actualizamos el estado.
+            verificationDocs: {
+                dniFrenteUrl,
+                dniDorsoUrl,
+                selfieDniUrl,
+            },
         });
 
         toast({
@@ -109,6 +127,12 @@ export default function VerificationTab({ isVerified, verificationStatus, profes
         setIsSubmitting(false);
     }
   };
+  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, setFile: React.Dispatch<React.SetStateAction<File | null>>) => {
+    if (e.target.files && e.target.files[0]) {
+        setFile(e.target.files[0]);
+    }
+  }
 
   if (isVerified || status === 'verified') {
       return (
@@ -182,15 +206,15 @@ export default function VerificationTab({ isVerified, verificationStatus, profes
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                     <Label htmlFor="dniFrente">DNI (Frente)</Label>
-                    <Input id="dniFrente" type="file" required className="file:text-primary file:font-medium" />
+                    <Input id="dniFrente" type="file" required onChange={(e) => handleFileChange(e, setDniFrenteFile)} className="file:text-primary file:font-medium" accept="image/*" />
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="dniDorso">DNI (Dorso)</Label>
-                    <Input id="dniDorso" type="file" required className="file:text-primary file:font-medium"/>
+                    <Input id="dniDorso" type="file" required onChange={(e) => handleFileChange(e, setDniDorsoFile)} className="file:text-primary file:font-medium" accept="image/*"/>
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="selfie">Selfie con DNI</Label>
-                    <Input id="selfie" type="file" required className="file:text-primary file:font-medium"/>
+                    <Input id="selfie" type="file" required onChange={(e) => handleFileChange(e, setSelfieFile)} className="file:text-primary file:font-medium" accept="image/*"/>
                 </div>
             </div>
 
