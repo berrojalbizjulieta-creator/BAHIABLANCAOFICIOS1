@@ -1,40 +1,49 @@
-import { NextResponse } from "next/server";
-import { PROFESSIONALS } from '@/lib/data';
+import { NextResponse } from 'next/server';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { CATEGORIES } from '@/lib/data';
+import type { Professional } from '@/lib/types';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const q = searchParams.get("q")?.toLowerCase() || "";
+  const q = searchParams.get('q')?.toLowerCase() || '';
 
   if (!q) {
     return NextResponse.json([]);
   }
 
-  const results = PROFESSIONALS.filter(
-    (p) => {
-      // Find all categories for the professional
-      const professionalCategories = CATEGORIES.filter(c => p.categoryIds.includes(c.id));
+  try {
+    const professionalsSnapshot = await getDocs(collection(db, 'professionalsDetails'));
+    const allProfessionals = professionalsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Professional));
+
+    const activeProfessionals = allProfessionals.filter(p => p.isActive && p.subscription?.isSubscriptionActive);
+
+    const results = activeProfessionals.filter(p => {
+      const professionalCategories = CATEGORIES.filter(c => p.categoryIds?.includes(c.id));
       
-      // Check if query matches professional name, any of their category names, or any of their specialties
-      return p.name.toLowerCase().includes(q) ||
-             professionalCategories.some(c => c.name.toLowerCase().includes(q)) ||
-             p.specialties.some(s => s.toLowerCase().includes(q));
-    }
-  );
+      const nameMatch = p.name.toLowerCase().includes(q);
+      const categoryMatch = professionalCategories.some(c => c.name.toLowerCase().includes(q));
+      const specialtyMatch = p.specialties?.some(s => s.toLowerCase().includes(q));
 
-  if (results.length === 0) {
-    return NextResponse.json([]);
+      return nameMatch || categoryMatch || specialtyMatch;
+    });
+
+    if (results.length === 0) {
+      return NextResponse.json([]);
+    }
+
+    return NextResponse.json(results.map(p => {
+      const primaryCategory = CATEGORIES.find(c => c.id === p.categoryIds[0]);
+      return {
+          id: p.id,
+          nombre: p.name,
+          rubro: primaryCategory?.name || 'Sin categoría',
+          photoUrl: p.photoUrl,
+          avgRating: p.avgRating
+      }
+    }));
+  } catch (error) {
+    console.error("Error searching professionals:", error);
+    return NextResponse.json({ error: "Failed to fetch search results." }, { status: 500 });
   }
-
-  return NextResponse.json(results.map(p => {
-    // For display, we'll just show the first category. The profile page shows all of them.
-    const primaryCategory = CATEGORIES.find(c => c.id === p.categoryIds[0]);
-    return {
-        id: p.id,
-        nombre: p.name,
-        rubro: primaryCategory?.name || 'Sin categoría',
-        photoUrl: p.photoUrl,
-        avgRating: p.avgRating
-    }
-  }));
 }
