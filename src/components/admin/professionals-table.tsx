@@ -26,7 +26,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal, Loader2 } from 'lucide-react';
+import { MoreHorizontal, Loader2, ShieldCheck } from 'lucide-react';
 import type { Professional, User as AppUser } from '@/lib/types';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -166,7 +166,10 @@ export default function ProfessionalsTable() {
               return (
               <TableRow key={pro.id}>
                 <TableCell>
-                  <div className="font-medium">{pro.name}</div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{pro.name}</span>
+                    {pro.isVerified && <ShieldCheck className="h-5 w-5 text-blue-500" />}
+                  </div>
                   <div className="text-sm text-muted-foreground">{pro.email}</div>
                 </TableCell>
                 <TableCell>{primaryCategory?.name || 'No especificado'}</TableCell>
