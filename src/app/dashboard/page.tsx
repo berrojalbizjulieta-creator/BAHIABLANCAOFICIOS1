@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import ClientDashboard from '@/components/dashboard/client-dashboard';
 
@@ -46,6 +46,10 @@ interface DashboardStats {
 function AdminDashboard() {
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [loadingStats, setLoadingStats] = useState(true);
+    const searchParams = useSearchParams();
+    const router = useRouter();
+
+    const activeTab = searchParams.get('tab') || 'overview';
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -135,13 +139,17 @@ function AdminDashboard() {
         fetchStats();
     }, []);
 
+    const onTabChange = (value: string) => {
+      router.push(`/dashboard?tab=${value}`);
+    };
+
     return (
     <div className="flex-col md:flex">
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Dashboard de Administración</h2>
         </div>
-        <Tabs defaultValue="overview" className="space-y-4">
+        <Tabs value={activeTab} onValueChange={onTabChange} className="space-y-4">
           <TabsList>
             <TabsTrigger value="overview">Resumen</TabsTrigger>
             <TabsTrigger value="professionals">Profesionales</TabsTrigger>
@@ -262,8 +270,7 @@ function AdminDashboard() {
   );
 }
 
-
-export default function DashboardPage() {
+function DashboardPageContent() {
   const router = useRouter();
   const { user, isAdmin, isProfessional, loading } = useAdminAuth();
   
@@ -306,4 +313,12 @@ export default function DashboardPage() {
         <p>Serás redirigido a tu panel de control en un momento.</p>
     </div>
   );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center h-screen"><Loader2 className="animate-spin h-12 w-12 text-primary" /></div>}>
+      <DashboardPageContent />
+    </Suspense>
+  )
 }

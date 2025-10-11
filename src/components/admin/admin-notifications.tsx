@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Popover,
   PopoverContent,
@@ -16,6 +16,7 @@ import { Separator } from '../ui/separator';
 export default function AdminNotifications() {
   const [pendingVerifications, setPendingVerifications] = useState(0);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const q = query(collection(db, "professionalsDetails"), where("verificationStatus", "==", "pending"));
@@ -30,6 +31,10 @@ export default function AdminNotifications() {
 
     return () => unsubscribe();
   }, []);
+
+  const handleNotificationClick = (path: string) => {
+    router.push(path);
+  }
 
   const hasNotifications = pendingVerifications > 0;
 
@@ -61,7 +66,10 @@ export default function AdminNotifications() {
             </div>
           ) : hasNotifications ? (
             <div className="grid gap-2">
-                <Link href="/dashboard#verifications" className="group flex items-center justify-between rounded-md p-2 hover:bg-accent hover:text-accent-foreground">
+                <button 
+                    onClick={() => handleNotificationClick('/dashboard?tab=verifications')} 
+                    className="group flex items-center justify-between rounded-md p-2 hover:bg-accent hover:text-accent-foreground text-left w-full"
+                >
                     <div className='flex items-center gap-3'>
                         <div className="bg-blue-100 p-2 rounded-full">
                             <ShieldCheck className="h-5 w-5 text-blue-600" />
@@ -73,7 +81,7 @@ export default function AdminNotifications() {
                             </p>
                         </div>
                     </div>
-                </Link>
+                </button>
             </div>
           ) : (
             <p className="text-sm text-muted-foreground text-center p-4">
