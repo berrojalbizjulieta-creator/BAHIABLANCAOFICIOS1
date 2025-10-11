@@ -48,12 +48,17 @@ export default function SearchForm() {
     setIsLoading(true);
 
     try {
-      const profResults = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-      const professionals: SearchResult[] = await profResults.json();
-      setResults(professionals);
+      // Fetch both professionals and suggestions in parallel
+      const [profRes, sugRes] = await Promise.all([
+        fetch(`/api/search?q=${encodeURIComponent(query)}`),
+        fetch(`/api/sugerencia?q=${encodeURIComponent(query)}`)
+      ]);
+
+      const professionals: SearchResult[] = await profRes.json();
+      const suggestionData: { suggestedTrades: string[] } = await sugRes.json();
       
-      const professionalCategories = Array.from(new Set(professionals.map(p => p.rubro)));
-      setSuggestions(professionalCategories.slice(0, 3));
+      setResults(professionals);
+      setSuggestions(suggestionData.suggestedTrades || []);
 
       setIsDropdownOpen(true);
     } catch (e: any) {
