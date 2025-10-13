@@ -26,6 +26,7 @@ import {
   XCircle,
   Tag,
   Loader2,
+  Trash2,
 } from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {
@@ -69,7 +70,7 @@ import { CATEGORIES, CATEGORY_SPECIALTIES, defaultSchedule } from '@/lib/data';
 import SpecialtiesDialog from '@/components/professionals/specialties-dialog';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { storage, db } from '@/lib/firebase';
-import { ref, uploadString, getDownloadURL } from 'firebase/storage';
+import { ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storage';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { getReviewsForProfessional } from '@/lib/firestore-queries';
 
@@ -450,6 +451,19 @@ export default function ProfilePage() {
     }
   };
 
+  const handleDeleteWorkPhoto = (photoId: string) => {
+    if (professional) {
+      const updatedPhotos = professional.workPhotos?.filter(photo => photo.id !== photoId);
+      // We also need to handle deleting from storage, but that should happen on save.
+      // For now, just update the state. The save logic should compare the new and old lists.
+      setProfessional({ ...professional, workPhotos: updatedPhotos });
+      toast({
+        title: "Foto eliminada",
+        description: "La foto se quitará de tu galería cuando guardes los cambios.",
+      });
+    }
+  };
+
   const handleWorkPhotoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && professional) {
@@ -824,19 +838,32 @@ export default function ProfilePage() {
                                 key={photo.id}
                                 className="md:basis-1/2 lg:basis-1/3"
                               >
-                                <DialogTrigger asChild onClick={() => setActivePhoto(photo)}>
-                                    <div className="p-1 cursor-pointer">
-                                        <div className="relative aspect-video overflow-hidden rounded-lg">
-                                        <Image
-                                            src={photo.imageUrl}
-                                            alt={photo.description}
-                                            fill
-                                            className="object-cover"
-                                            data-ai-hint={photo.imageHint}
-                                        />
-                                        </div>
-                                    </div>
-                                </DialogTrigger>
+                                <div className="p-1 group relative">
+                                  <DialogTrigger asChild onClick={() => setActivePhoto(photo)}>
+                                      <div className="cursor-pointer">
+                                          <div className="relative aspect-video overflow-hidden rounded-lg">
+                                          <Image
+                                              src={photo.imageUrl}
+                                              alt={photo.description}
+                                              fill
+                                              className="object-cover"
+                                              data-ai-hint={photo.imageHint}
+                                          />
+                                          </div>
+                                      </div>
+                                  </DialogTrigger>
+                                  {isEditing && (
+                                    <Button
+                                      variant="destructive"
+                                      size="icon"
+                                      className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                                      onClick={() => handleDeleteWorkPhoto(photo.id)}
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                      <span className="sr-only">Eliminar foto</span>
+                                    </Button>
+                                  )}
+                                </div>
                               </CarouselItem>
                             ))}
                           </CarouselContent>
