@@ -1,8 +1,8 @@
 
-import { genkit, configureGenkit } from 'genkit';
+import { genkit } from 'genkit';
 import { googleAI } from '@genkit-ai/google-genai';
 
-configureGenkit({
+export const ai = genkit({
   plugins: [
     googleAI({
       // Specify the API version.
@@ -14,5 +14,3 @@ configureGenkit({
   // Perform OpenTelemetry instrumentation.
   enableTracingAndMetrics: true,
 });
-
-export { genkit as ai };
