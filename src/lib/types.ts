@@ -67,12 +67,12 @@ export interface Professional {
   priceInfo?: string;
   subscription?: ProfessionalSubscription;
   subscriptionTier?: 'standard' | 'premium';
-  isSubscriptionActive?: boolean; 
+  isSubscriptionActive?: boolean;
   registrationDate: Date | Timestamp;
   lastPaymentDate?: Date | Timestamp;
   isActive: boolean;
   schedule?: Schedule[];
-  totalReviews: number; 
+  totalReviews: number;
   dayAvailability: { [key: string]: boolean };
 }
 
@@ -89,7 +89,7 @@ export interface User {
 
 
 export interface Client {
-  id: number; 
+  id: number;
   name: string;
   email: string;
   photoUrl: string;

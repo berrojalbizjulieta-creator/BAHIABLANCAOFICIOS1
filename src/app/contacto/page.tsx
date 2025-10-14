@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -41,6 +40,7 @@ const emailAddress = 'bahiablancaoficios@gmail.com';
 
 export default function ContactoPage() {
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
@@ -52,21 +52,27 @@ export default function ContactoPage() {
   });
 
   const onSubmit: SubmitHandler<ContactFormValues> = (data) => {
+    setIsLoading(true);
+
     const subject = encodeURIComponent(`Nuevo mensaje de ${data.name} desde la web`);
     const body = encodeURIComponent(
       `Has recibido un nuevo mensaje de contacto:\n\nNombre: ${data.name}\nEmail: ${data.email}\n\nMensaje:\n${data.message}`
     );
+
     const mailtoLink = `mailto:${emailAddress}?subject=${subject}&body=${body}`;
 
     // Abrir el cliente de correo del usuario
     window.location.href = mailtoLink;
 
-    toast({
-      title: '¡Abriendo tu correo!',
-      description: 'Preparamos un borrador para que nos envíes tu mensaje.',
-    });
-
-    form.reset();
+    // Simular un pequeño retraso para que el usuario vea la transición
+    setTimeout(() => {
+        toast({
+          title: '¡Listo para enviar!',
+          description: 'Tu aplicación de correo se ha abierto. ¡Solo tienes que darle a enviar!',
+        });
+        setIsLoading(false);
+        form.reset();
+    }, 1500);
   };
 
   return (
