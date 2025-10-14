@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -24,15 +24,15 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { DollarSign, PlusCircle, Loader2 } from 'lucide-react';
+import { DollarSign, PlusCircle, Loader2, Upload } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import Link from 'next/link';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import type { JobRequest } from '@/lib/types';
 import JobRequestCard from './job-request-card';
-import { db } from '@/lib/firebase';
+import { db, storage } from '@/lib/firebase';
 import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, updateDoc } from 'firebase/firestore';
-
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const jobRequestSchema = z.object({
   title: z.string().min(10, 'El título debe tener al menos 10 caracteres.'),
@@ -44,6 +44,8 @@ const jobRequestSchema = z.object({
 type JobRequestFormValues = z.infer<typeof jobRequestSchema>;
 
 const ITEMS_PER_PAGE = 15;
+const MAX_IMAGE_SIZE_MB = 5;
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 export default function JobRequestsPage() {
   const [jobRequests, setJobRequests] = useState<JobRequest[]>([]);
@@ -52,6 +54,8 @@ export default function JobRequestsPage() {
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const { toast } = useToast();
   const { user, isProfessional } = useAdminAuth();
@@ -95,6 +99,22 @@ export default function JobRequestsPage() {
       whatsapp: '',
     },
   });
+  
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+        toast({ title: 'Formato no permitido', description: 'Por favor, sube una imagen en formato JPG, PNG o WebP.', variant: 'destructive' });
+        return;
+      }
+      if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
+        toast({ title: 'Archivo muy grande', description: `La imagen no puede superar los ${MAX_IMAGE_SIZE_MB}MB.`, variant: 'destructive' });
+        return;
+      }
+      setImageFile(file);
+    }
+  }
+
 
   const onSubmit: SubmitHandler<JobRequestFormValues> = async (data) => {
     if (!user) {
@@ -105,8 +125,16 @@ export default function JobRequestsPage() {
     setIsSubmitting(true);
     
     try {
+        let imageUrl = '';
+        if (imageFile) {
+            const storageRef = ref(storage, `job-requests/${user.uid}/${Date.now()}-${imageFile.name}`);
+            const uploadResult = await uploadBytes(storageRef, imageFile);
+            imageUrl = await getDownloadURL(uploadResult.ref);
+        }
+
         const newRequestData = {
             ...data,
+            imageUrl,
             clientId: user.uid,
             clientName: user.displayName || 'Cliente Anónimo',
             clientPhotoUrl: user.photoURL || '',
@@ -117,7 +145,6 @@ export default function JobRequestsPage() {
 
         const docRef = await addDoc(collection(db, "jobRequests"), newRequestData);
         
-        // Actualizamos el estado local con los datos correctos para que se vea bien al instante.
         const localNewRequest = {
             ...newRequestData,
             id: docRef.id,
@@ -131,6 +158,10 @@ export default function JobRequestsPage() {
         });
 
         form.reset();
+        setImageFile(null);
+        if (imageInputRef.current) {
+          imageInputRef.current.value = "";
+        }
         setIsFormVisible(false);
     } catch(error) {
         console.error("Error adding document: ", error);
@@ -209,7 +240,7 @@ export default function JobRequestsPage() {
               </CardHeader>
                <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-6">
                         <FormField
                             control={form.control}
                             name="title"
@@ -240,6 +271,26 @@ export default function JobRequestsPage() {
                                 </FormItem>
                             )}
                         />
+
+                        <FormItem>
+                          <FormLabel>Foto de referencia (opcional)</FormLabel>
+                          <FormControl>
+                              <div className="relative">
+                                  <Input
+                                    type="file"
+                                    id="image"
+                                    accept={ALLOWED_IMAGE_TYPES.join(',')}
+                                    onChange={handleImageChange}
+                                    className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+                                    ref={imageInputRef}
+                                  />
+                              </div>
+                          </FormControl>
+                           <p className="text-xs text-muted-foreground mt-1">Sube una imagen para dar más detalles. (Máx {MAX_IMAGE_SIZE_MB}MB)</p>
+                          <FormMessage />
+                        </FormItem>
+
+
                         <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                              <FormField
                                 control={form.control}
@@ -271,7 +322,7 @@ export default function JobRequestsPage() {
                                 )}
                             />
                         </div>
-                         <p className='text-xs text-muted-foreground'>Tu WhatsApp solo será visible para los profesionales que comenten en tu anuncio.</p>
+                         <p className='text-xs text-muted-foreground'>Tu WhatsApp solo será visible para los profesionales que se postulen.</p>
                     </CardContent>
                     <CardFooter className='gap-4'>
                         <Button type="submit" disabled={isSubmitting}>

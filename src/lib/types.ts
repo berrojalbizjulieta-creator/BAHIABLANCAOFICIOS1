@@ -127,6 +127,7 @@ export interface JobRequest {
   clientPhotoUrl: string;
   createdAt: Date;
   whatsapp: string;
+  imageUrl?: string;
   comments: JobComment[];
 }
 

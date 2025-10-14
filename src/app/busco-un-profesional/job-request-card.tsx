@@ -10,6 +10,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useState } from 'react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import Image from 'next/image';
 
 interface JobRequestCardProps {
     request: JobRequest;
@@ -67,10 +68,20 @@ export default function JobRequestCard({ request, onUpdateRequest, isUpdating }:
                     {request.status === 'open' ? 'Abierto' : 'Finalizado'}
                 </Badge>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
                 <p className="text-muted-foreground">
                     {request.description}
                 </p>
+                {request.imageUrl && (
+                    <div className="relative aspect-video w-full max-w-sm mx-auto overflow-hidden rounded-lg">
+                        <Image 
+                            src={request.imageUrl}
+                            alt={`Imagen de referencia para ${request.title}`}
+                            fill
+                            className="object-cover"
+                        />
+                    </div>
+                )}
             </CardContent>
             <CardFooter className="justify-between items-center bg-muted/50 p-4">
                  <div className="flex items-center gap-2 font-bold text-lg text-primary">
