@@ -27,7 +27,7 @@ El uso de la plataforma implica la aceptación de todas las cláusulas, sin perj
 
 Registro y Contratación
 
-La inscripción de USUARIOS PROFESIONALES, locales o empresas podrá ser de pago después de un período inicial de prueba de 6 meses o, posteriormente, desde el inicio según la modalidad vigente.
+La inscripción de USUARIOS PROFESIONALES, locales o empresas podrá ser de pago después de un período inicial de prueba de 3 meses o, posteriormente, desde el inicio según la modalidad vigente.
 
 El registro implica la aceptación de estos Términos y Condiciones.
 
