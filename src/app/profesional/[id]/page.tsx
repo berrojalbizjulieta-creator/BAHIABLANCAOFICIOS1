@@ -357,19 +357,19 @@ export default function PublicProfilePage() {
               <Card className="overflow-hidden shadow-lg">
                 <CardContent className="p-6">
                   <div className="flex flex-col sm:flex-row items-start gap-6">
-                     <Avatar className="w-36 h-36 border-4 border-background shadow-md">
+                     <Avatar className="w-24 h-24 sm:w-36 sm:h-36 border-4 border-background shadow-md">
                         <AvatarImage src={professional.photoUrl} alt={professional.name} />
                         <AvatarFallback>{professional.name.charAt(0)}</AvatarFallback>
                      </Avatar>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <h1 className="text-3xl font-bold font-headline">
+                        <h1 className="text-2xl sm:text-3xl font-bold font-headline">
                           {professional.name}
                         </h1>
                         {professional.isVerified ? (
-                          <ShieldCheck className="w-7 h-7 text-blue-500" />
+                          <ShieldCheck className="w-6 h-6 sm:w-7 sm:h-7 text-blue-500" />
                         ) : (
-                          <Shield className="w-7 h-7 text-muted-foreground" />
+                          <Shield className="w-6 h-6 sm:w-7 sm:h-7 text-muted-foreground" />
                         )}
                         {professional.subscription?.tier === 'premium' && (
                           <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">
@@ -403,13 +403,13 @@ export default function PublicProfilePage() {
                         </Badge>
                       )}
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <Button asChild>
+                    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                      <Button asChild className="w-full sm:w-auto">
                          <a href={getWhatsAppLink(professional.phone, CATEGORIES.find(c => c.id === professional.categoryIds[0])?.name)} target="_blank" rel="noopener noreferrer">
                             <Phone className="mr-2" /> Whatsapp
                         </a>
                       </Button>
-                      <Button variant="outline">
+                      <Button variant="outline" className="w-full sm:w-auto">
                         <Share2 className="mr-2 h-4 w-4" />
                         Compartir
                       </Button>
@@ -499,7 +499,7 @@ export default function PublicProfilePage() {
                         <Carousel opts={{ align: 'start' }} className="w-full">
                             <CarouselContent>
                             {professional.workPhotos.map((photo) => (
-                                <CarouselItem key={photo.id}>
+                                <CarouselItem key={photo.id} className="basis-full sm:basis-1/2">
                                 <DialogTrigger asChild onClick={() => setActivePhoto(photo)}>
                                     <div className="p-1 cursor-pointer">
                                         <div className="relative aspect-video overflow-hidden rounded-lg">
@@ -516,8 +516,8 @@ export default function PublicProfilePage() {
                                 </CarouselItem>
                             ))}
                             </CarouselContent>
-                            <CarouselPrevious className="-ml-2"/>
-                            <CarouselNext className="-mr-2"/>
+                            <CarouselPrevious className="-ml-2 hidden sm:flex"/>
+                            <CarouselNext className="-mr-2 hidden sm:flex"/>
                         </Carousel>
                         <DialogContent className="max-w-3xl p-2">
                             <DialogTitle className="sr-only">Imagen de trabajo</DialogTitle>

@@ -54,9 +54,9 @@ const renderCategoryCard = (categoryName: string) => {
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
         </div>
         <div className="absolute bottom-0 left-0 p-4 text-white">
-          <p className="text-sm mt-1 opacity-90">{category.description}</p>
-          <p className="text-xs mt-2 font-semibold opacity-80 group-hover:opacity-100 group-hover:underline">
-            Encontralo en {category.name}
+           <h3 className="text-lg font-bold font-headline">{category.name}</h3>
+          <p className="text-sm mt-1 opacity-90 group-hover:underline">
+            Ver profesionales
           </p>
         </div>
       </Card>
@@ -84,14 +84,14 @@ export default function EssentialServicesPage() {
       <div className="space-y-16">
         <section>
           <h2 className="text-2xl font-bold font-headline mb-6">Mantenimiento y Reparaciones del Hogar</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {maintenanceCategories.map(renderCategoryCard)}
           </div>
         </section>
 
         <section>
           <h2 className="text-2xl font-bold font-headline mb-6">Mejoras y Proyectos</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {improvementCategories.map(renderCategoryCard)}
           </div>
         </section>

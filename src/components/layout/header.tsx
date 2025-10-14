@@ -32,6 +32,7 @@ const navLinks = [
 export function Header() {
   const { user, isAdmin, loading } = useAdminAuth();
   const [isClient, setIsClient] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -47,6 +48,10 @@ export function Header() {
   const handleLogout = async () => {
     await signOut(auth);
     router.push('/');
+  };
+
+  const handleLinkClick = () => {
+    setIsMobileMenuOpen(false);
   };
 
   const renderAuthButtons = () => {
@@ -106,20 +111,23 @@ export function Header() {
     if (user) {
       return (
         <div className="flex flex-col gap-3">
-            <Button variant="outline" asChild>
+            <Button variant="outline" asChild onClick={handleLinkClick}>
                 <Link href="/dashboard">Mi Panel</Link>
             </Button>
-            <Button variant="destructive" onClick={handleLogout}>Cerrar Sesión</Button>
+            <Button variant="destructive" onClick={() => {
+                handleLogout();
+                handleLinkClick();
+            }}>Cerrar Sesión</Button>
         </div>
       );
     }
 
     return (
       <div className="flex flex-col gap-3">
-        <Button variant="outline" asChild>
+        <Button variant="outline" asChild onClick={handleLinkClick}>
           <Link href="/login">Iniciar Sesión</Link>
         </Button>
-        <Button asChild>
+        <Button asChild onClick={handleLinkClick}>
           <Link href="/signup">Registrarse</Link>
         </Button>
       </div>
@@ -130,7 +138,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-7xl items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2" onClick={handleLinkClick}>
           <Logo className="h-8 w-auto" />
         </Link>
 
@@ -151,7 +159,7 @@ export function Header() {
         </div>
 
         <div className="md:hidden">
-          <Sheet>
+          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
                 <Menu className="h-6 w-6" />
@@ -161,7 +169,9 @@ export function Header() {
             <SheetContent side="right">
               <div className="flex flex-col h-full">
                 <div className="flex items-center mb-6">
-                   <Logo className="h-8 w-auto" />
+                   <Link href="/" onClick={handleLinkClick}>
+                    <Logo className="h-8 w-auto" />
+                  </Link>
                 </div>
                 <nav className="flex flex-col gap-4 text-lg font-medium">
                   {navLinks.map((link) => (
@@ -169,6 +179,7 @@ export function Header() {
                       key={link.href}
                       href={link.href}
                       className="text-foreground/80 transition-colors hover:text-foreground"
+                      onClick={handleLinkClick}
                     >
                       {link.label}
                     </Link>

@@ -10,13 +10,15 @@ export function Footer() {
     <footer className="bg-muted/40" id="about">
       <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
-          <div className="lg:col-span-1">
-            <Logo className="h-10 w-auto" />
-            <p className="mt-4 max-w-xs text-sm text-muted-foreground">
+          <div className="lg:col-span-1 text-center lg:text-left">
+            <div className="flex justify-center lg:justify-start">
+                <Logo className="h-10 w-auto" />
+            </div>
+            <p className="mt-4 max-w-xs text-sm text-muted-foreground mx-auto lg:mx-0">
               Conectando a la comunidad de Bahía Blanca con los mejores
               profesionales y oficios.
             </p>
-            <div className="mt-6 flex space-x-4">
+            <div className="mt-6 flex space-x-4 justify-center lg:justify-start">
               <Link
                 href="#"
                 className="text-muted-foreground hover:text-primary"
@@ -41,7 +43,7 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 lg:col-span-3 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-8 lg:col-span-3 sm:grid-cols-4 text-center sm:text-left">
             <div>
               <p className="font-bold text-foreground">Servicios</p>
               <nav className="mt-4 flex flex-col space-y-2 text-sm">
@@ -103,14 +105,14 @@ export function Footer() {
                   href={`https://wa.me/${whatsappNumber}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-muted-foreground hover:text-primary"
+                  className="flex items-center gap-2 text-muted-foreground hover:text-primary justify-center sm:justify-start"
                 >
                   <Phone className="h-4 w-4"/>
                   WhatsApp
                 </a>
                 <a
                   href={`mailto:${emailAddress}`}
-                  className="flex items-center gap-2 text-muted-foreground hover:text-primary"
+                  className="flex items-center gap-2 text-muted-foreground hover:text-primary justify-center sm:justify-start"
                 >
                   <Mail className="h-4 w-4" />
                   Email
