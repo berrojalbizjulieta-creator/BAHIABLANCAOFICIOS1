@@ -37,10 +37,9 @@ type ContactFormValues = z.infer<typeof contactSchema>;
 
 const whatsappNumber = '5492915088831';
 const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hola, me comunico desde el sitio web de Bahia Blanca Oficios.')}`;
-const emailAddress = 'bahiablancaoficios@gmail.com.ar';
+const emailAddress = 'bahiablancaoficios@gmail.com';
 
 export default function ContactoPage() {
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<ContactFormValues>({
@@ -53,18 +52,20 @@ export default function ContactoPage() {
   });
 
   const onSubmit: SubmitHandler<ContactFormValues> = async (data) => {
-    setIsLoading(true);
-    console.log('Form data submitted:', data);
+    const subject = encodeURIComponent(`Nuevo mensaje de ${data.name} desde la web`);
+    const body = encodeURIComponent(
+      `Has recibido un nuevo mensaje de contacto:\n\nNombre: ${data.name}\nEmail: ${data.email}\n\nMensaje:\n${data.message}`
+    );
+    const mailtoLink = `mailto:${emailAddress}?subject=${subject}&body=${body}`;
 
-    // Simulate sending the message
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // Abrir el cliente de correo del usuario
+    window.location.href = mailtoLink;
 
     toast({
-      title: '¡Mensaje Enviado!',
-      description: 'Gracias por contactarnos. Te responderemos a la brevedad.',
+      title: '¡Abriendo tu correo!',
+      description: 'Preparamos un borrador para que nos envíes tu mensaje.',
     });
 
-    setIsLoading(false);
     form.reset();
   };
 
@@ -167,8 +168,8 @@ export default function ContactoPage() {
                         />
                     </CardContent>
                     <CardFooter>
-                        <Button type="submit" className="w-full" disabled={isLoading}>
-                            {isLoading ? 'Enviando...' : (<> <Send className="mr-2"/> Enviar Mensaje </>)}
+                        <Button type="submit" className="w-full">
+                            <Send className="mr-2"/> Enviar Mensaje
                         </Button>
                     </CardFooter>
                 </form>
