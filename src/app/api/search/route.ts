@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { CATEGORIES } from '@/lib/data';
+import { CATEGORIES, CATEGORY_SPECIALTIES } from '@/lib/data';
 import type { Professional } from '@/lib/types';
 
 // Función para normalizar texto (quitar acentos y a minúsculas)
@@ -23,8 +23,21 @@ export async function GET(request: Request) {
   const normalizedQuery = normalizeText(q);
 
   try {
+    // 1. Encontrar categorías que coincidan con la búsqueda a través de sus especialidades
+    const matchingCategoryIds = new Set<number>();
+    for (const catId in CATEGORY_SPECIALTIES) {
+      const categoryData = CATEGORY_SPECIALTIES[Number(catId)];
+      const specialtiesText = categoryData.specialties.map(normalizeText).join(' ');
+      const categoryNameText = normalizeText(categoryData.name);
+
+      if (specialtiesText.includes(normalizedQuery) || categoryNameText.includes(normalizedQuery)) {
+        matchingCategoryIds.add(Number(catId));
+      }
+    }
+
+    // 2. Obtener todos los profesionales activos y con suscripción
     const professionalsRef = collection(db, 'professionalsDetails');
-    const qSnapshot = query(professionalsRef, 
+    const qSnapshot = query(professionalsRef,
         where('isActive', '==', true),
         where('subscription.isSubscriptionActive', '==', true)
     );
@@ -36,17 +49,24 @@ export async function GET(request: Request) {
         ...doc.data() 
     } as Professional));
 
+    // 3. Filtrar profesionales
     const results = allProfessionals.filter(prof => {
-      const professionalCategories = CATEGORIES.filter(c => prof.categoryIds?.includes(c.id));
-
+      // Filtrar por perfil del profesional (nombre, descripción, especialidades propias)
       const name = normalizeText(prof.name);
       const description = normalizeText(prof.description);
       const specialties = prof.specialties?.map(normalizeText).join(' ') || '';
-      const categoryNames = professionalCategories.map(c => normalizeText(c.name)).join(' ');
+      const professionalProfileText = `${name} ${description} ${specialties}`;
 
-      const searchableText = `${name} ${description} ${specialties} ${categoryNames}`;
+      if (professionalProfileText.includes(normalizedQuery)) {
+        return true;
+      }
       
-      return searchableText.includes(normalizedQuery);
+      // Filtrar si el profesional pertenece a una de las categorías que coinciden con la búsqueda
+      if (prof.categoryIds.some(id => matchingCategoryIds.has(id))) {
+          return true;
+      }
+
+      return false;
     });
     
     if (results.length === 0) {
