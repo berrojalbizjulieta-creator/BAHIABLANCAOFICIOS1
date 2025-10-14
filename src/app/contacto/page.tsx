@@ -51,7 +51,7 @@ export default function ContactoPage() {
     },
   });
 
-  const onSubmit: SubmitHandler<ContactFormValues> = async (data) => {
+  const onSubmit: SubmitHandler<ContactFormValues> = (data) => {
     const subject = encodeURIComponent(`Nuevo mensaje de ${data.name} desde la web`);
     const body = encodeURIComponent(
       `Has recibido un nuevo mensaje de contacto:\n\nNombre: ${data.name}\nEmail: ${data.email}\n\nMensaje:\n${data.message}`
