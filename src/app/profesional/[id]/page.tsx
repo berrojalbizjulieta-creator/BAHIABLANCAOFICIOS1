@@ -433,10 +433,11 @@ export default function PublicProfilePage() {
                           Información General
                         </h4>
                         <ul className="space-y-3 text-sm">
-                           <li className="flex items-center gap-3"><Trophy className="w-4 h-4 text-primary" /> <span>Top Pro actual</span></li>
-                           <li className="flex items-center gap-3"><Briefcase className="w-4 h-4 text-primary" /> <span>Contratado 0 veces</span></li>
                            <li className="flex items-center gap-3"><MapPin className="w-4 h-4 text-primary" /> <span>Sirve a Bahía Blanca</span></li>
-                           <li className="flex items-center gap-3"><CheckCircle className="w-4 h-4 text-primary" /> <span>Antecedentes no verificados</span></li>
+                           <li className="flex items-center gap-3">
+                                <CheckCircle className="w-4 h-4 text-primary" /> 
+                                <span>{professional.isVerified ? "Antecedentes verificados" : "Antecedentes no verificados"}</span>
+                           </li>
                            <li className="flex items-center gap-3"><Users className="w-4 h-4 text-primary" /> <span>{(professional as any).employees || 0} empleados</span></li> 
                            <li className="flex items-center gap-3"><Clock className="w-4 h-4 text-primary" /> <span>{(professional as any).yearsInBusiness || 0} años en el negocio</span></li>
                         </ul>

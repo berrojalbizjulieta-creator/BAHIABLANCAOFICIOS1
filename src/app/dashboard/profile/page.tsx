@@ -733,10 +733,11 @@ export default function ProfilePage() {
                           Información General
                         </h4>
                         <ul className="space-y-3 text-sm">
-                           <li className="flex items-center gap-3"><Trophy className="w-4 h-4 text-primary" /> <span>Top Pro actual</span></li>
-                           <li className="flex items-center gap-3"><Briefcase className="w-4 h-4 text-primary" /> <span>Contratado 0 veces</span></li>
                            <li className="flex items-center gap-3"><MapPin className="w-4 h-4 text-primary" /> <span>Sirve a Bahía Blanca</span></li>
-                           <li className="flex items-center gap-3"><CheckCircle className="w-4 h-4 text-primary" /> <span>Antecedentes no verificados</span></li>
+                           <li className="flex items-center gap-3">
+                                <CheckCircle className="w-4 h-4 text-primary" /> 
+                                <span>{professional.isVerified ? "Antecedentes verificados" : "Antecedentes no verificados"}</span>
+                           </li>
                            <li className="flex items-center gap-3"><Users className="w-4 h-4 text-primary" /> 
                             {isEditing ? <div className="flex items-center gap-2"><Input type="number" placeholder="0" className="w-16 h-8"/> <span>empleados</span></div> : <span>0 empleados</span>}
                            </li>
