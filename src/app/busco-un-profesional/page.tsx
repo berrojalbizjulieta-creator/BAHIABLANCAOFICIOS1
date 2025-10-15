@@ -31,7 +31,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import type { JobRequest } from '@/lib/types';
 import JobRequestCard from './job-request-card';
 import { db, storage } from '@/lib/firebase';
-import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, updateDoc, where, limit } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const jobRequestSchema = z.object({
@@ -64,7 +64,12 @@ export default function JobRequestsPage() {
     const fetchJobRequests = async () => {
       setLoadingRequests(true);
       try {
-        const q = query(collection(db, 'jobRequests'), orderBy('createdAt', 'desc'));
+        const q = query(
+          collection(db, 'jobRequests'),
+          where('status', '==', 'open'), 
+          orderBy('createdAt', 'desc'),
+          limit(50) // Limit initial load for performance
+        );
         const querySnapshot = await getDocs(q);
         const requestsData = querySnapshot.docs.map(doc => {
           const data = doc.data();
@@ -74,7 +79,7 @@ export default function JobRequestsPage() {
             createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
           } as JobRequest;
         });
-        setJobRequests(requestsData.filter(req => req.status === 'open'));
+        setJobRequests(requestsData);
       } catch (error) {
         console.error("Error fetching job requests: ", error);
         toast({
@@ -286,7 +291,7 @@ export default function JobRequestsPage() {
                                   />
                               </div>
                           </FormControl>
-                           <p className="text-xs text-muted-foreground mt-1">Sube una imagen para dar más detalles. (Máx {MAX_IMAGE_SIZE_MB}MB)</p>
+                           <p className="text-xs text-muted-foreground mt-1">Sube una imagen para dar más detalles. (Máx ${MAX_IMAGE_SIZE_MB}MB)</p>
                           <FormMessage />
                         </FormItem>
 

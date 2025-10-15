@@ -40,30 +40,6 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'upload.wikimedia.org',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'px.cdn.lanueva.com', // corregido
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'production-next-images-cdn.thumbtack.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'i0.wp.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
         hostname: 'i.pinimg.com',
         port: '',
         pathname: '/**',
@@ -71,12 +47,6 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'i.postimg.cc',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'i.ibb.co',
         port: '',
         pathname: '/**',
       },
