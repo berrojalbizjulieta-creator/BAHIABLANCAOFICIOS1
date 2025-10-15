@@ -1,14 +1,7 @@
 'use server';
-/**
- * @fileOverview A plant problem diagnosis AI agent.
- *
- * - diagnosePlant - A function that handles the plant diagnosis process.
- * - DiagnosePlantInput - The input type for the diagnosePlant function.
- * - DiagnosePlantOutput - The return type for the diagnosePlant function.
- */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
+import { z } from 'zod';
 import { CATEGORY_SPECIALTIES } from '@/lib/data';
 
 const SuggestionInputSchema = z.object({
@@ -20,7 +13,32 @@ const SuggestionOutputSchema = z.object({
   suggestedTrades: z.array(z.string()).describe('Una lista de hasta 3 oficios relevantes de la lista proporcionada.'),
 });
 
-// Construir una lista de especialidades para el prompt
+// 🧩 Tabla de sinónimos comunes (la IA suele devolver estas palabras)
+const synonyms: Record<string, string> = {
+  plomero: 'Plomería',
+  fontanero: 'Plomería',
+  electricidad: 'Electricista',
+  gasista: 'Gasista Matriculado',
+  albañil: 'Albañilería',
+  pintor: 'Pintores',
+  cerrajero: 'Cerrajería',
+  carpintero: 'Carpintería',
+  techista: 'Reparaciones', // No hay categoría "Techista"
+  jardinero: 'Jardinería',
+  herrero: 'Herrería',
+  vidriero: 'Vidriería',
+  durlock: 'Albañilería',
+  yesero: 'Albañilería',
+  persianas: 'Reparaciones',
+  mantenimiento: 'Reparaciones',
+  limpieza: 'Limpieza',
+};
+
+// 🔤 Función de normalización para comparar texto
+const normalize = (text: string) =>
+  text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+
+// 🧱 Construimos un contexto claro para el modelo
 const specialtiesContext = Object.values(CATEGORY_SPECIALTIES)
   .map(cat => `- ${cat.name}: ${cat.specialties.join(', ')}`)
   .join('\n');
@@ -30,26 +48,36 @@ const suggestionPrompt = ai.definePrompt(
     name: 'suggestionPrompt',
     input: { schema: SuggestionInputSchema },
     output: { schema: SuggestionOutputSchema },
-    prompt: `Eres un experto en entender las necesidades de servicios para el hogar y categorizarlas. Tu objetivo es ayudar a los usuarios a encontrar el tipo de profesional correcto, incluso si no usan el término exacto.
+    prompt: `
+Eres un asistente experto en categorizar necesidades de servicios del hogar.
 
-Un usuario ha buscado: "{{query}}".
+Tu tarea es analizar la búsqueda del usuario y devolver una lista de los oficios más relevantes
+de la lista de 'Oficios Disponibles'. NO inventes nombres nuevos, devuelve exactamente los que están en la lista.
 
-Basándote en su búsqueda, analiza la intención y sugiere los oficios más relevantes de la lista de 'Oficios Disponibles'. Piensa conceptualmente: ¿qué tipo de profesional haría esta tarea?
+---
 
-Para ayudarte a decidir, aquí tienes una lista de especialidades asociadas a cada oficio:
-${specialtiesContext}
-
-Por ejemplo:
-- Si la búsqueda es "canilla que gotea", sugiere "Plomería".
-- Si es "arreglar persiana", sugiere "Reparaciones".
-- Si es "poner durlock", sugiere "Albañilería".
-
-Sugiere un máximo de 3 oficios. Si ninguno de los oficios disponibles parece remotamente relevante, devuelve una lista vacía.
+Búsqueda del usuario: "{{query}}"
 
 Oficios Disponibles:
 {{#each categories}}
 - {{this}}
 {{/each}}
+
+Lista de especialidades para ayudarte:
+${specialtiesContext}
+
+Ejemplos:
+- "canilla que gotea" → Plomería
+- "poner enchufe nuevo" → Electricista
+- "hacer pared de durlock" → Albañilería
+- "persiana trabada" → Reparaciones
+
+IMPORTANTE:
+1. Devuelve un máximo de 3 oficios.
+2. Usa solo los nombres EXACTOS de la lista.
+3. Si no hay coincidencias claras, devuelve una lista vacía.
+
+Tu respuesta debe ser una lista JSON válida con los nombres exactos de los oficios.
 `,
   },
 );
@@ -62,28 +90,46 @@ const suggestionFlow = ai.defineFlow(
   },
   async (input) => {
     const llmResponse = await suggestionPrompt(input);
-    const output = llmResponse.output;
+    const rawOutput = llmResponse.output;
 
-    // Normaliza el texto para hacer la comparación más flexible (ignora mayúsculas/minúsculas y acentos)
-    const normalize = (text: string) =>
-        text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    // console.log('🧠 Respuesta cruda del modelo:', rawOutput);
 
-    // Mapea categorías normalizadas a su nombre original
+    const rawSuggestions = rawOutput?.suggestedTrades || [];
+
+    // 1. Mapear sinónimos y normalizar las sugerencias de la IA
+    const mappedSuggestions = rawSuggestions.map((s) => {
+      const clean = normalize(s);
+      // Buscar en sinónimos primero
+      const synonymMatch = Object.keys(synonyms).find(key => clean.includes(normalize(key)));
+      if (synonymMatch) {
+        return synonyms[synonymMatch];
+      }
+      return s; // Devolver original si no hay sinónimo
+    });
+    
+    // 2. Crear un mapa de categorías normalizadas para una búsqueda eficiente
     const categoryMap = new Map(input.categories.map(cat => [normalize(cat), cat]));
 
-    const validSuggestions = output?.suggestedTrades
-        .map(trade => {
-            const normalizedTrade = normalize(trade);
-            // Devuelve el nombre original de la categoría si hay una coincidencia normalizada
-            return categoryMap.get(normalizedTrade);
-        })
-        .filter((trade): trade is string => !!trade) || []; // Filtra los undefined y asegura el tipo
+    // 3. Filtrar y validar las sugerencias mapeadas contra las categorías reales
+    const validSuggestions = mappedSuggestions
+      .map(trade => {
+        const normalizedTrade = normalize(trade);
+        return categoryMap.get(normalizedTrade);
+      })
+      .filter((trade): trade is string => !!trade); // Filtrar undefined
 
-    return { suggestedTrades: [...new Set(validSuggestions)] }; // Usa un Set para evitar duplicados
+    // console.log('✅ Sugerencias finales:', [...new Set(validSuggestions)]);
+    
+    return { suggestedTrades: [...new Set(validSuggestions)] }; // Usar Set para evitar duplicados
   }
 );
 
 export async function getSuggestions(query: string, categories: string[]): Promise<string[]> {
-  const result = await suggestionFlow({ query, categories });
-  return result.suggestedTrades;
+  try {
+    const result = await suggestionFlow({ query, categories });
+    return result.suggestedTrades;
+  } catch (error) {
+    console.error('❌ Error ejecutando getSuggestions:', error);
+    return [];
+  }
 }
