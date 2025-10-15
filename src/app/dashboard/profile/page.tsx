@@ -531,6 +531,17 @@ export default function ProfilePage() {
             }
         }
     };
+    
+    const handleShare = () => {
+        if (professional) {
+            const profileUrl = `${window.location.origin}/profesional/${professional.id}`;
+            const message = encodeURIComponent(
+                `¡Mirá el perfil de este profesional en BahiaBlancaOficios!\n\n*${professional.name}*\n${profileUrl}`
+            );
+            const whatsappUrl = `https://wa.me/?text=${message}`;
+            window.open(whatsappUrl, '_blank');
+        }
+    };
 
 
   return (
@@ -664,7 +675,7 @@ export default function ProfilePage() {
                             <Edit className="mr-2" /> {professional.subscription?.isSubscriptionActive ? 'Editar Perfil' : 'Rellena tu Perfil'}
                         </Button>
                     )}
-                    <Button variant="outline">
+                    <Button variant="outline" onClick={handleShare}>
                         <Share2 className="mr-2 h-4 w-4" />
                         Compartir
                     </Button>
