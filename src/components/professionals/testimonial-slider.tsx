@@ -52,8 +52,8 @@ export default function TestimonialSlider({
       </CarouselContent>
         {testimonials.length > 1 && (
         <>
-          <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2" />
-          <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2" />
+          <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 hidden md:inline-flex" />
+          <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 hidden md:inline-flex" />
         </>
       )}
     </Carousel>
