@@ -54,7 +54,7 @@ const alwaysAvailableSchedule: Schedule[] = [
     { day: 'Mie', open: '00:00', close: '23:59', enabled: true },
     { day: 'Jue', open: '00:00', close: '23:59', enabled: true },
     { day: 'Vie', open: '00:00', close: '23:59', enabled: true },
-    { day: 'Sab', open: '00:00', close: '23:59', enabled: true },
+    { day: 'Sab', 'open': '00:00', close: '23:59', enabled: true },
 ];
 
 export const CATEGORIES: Category[] = [
@@ -790,7 +790,7 @@ export const BANNERS: Banner[] = [
     id: 4,
     title: 'Servicios de Pintura',
     description: 'Dale un nuevo color a tu vida con pintores expertos.',
-    imageUrl: 'https://i0.wp.com/villamariavivo.com/wp-content/uploads/2025/05/Chamtac-Pintores-en-Cordoba.png?fit=600%2C315&ssl=1',
+    imageUrl: 'https://picsum.photos/seed/paintwork/600/400',
     imageHint: 'painter working',
     buttonText: 'Ver Pintores',
     buttonLink: '/servicios/pintura',
