@@ -406,7 +406,7 @@ export default function ProfilePage() {
 
         toast({
             title: "¡Suscripción Activada!",
-            description: `Tu perfil ahora está visible para nuevos clientes con el plan ${plan}.`,
+            description: `Tu perfil ahora está visible para nuevos clientes.`,
         });
 
     } catch(error) {
@@ -590,12 +590,6 @@ export default function ProfilePage() {
                         </h1>
                         )}
                         {professional.isVerified ? <ShieldCheck className="w-7 h-7 text-blue-500" /> : <Shield className="w-7 h-7 text-muted-foreground" />}
-                        {professional.subscriptionTier === 'premium' && professional.subscription?.isSubscriptionActive && (
-                            <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">
-                                <PremiumIcon className="w-4 h-4 mr-1 text-purple-600" />
-                                Premium
-                            </Badge>
-                        )}
                     </div>
                      <div className="mt-2 text-sm space-y-2">
                       {isEditing ? (

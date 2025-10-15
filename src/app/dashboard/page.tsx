@@ -111,8 +111,9 @@ function AdminDashboard() {
                 });
 
                 const totalRevenue = allProfessionals.reduce((acc, p) => {
+                    // Ahora hay un solo plan, asumimos un precio fijo (ej. 15800) si está activo
                     if (p.subscription?.isSubscriptionActive) {
-                        return acc + (p.subscriptionTier === 'premium' ? 15000 : 9000);
+                        return acc + 15800;
                     }
                     return acc;
                 }, 0);

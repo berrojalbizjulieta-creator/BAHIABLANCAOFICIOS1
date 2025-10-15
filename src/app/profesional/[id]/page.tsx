@@ -371,12 +371,6 @@ export default function PublicProfilePage() {
                         ) : (
                           <Shield className="w-6 h-6 sm:w-7 sm:h-7 text-muted-foreground" />
                         )}
-                        {professional.subscription?.tier === 'premium' && (
-                          <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">
-                            <PremiumIcon className="w-4 h-4 mr-1 text-purple-600" />
-                            Premium
-                          </Badge>
-                        )}
                       </div>
                       <div className="flex flex-wrap items-center gap-2 text-muted-foreground mt-2 text-sm">
                           <Briefcase className="w-4 h-4" />
