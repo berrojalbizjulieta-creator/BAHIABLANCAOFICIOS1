@@ -1,3 +1,4 @@
+
 import { NextResponse } from 'next/server';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -21,6 +22,7 @@ export async function GET(request: Request) {
   }
 
   const normalizedQuery = normalizeText(q);
+  const queryWords = normalizedQuery.split(' ').filter(w => w.length > 0);
 
   try {
     // 1. Encontrar categorías que coincidan con la búsqueda a través de sus especialidades
@@ -29,20 +31,17 @@ export async function GET(request: Request) {
       const categoryData = CATEGORY_SPECIALTIES[Number(catId)];
       const specialtiesText = categoryData.specialties.map(normalizeText).join(' ');
       const categoryNameText = normalizeText(categoryData.name);
+      
+      const categoryContent = `${categoryNameText} ${specialtiesText}`;
 
-      if (specialtiesText.includes(normalizedQuery) || categoryNameText.includes(normalizedQuery)) {
+      if (queryWords.every(word => categoryContent.includes(word))) {
         matchingCategoryIds.add(Number(catId));
       }
     }
 
-    // 2. Obtener todos los profesionales activos y con suscripción
+    // 2. Obtener todos los profesionales
     const professionalsRef = collection(db, 'professionalsDetails');
-    const qSnapshot = query(professionalsRef,
-        where('isActive', '==', true),
-        where('subscription.isSubscriptionActive', '==', true)
-    );
-    
-    const professionalsSnapshot = await getDocs(qSnapshot);
+    const professionalsSnapshot = await getDocs(professionalsRef);
     
     const allProfessionals = professionalsSnapshot.docs.map(doc => ({ 
         id: doc.id, 
@@ -51,13 +50,19 @@ export async function GET(request: Request) {
 
     // 3. Filtrar profesionales
     const results = allProfessionals.filter(prof => {
+      // Solo incluir profesionales activos y con suscripción
+      if (!prof.isActive || !prof.subscription?.isSubscriptionActive) {
+          return false;
+      }
+        
       // Filtrar por perfil del profesional (nombre, descripción, especialidades propias)
       const name = normalizeText(prof.name);
       const description = normalizeText(prof.description);
       const specialties = prof.specialties?.map(normalizeText).join(' ') || '';
       const professionalProfileText = `${name} ${description} ${specialties}`;
 
-      if (professionalProfileText.includes(normalizedQuery)) {
+      // Búsqueda mejorada: todas las palabras de la consulta deben estar presentes
+      if (queryWords.every(word => professionalProfileText.includes(word))) {
         return true;
       }
       

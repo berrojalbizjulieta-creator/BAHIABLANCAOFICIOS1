@@ -3,30 +3,44 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
+import { CATEGORY_SPECIALTIES } from '@/lib/data';
 
 const SuggestionInputSchema = z.object({
-  query: z.string().describe('The user\'s search query.'),
-  categories: z.array(z.string()).describe('The list of available trade categories.'),
+  query: z.string().describe('La búsqueda del usuario.'),
+  categories: z.array(z.string()).describe('La lista de oficios disponibles.'),
 });
 
 const SuggestionOutputSchema = z.object({
-  suggestedTrades: z.array(z.string()).describe('A list of up to 3 relevant trade categories from the provided list.'),
+  suggestedTrades: z.array(z.string()).describe('Una lista de hasta 3 oficios relevantes de la lista proporcionada.'),
 });
+
+// Construir una lista de especialidades para el prompt
+const specialtiesContext = Object.values(CATEGORY_SPECIALTIES)
+  .map(cat => `- ${cat.name}: ${cat.specialties.join(', ')}`)
+  .join('\n');
 
 const suggestionPrompt = ai.definePrompt(
   {
     name: 'suggestionPrompt',
     input: { schema: SuggestionInputSchema },
     output: { schema: SuggestionOutputSchema },
-    prompt: `You are an expert at understanding user needs for home services and categorizing them. Your goal is to help users find the right type of professional.
+    prompt: `Eres un experto en entender las necesidades de servicios para el hogar y categorizarlas. Tu objetivo es ayudar a los usuarios a encontrar el tipo de profesional correcto, incluso si no usan el término exacto.
 
-A user has searched for: "{{query}}".
+Un usuario ha buscado: "{{query}}".
 
-Based on their search query, analyze the user's intent and suggest the most relevant trade categories from the provided list. Think about what kind of professional would perform the task described. For example, if the user searches for "leaky faucet", you should suggest "Plomería". If they search for "fix blinds", you should suggest "Reparaciones".
+Basándote en su búsqueda, analiza la intención y sugiere los oficios más relevantes de la lista de 'Oficios Disponibles'. Piensa conceptualmente: ¿qué tipo de profesional haría esta tarea?
 
-Suggest a maximum of 3 categories. If none of the available categories seem even remotely relevant, return an empty list.
+Para ayudarte a decidir, aquí tienes una lista de especialidades asociadas a cada oficio:
+${specialtiesContext}
 
-Available Categories:
+Por ejemplo:
+- Si la búsqueda es "canilla que gotea", sugiere "Plomería".
+- Si es "arreglar persiana", sugiere "Reparaciones".
+- Si es "poner durlock", sugiere "Albañilería".
+
+Sugiere un máximo de 3 oficios. Si ninguno de los oficios disponibles parece remotamente relevante, devuelve una lista vacía.
+
+Oficios Disponibles:
 {{#each categories}}
 - {{this}}
 {{/each}}
@@ -44,12 +58,22 @@ const suggestionFlow = ai.defineFlow(
     const llmResponse = await suggestionPrompt(input);
     const output = llmResponse.output;
 
-    // Filter the suggestions to ensure they are valid categories
-    const validSuggestions = output?.suggestedTrades.filter(trade => 
-      input.categories.includes(trade)
-    ) || [];
+    // Normaliza el texto para hacer la comparación más flexible (ignora mayúsculas/minúsculas y acentos)
+    const normalize = (text: string) =>
+        text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-    return { suggestedTrades: validSuggestions };
+    // Mapea categorías normalizadas a su nombre original
+    const categoryMap = new Map(input.categories.map(cat => [normalize(cat), cat]));
+
+    const validSuggestions = output?.suggestedTrades
+        .map(trade => {
+            const normalizedTrade = normalize(trade);
+            // Devuelve el nombre original de la categoría si hay una coincidencia normalizada
+            return categoryMap.get(normalizedTrade);
+        })
+        .filter((trade): trade is string => !!trade) || []; // Filtra los undefined y asegura el tipo
+
+    return { suggestedTrades: [...new Set(validSuggestions)] }; // Usa un Set para evitar duplicados
   }
 );
 
