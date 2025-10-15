@@ -1,8 +1,14 @@
-
 'use server';
+/**
+ * @fileOverview A plant problem diagnosis AI agent.
+ *
+ * - diagnosePlant - A function that handles the plant diagnosis process.
+ * - DiagnosePlantInput - The input type for the diagnosePlant function.
+ * - DiagnosePlantOutput - The return type for the diagnosePlant function.
+ */
 
-import { ai } from '@/ai/genkit';
-import { z } from 'zod';
+import {ai} from '@/ai/genkit';
+import {z} from 'genkit';
 import { CATEGORY_SPECIALTIES } from '@/lib/data';
 
 const SuggestionInputSchema = z.object({
