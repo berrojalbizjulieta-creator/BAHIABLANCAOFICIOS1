@@ -61,17 +61,17 @@ export default function ProfessionalCard({
   const primaryCategory = CATEGORIES.find(c => c.id === professional.categoryIds[0]);
 
   return (
-    <>
-      <Card className={cn(
-        "flex flex-col md:flex-row items-start w-full transition-shadow hover:shadow-lg relative",
-        isFeatured && "border-2 border-primary shadow-lg"
-      )}>
-        {isFeatured && (
-          <Badge className='absolute -top-3 left-4 bg-primary text-primary-foreground flex items-center gap-1.5 z-10'>
-            <Sparkles className="w-4 h-4"/>
+    <div className="relative">
+      {isFeatured && (
+          <Badge className='absolute -top-3 left-4 bg-primary text-primary-foreground flex items-center gap-1.5 z-10 text-xs'>
+            <Sparkles className="w-3 h-3"/>
             Recomendado
           </Badge>
         )}
+      <Card className={cn(
+        "flex flex-col md:flex-row items-start w-full transition-shadow hover:shadow-lg",
+        isFeatured && "border-2 border-primary shadow-lg"
+      )}>
         <div className="flex-shrink-0 p-6 flex flex-col items-center text-center md:w-1/3">
           <Link href={`/profesional/${professional.id}`} passHref>
              <Avatar className="w-36 h-36 cursor-pointer border-4 border-background shadow-md">
@@ -148,6 +148,6 @@ export default function ProfessionalCard({
           </CardFooter>
         </div>
       </Card>
-    </>
+    </div>
   );
 }
