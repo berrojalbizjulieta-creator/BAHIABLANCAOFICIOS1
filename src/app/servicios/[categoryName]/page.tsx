@@ -17,6 +17,14 @@ import type { Professional, Schedule } from '@/lib/types';
 import { getAllActiveProfessionals } from '@/lib/firestore-queries';
 import { db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
+import Autoplay from "embla-carousel-autoplay"
 
 const PAGE_SIZE = 12;
 
@@ -66,22 +74,11 @@ export default function CategoryPage() {
   );
   
   useEffect(() => {
-    if (!category) {
-      setLoading(false);
-      return;
-    }
-
     const fetchProfessionals = async () => {
       setLoading(true);
       try {
         const allActiveProfessionals = await getAllActiveProfessionals(db);
-
-        const professionalsInCategory = allActiveProfessionals.filter(p => 
-            p.categoryIds.includes(category.id)
-        );
-        
-        setAllProfessionals(professionalsInCategory);
-        
+        setAllProfessionals(allActiveProfessionals);
       } catch (error) {
         console.error('Error fetching professionals:', error);
         toast({
@@ -95,52 +92,57 @@ export default function CategoryPage() {
     };
 
     fetchProfessionals();
-  }, [category, toast]);
+  }, [toast]);
 
-  const sortedProfessionals = useMemo(() => {
-    // 1. Separar destacados de regulares
-    const featured = allProfessionals.filter(p => p.isFeatured);
-    const regular = allProfessionals.filter(p => !p.isFeatured);
+  // 1. Filtrar los profesionales que pertenecen a la categoría actual
+  const professionalsInCategory = useMemo(() => {
+      if (!category) return [];
+      return allProfessionals.filter(p => p.categoryIds.includes(category.id));
+  }, [allProfessionals, category]);
 
-    // 2. Ordenar destacados por rating (siempre)
-    featured.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
+  // 2. Separar destacados de regulares
+  const featuredProfessionals = useMemo(() => {
+      return professionalsInCategory.filter(p => p.isFeatured);
+  }, [professionalsInCategory]);
 
-    // 3. Ordenar regulares según el filtro seleccionado
-    let sortedRegular = [...regular];
+  const regularProfessionals = useMemo(() => {
+      return professionalsInCategory.filter(p => !p.isFeatured);
+  }, [professionalsInCategory]);
+  
+
+  const sortedRegularProfessionals = useMemo(() => {
+    let sorted = [...regularProfessionals];
     switch (sortBy) {
       case 'rating':
-        sortedRegular.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
+        sorted.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
         break;
       case 'verified':
-        // Muestra verificados primero, luego no verificados. Dentro de cada grupo, ordena por rating.
-        sortedRegular.sort((a, b) => {
+        sorted.sort((a, b) => {
             if (a.isVerified && !b.isVerified) return -1;
             if (!a.isVerified && b.isVerified) return 1;
             return (b.avgRating || 0) - (a.avgRating || 0);
         });
         break;
       case 'availability':
-        sortedRegular.sort((a, b) => {
+        sorted.sort((a, b) => {
           const aIsAvailable = isAvailableNow(a.schedule);
           const bIsAvailable = isAvailableNow(b.schedule);
           if (aIsAvailable && !bIsAvailable) return -1;
           if (!aIsAvailable && bIsAvailable) return 1;
-          if (aIsAvailable && bIsAvailable) return (b.avgRating || 0) - (a.avgRating || 0);
-          return 0;
+          return (b.avgRating || 0) - (a.avgRating || 0);
         });
         break;
       default:
-        sortedRegular.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
+        sorted.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
         break;
     }
-    // 4. Unir las listas, con los destacados siempre al principio
-    return [...featured, ...sortedRegular];
-  }, [allProfessionals, sortBy]);
+    return sorted;
+  }, [regularProfessionals, sortBy]);
 
-  const totalPages = Math.ceil(sortedProfessionals.length / PAGE_SIZE);
+  const totalPages = Math.ceil(sortedRegularProfessionals.length / PAGE_SIZE);
   const startIndex = (currentPage - 1) * PAGE_SIZE;
   const endIndex = startIndex + PAGE_SIZE;
-  const currentProfessionals = sortedProfessionals.slice(startIndex, endIndex);
+  const currentRegularProfessionals = sortedRegularProfessionals.slice(startIndex, endIndex);
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
@@ -198,18 +200,45 @@ export default function CategoryPage() {
         </div>
       ) : (
         <>
-          {currentProfessionals.length > 0 ? (
+          {featuredProfessionals.length > 0 && (
+            <section className="mb-12">
+              <h2 className="text-xl font-bold font-headline mb-4 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-primary"/>
+                Profesionales Recomendados
+              </h2>
+              {featuredProfessionals.length > 1 ? (
+                <Carousel 
+                    opts={{ align: "start", loop: true }}
+                    plugins={[Autoplay({ delay: 5000 })]}
+                    className="w-full"
+                >
+                    <CarouselContent className="-ml-4">
+                        {featuredProfessionals.map((prof) => (
+                            <CarouselItem key={prof.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                               <ProfessionalCard professional={prof} isFeatured={true} />
+                            </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+                    <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+                </Carousel>
+              ) : (
+                 <ProfessionalCard professional={featuredProfessionals[0]} isFeatured={true} />
+              )}
+            </section>
+          )}
+
+          {currentRegularProfessionals.length > 0 ? (
             <div className="space-y-6">
-              {currentProfessionals.map((professional) => (
+              {currentRegularProfessionals.map((professional) => (
                 <ProfessionalCard
                   key={professional.id as string}
                   professional={professional}
-                  isFeatured={professional.isFeatured}
                 />
               ))}
             </div>
           ) : (
-             (allProfessionals.length === 0) && (
+             (professionalsInCategory.length === 0) && (
                  <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-lg text-center p-4">
                     <p className="text-lg font-medium text-muted-foreground">
                         {`Aún no hay profesionales en "${category?.name}".`}

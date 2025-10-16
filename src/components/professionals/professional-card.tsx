@@ -63,11 +63,11 @@ export default function ProfessionalCard({
   return (
     <>
       <Card className={cn(
-        "flex flex-col md:flex-row items-start w-full overflow-hidden transition-shadow hover:shadow-lg relative",
+        "flex flex-col md:flex-row items-start w-full transition-shadow hover:shadow-lg relative",
         isFeatured && "border-2 border-primary shadow-lg"
       )}>
         {isFeatured && (
-          <Badge className='absolute -top-3 left-4 bg-primary text-primary-foreground flex items-center gap-1.5'>
+          <Badge className='absolute -top-3 left-4 bg-primary text-primary-foreground flex items-center gap-1.5 z-10'>
             <Sparkles className="w-4 h-4"/>
             Recomendado
           </Badge>
