@@ -532,15 +532,32 @@ export default function ProfilePage() {
         }
     };
     
-    const handleShare = () => {
-        if (professional) {
-            const profileUrl = `${window.location.origin}/profesional/${professional.id}`;
-            const message = encodeURIComponent(
-                `¡Mirá el perfil de este profesional en BahiaBlancaOficios!\n\n*${professional.name}*\n${profileUrl}`
-            );
-            const whatsappUrl = `https://wa.me/?text=${message}`;
-            window.open(whatsappUrl, '_blank');
+    const handleShare = async () => {
+      if (!professional) return;
+  
+      const shareData = {
+        title: `Perfil de ${professional.name} en BahiaBlancaOficios`,
+        text: `¡Mirá el perfil de este profesional en BahiaBlancaOficios!`,
+        url: `${window.location.origin}/profesional/${professional.id}`,
+      };
+  
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+        } catch (error) {
+          console.error('Error al compartir:', error);
+          toast({
+            title: 'Error al compartir',
+            description: 'No se pudo abrir el diálogo para compartir.',
+            variant: 'destructive',
+          });
         }
+      } else {
+        // Fallback para navegadores que no soportan la Web Share API (ej. desktop)
+        const message = encodeURIComponent(`${shareData.text}\n\n${shareData.url}`);
+        const whatsappUrl = `https://wa.me/?text=${message}`;
+        window.open(whatsappUrl, '_blank');
+      }
     };
 
 
