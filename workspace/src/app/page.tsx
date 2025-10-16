@@ -1,0 +1,24 @@
+// Force Rebuild: Sat Jul 27 2024 22:15:33 GMT+0000 (Coordinated Universal Time)
+// Restoration Point: Fri Jul 26 2024 18:23:44 GMT+0000 (Coordinated Universal Time)
+
+import CategoriesGrid from '@/components/home/categories-grid';
+import HeroSection from '@/components/home/hero-section';
+import PromoSlider from '@/components/home/promo-slider';
+import AppPromoSection from '@/components/home/app-promo-section';
+import JoinUsSection from '@/components/home/join-us-section';
+import TestimonialSection from '@/components/home/testimonial-section';
+import AdBanner from '@/components/home/ad-banner';
+
+export default function Home() {
+  return (
+    <>
+      <HeroSection />
+      <CategoriesGrid />
+      <AdBanner />
+      <PromoSlider />
+      <AppPromoSection />
+      <JoinUsSection />
+      <TestimonialSection />
+    </>
+  );
+}
