@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -61,9 +62,9 @@ export default function ProfessionalCard({
   const primaryCategory = CATEGORIES.find(c => c.id === professional.categoryIds[0]);
 
   return (
-    <div className="relative">
+    <div className="relative pt-2"> 
       {isFeatured && (
-          <Badge className='absolute -top-3 left-4 bg-primary text-primary-foreground flex items-center gap-1.5 z-10 text-xs'>
+          <Badge className='absolute top-0 left-4 bg-primary text-primary-foreground flex items-center gap-1.5 z-10 text-xs'>
             <Sparkles className="w-3 h-3"/>
             Recomendado
           </Badge>

@@ -95,13 +95,11 @@ export default function CategoryPage() {
     fetchProfessionals();
   }, [toast]);
 
-  // 1. Filtrar los profesionales que pertenecen a la categoría actual
   const professionalsInCategory = useMemo(() => {
-      if (!category) return [];
-      return allProfessionals.filter(p => p.categoryIds.includes(category.id));
+    if (!category) return [];
+    return allProfessionals.filter(p => Array.isArray(p.categoryIds) && p.categoryIds.includes(category.id));
   }, [allProfessionals, category]);
 
-  // 2. Separar destacados de regulares
   const featuredProfessionals = useMemo(() => {
       return professionalsInCategory.filter(p => p.isFeatured);
   }, [professionalsInCategory]);
@@ -207,19 +205,23 @@ export default function CategoryPage() {
                 <Sparkles className="w-5 h-5 text-primary"/>
                 Profesionales Recomendados
               </h2>
-               <Carousel 
-                  opts={{ align: "start", loop: true }}
-                  plugins={[Autoplay({ delay: 5000, stopOnInteraction: false })]}
-                  className="w-full"
-                >
-                  <CarouselContent>
-                      {featuredProfessionals.map((prof) => (
-                          <CarouselItem key={prof.id}>
-                              <ProfessionalCard professional={prof} isFeatured={true} />
-                          </CarouselItem>
-                      ))}
-                  </CarouselContent>
-              </Carousel>
+               {featuredProfessionals.length > 1 ? (
+                 <Carousel 
+                    opts={{ align: "start", loop: true }}
+                    plugins={[Autoplay({ delay: 5000, stopOnInteraction: true })]}
+                    className="w-full pt-4 -mt-4" // Padding top to make space for badge
+                  >
+                    <CarouselContent>
+                        {featuredProfessionals.map((prof) => (
+                            <CarouselItem key={prof.id}>
+                                <ProfessionalCard professional={prof} isFeatured={true} />
+                            </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                </Carousel>
+               ) : (
+                <ProfessionalCard professional={featuredProfessionals[0]} isFeatured={true} />
+               )}
             </section>
           )}
 
