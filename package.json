@@ -7,8 +7,7 @@
     "build": "NODE_OPTIONS='--openssl-legacy-provider' NODE_ENV=production next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit",
-    "check-routes": "node checkRoutes.js"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@genkit-ai/google-genai": "^1.0.0-rc.5",
