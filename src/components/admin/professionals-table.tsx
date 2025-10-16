@@ -26,7 +26,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal, Loader2, ShieldCheck } from 'lucide-react';
+import { MoreHorizontal, Loader2, ShieldCheck, Sparkles } from 'lucide-react';
 import type { Professional, User as AppUser } from '@/lib/types';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -36,6 +36,7 @@ import { collection, getDocs, doc, updateDoc, writeBatch } from 'firebase/firest
 import { db } from '@/lib/firebase';
 import { CATEGORIES } from '@/lib/data';
 import Link from 'next/link';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 interface CombinedProfessionalData extends Professional {
   userIsActive?: boolean;
@@ -64,6 +65,7 @@ export default function ProfessionalsTable() {
                 ...profData,
                 id: profDoc.id,
                 userIsActive: userData?.isActive ?? false,
+                isFeatured: profData.isFeatured ?? false, // Ensure default value
                 registrationDate: profData.registrationDate?.toDate ? profData.registrationDate.toDate() : new Date(),
                 lastPaymentDate: profData.lastPaymentDate?.toDate ? profData.lastPaymentDate.toDate() : undefined,
             }
@@ -102,6 +104,26 @@ export default function ProfessionalsTable() {
     }
   };
   
+  const handleToggleFeatured = async (id: string, isFeatured: boolean) => {
+    setProfessionals(prev =>
+        prev.map(p => (p.id === id ? { ...p, isFeatured: isFeatured } : p))
+    );
+    try {
+        const profDocRef = doc(db, 'professionalsDetails', id);
+        await updateDoc(profDocRef, { isFeatured: isFeatured });
+        toast({
+            title: 'Profesional Actualizado',
+            description: `El profesional ha sido ${isFeatured ? 'añadido a destacados' : 'quitado de destacados'}.`,
+        });
+    } catch (error) {
+        console.error("Error toggling featured state:", error);
+        setProfessionals(prev =>
+            prev.map(p => (p.id === id ? { ...p, isFeatured: !isFeatured } : p))
+        );
+        toast({ title: 'Error', description: 'No se pudo actualizar el estado de destacado.', variant: 'destructive'});
+    }
+  }
+
   const handleMarkAsPaid = async (id: string) => {
     const newLastPaymentDate = new Date();
     // Optimistic UI update
@@ -136,10 +158,11 @@ export default function ProfessionalsTable() {
       <CardHeader>
         <CardTitle>Profesionales Registrados ({professionals.length})</CardTitle>
         <CardDescription>
-          Gestiona los profesionales de la plataforma.
+          Gestiona los profesionales de la plataforma. Activa o desactiva sus perfiles y promociónalos.
         </CardDescription>
       </CardHeader>
       <CardContent>
+        <TooltipProvider>
          {loading ? (
             <div className="flex justify-center items-center h-64">
                 <Loader2 className="animate-spin h-8 w-8 text-primary" />
@@ -151,6 +174,7 @@ export default function ProfessionalsTable() {
               <TableHead>Nombre</TableHead>
               <TableHead>Oficio Principal</TableHead>
               <TableHead>Estado de Pago</TableHead>
+              <TableHead>Destacado</TableHead>
               <TableHead>Miembro desde</TableHead>
               <TableHead>Activo</TableHead>
               <TableHead>
@@ -179,12 +203,27 @@ export default function ProfessionalsTable() {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  {format(pro.registrationDate, 'd MMMM, yyyy', { locale: es })}
+                  <Tooltip>
+                    <TooltipTrigger>
+                       <Switch
+                          checked={pro.isFeatured}
+                          onCheckedChange={value => handleToggleFeatured(pro.id, value)}
+                          aria-label="Destacar profesional"
+                        />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>{pro.isFeatured ? 'Quitar de destacados' : 'Añadir a destacados'}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TableCell>
+                <TableCell>
+                  {format(pro.registrationDate, 'd MMM, yyyy', { locale: es })}
                 </TableCell>
                 <TableCell>
                   <Switch
                     checked={pro.userIsActive}
                     onCheckedChange={value => handleToggleActive(pro.id, value)}
+                    aria-label="Activar/desactivar profesional"
                   />
                 </TableCell>
                 <TableCell>
@@ -209,6 +248,7 @@ export default function ProfessionalsTable() {
           </TableBody>
         </Table>
         )}
+        </TooltipProvider>
       </CardContent>
     </Card>
   );

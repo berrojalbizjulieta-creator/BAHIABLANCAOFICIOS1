@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation';
 import { CATEGORIES } from '@/lib/data';
 import ProfessionalCard from '@/components/professionals/professional-card';
 import { Button } from '@/components/ui/button';
-import { ListFilter, Loader2 } from 'lucide-react';
+import { ListFilter, Loader2, Sparkles } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,9 +13,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useMemo, useState, useEffect } from 'react';
 import type { Professional, Schedule } from '@/lib/types';
-import { getProfessionalsFilteredAndSorted } from '@/lib/firestore-queries';
+import { getProfessionalsFilteredAndSorted, getFeaturedProfessionalsForCategory } from '@/lib/firestore-queries';
 import { db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 const PAGE_SIZE = 12;
 
@@ -54,6 +55,7 @@ export default function CategoryPage() {
     .replace('Y', 'y');
 
   const [allProfessionals, setAllProfessionals] = useState<Professional[]>([]);
+  const [featuredProfessionals, setFeaturedProfessionals] = useState<Professional[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<SortType>('rating');
@@ -73,8 +75,12 @@ export default function CategoryPage() {
     const fetchProfessionals = async () => {
       setLoading(true);
       try {
-        const fetchedProfessionals = await getProfessionalsFilteredAndSorted(db, [category.id]);
-        setAllProfessionals(fetchedProfessionals);
+        const [featured, regular] = await Promise.all([
+          getFeaturedProfessionalsForCategory(db, category.id, true),
+          getFeaturedProfessionalsForCategory(db, category.id, false)
+        ]);
+        setFeaturedProfessionals(featured);
+        setAllProfessionals(regular);
       } catch (error) {
         console.error('Error fetching professionals:', error);
         toast({
@@ -179,49 +185,77 @@ export default function CategoryPage() {
         <div className="flex justify-center items-center h-64">
           <Loader2 className="animate-spin h-8 w-8 text-primary" />
         </div>
-      ) : currentProfessionals.length > 0 ? (
-        <div className="space-y-6">
-          {currentProfessionals.map((professional) => (
-            <ProfessionalCard
-              key={professional.id as string}
-              professional={professional}
-            />
-          ))}
-        </div>
       ) : (
-        <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-lg text-center p-4">
-          <p className="text-lg font-medium text-muted-foreground">
-             {sortBy === 'verified' 
-                ? `No se encontraron profesionales verificados en "${category?.name}".`
-                : `Aún no hay profesionales en "${category?.name}".`
-             }
-          </p>
-          <p className="text-sm text-muted-foreground mt-2">
-            ¡Sé el primero en registrarte en esta categoría!
-          </p>
-        </div>
-      )}
+        <>
+          {featuredProfessionals.length > 0 && (
+            <section className="mb-12">
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles className="w-6 h-6 text-yellow-500" />
+                <h2 className="text-2xl font-bold font-headline">Profesionales Recomendados</h2>
+              </div>
+              <Carousel
+                opts={{ align: 'start', loop: featuredProfessionals.length > 1 }}
+                className="w-full"
+              >
+                <CarouselContent className="-ml-4">
+                  {featuredProfessionals.map((professional) => (
+                    <CarouselItem key={professional.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                      <ProfessionalCard professional={professional} />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 hidden md:inline-flex" />
+                <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 hidden md:inline-flex" />
+              </Carousel>
+              <hr className="my-8"/>
+            </section>
+          )}
 
-      {totalPages > 1 && (
-        <div className="mt-12 flex justify-center items-center gap-4">
-          <Button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            variant="outline"
-          >
-            Anterior
-          </Button>
-          <span className="text-sm text-muted-foreground">
-            Página {currentPage} de {totalPages}
-          </span>
-          <Button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            variant="outline"
-          >
-            Siguiente
-          </Button>
-        </div>
+          {currentProfessionals.length > 0 ? (
+            <div className="space-y-6">
+              {currentProfessionals.map((professional) => (
+                <ProfessionalCard
+                  key={professional.id as string}
+                  professional={professional}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-lg text-center p-4">
+              <p className="text-lg font-medium text-muted-foreground">
+                {sortBy === 'verified'
+                  ? `No se encontraron profesionales verificados en "${category?.name}".`
+                  : `Aún no hay profesionales en "${category?.name}".`
+                }
+              </p>
+              <p className="text-sm text-muted-foreground mt-2">
+                ¡Sé el primero en registrarte en esta categoría!
+              </p>
+            </div>
+          )}
+
+          {totalPages > 1 && (
+            <div className="mt-12 flex justify-center items-center gap-4">
+              <Button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                variant="outline"
+              >
+                Anterior
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                Página {currentPage} de {totalPages}
+              </span>
+              <Button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                variant="outline"
+              >
+                Siguiente
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

@@ -58,6 +58,7 @@ export interface Professional {
   categoryIds: number[];
   workPhotos?: WorkPhoto[];
   isVerified: boolean;
+  isFeatured?: boolean; // <-- CAMBIO: Añadido campo para destacar
   verificationStatus?: 'not_started' | 'pending' | 'verified';
   verificationDocs?: {
     dniFrenteUrl?: string;

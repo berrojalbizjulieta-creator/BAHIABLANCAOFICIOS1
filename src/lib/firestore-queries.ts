@@ -6,6 +6,50 @@ import type { Professional, Testimonial, Review } from '@/lib/types';
 
 
 /**
+ * Obtiene profesionales, opcionalmente filtrados por si son destacados o no.
+ *
+ * @param firestore La instancia de Firestore.
+ * @param categoryId El ID de la categoría para filtrar.
+ * @param featured `true` para obtener solo destacados, `false` para no destacados, `undefined` para todos.
+ * @returns Una promesa que resuelve con un array de objetos Professional.
+ */
+export async function getFeaturedProfessionalsForCategory(
+    firestore: Firestore,
+    categoryId: number,
+    featured: boolean
+): Promise<Professional[]> {
+    let professionalsQuery: Query<DocumentData> = collection(firestore, 'professionalsDetails');
+
+    const constraints = [
+        where('categoryIds', 'array-contains', categoryId),
+        where('isActive', '==', true),
+        where('subscription.isSubscriptionActive', '==', true),
+        where('isFeatured', '==', featured)
+    ];
+
+    professionalsQuery = query(professionalsQuery, ...constraints);
+
+    const querySnapshot = await getDocs(professionalsQuery);
+
+    const professionals = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        if (data.registrationDate && data.registrationDate.toDate) {
+            data.registrationDate = data.registrationDate.toDate();
+        }
+        if (data.lastPaymentDate && data.lastPaymentDate.toDate) {
+            data.lastPaymentDate = data.lastPaymentDate.toDate();
+        }
+        return {
+            id: doc.id,
+            ...data
+        } as Professional;
+    });
+
+    return professionals;
+}
+
+
+/**
  * Busca profesionales en Firestore, filtrando por categoría.
  * La ordenación y filtrados adicionales (como disponibilidad) se deben hacer en el cliente.
  *
@@ -20,15 +64,15 @@ export async function getProfessionalsFilteredAndSorted(
     let professionalsQuery: Query<DocumentData> = collection(firestore, 'professionalsDetails');
 
     // 1. Filtrar por CATEGORÍA (si el usuario ha seleccionado alguna)
+    const constraints = [
+        where('isActive', '==', true),
+        where('subscription.isSubscriptionActive', '==', true)
+    ];
     if (selectedCategoryIds.length > 0) {
-        professionalsQuery = query(
-            professionalsQuery,
-            where('categoryIds', 'array-contains-any', selectedCategoryIds)
-        );
+        constraints.push(where('categoryIds', 'array-contains-any', selectedCategoryIds));
     }
     
-    // NOTA: Se elimina la ordenación por 'avgRating' y el filtro por 'dayAvailability'
-    // para evitar la necesidad de un índice compuesto. Estos se aplicarán en el cliente.
+    professionalsQuery = query(professionalsQuery, ...constraints);
 
     // 2. Ejecutar la Consulta en Firestore.
     const querySnapshot = await getDocs(professionalsQuery);
@@ -48,10 +92,6 @@ export async function getProfessionalsFilteredAndSorted(
                 id: doc.id,
                 ...data
             } as Professional;
-        })
-        .filter(prof => {
-            // Filtrado básico por activo y suscripción en el lado del servidor/función
-            return prof.isActive && prof.subscription?.isSubscriptionActive;
         });
 
     return professionals;
@@ -87,7 +127,7 @@ export async function getReviewsForProfessional(firestore: Firestore, profession
         } as Review;
     });
 
-    // Se ordena manualmente en el lado del cliente (servidor de Next.js en este caso).
+    // Se ordena manually en el lado del cliente (servidor de Next.js en este caso).
     reviews.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
     return reviews;
