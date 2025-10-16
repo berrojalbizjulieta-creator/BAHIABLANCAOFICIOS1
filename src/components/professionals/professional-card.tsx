@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Star, MessageSquare, DollarSign, Phone, ShieldCheck } from 'lucide-react';
+import { Star, MessageSquare, DollarSign, Phone, ShieldCheck, Sparkles } from 'lucide-react';
 import type { Professional } from '@/lib/types';
 import {
   Card,
@@ -21,11 +21,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import PaymentDialog from './payment-dialog';
 import { CATEGORIES } from '@/lib/data';
+import { cn } from '@/lib/utils';
+
 
 interface ProfessionalCardProps {
   professional: Professional;
+  isFeatured?: boolean;
 }
 
 function StarRating({ rating, count }: { rating: number, count: number }) {
@@ -48,6 +50,7 @@ function StarRating({ rating, count }: { rating: number, count: number }) {
 
 export default function ProfessionalCard({
   professional,
+  isFeatured = false,
 }: ProfessionalCardProps) {
   const getWhatsAppLink = (phone?: string) => {
     if (!phone) return '#';
@@ -59,7 +62,16 @@ export default function ProfessionalCard({
 
   return (
     <>
-      <Card className="flex flex-col md:flex-row items-start w-full overflow-hidden transition-shadow hover:shadow-md">
+      <Card className={cn(
+        "flex flex-col md:flex-row items-start w-full overflow-hidden transition-shadow hover:shadow-lg relative",
+        isFeatured && "border-2 border-primary shadow-lg"
+      )}>
+        {isFeatured && (
+          <Badge className='absolute -top-3 left-4 bg-primary text-primary-foreground flex items-center gap-1.5'>
+            <Sparkles className="w-4 h-4"/>
+            Recomendado
+          </Badge>
+        )}
         <div className="flex-shrink-0 p-6 flex flex-col items-center text-center md:w-1/3">
           <Link href={`/profesional/${professional.id}`} passHref>
              <Avatar className="w-36 h-36 cursor-pointer border-4 border-background shadow-md">

@@ -17,7 +17,6 @@ import type { Professional, Schedule } from '@/lib/types';
 import { getAllActiveProfessionals } from '@/lib/firestore-queries';
 import { db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 const PAGE_SIZE = 12;
 
@@ -56,7 +55,6 @@ export default function CategoryPage() {
     .replace('Y', 'y');
 
   const [allProfessionals, setAllProfessionals] = useState<Professional[]>([]);
-  const [featuredProfessionals, setFeaturedProfessionals] = useState<Professional[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<SortType>('rating');
@@ -76,23 +74,13 @@ export default function CategoryPage() {
     const fetchProfessionals = async () => {
       setLoading(true);
       try {
-        // 1. Obtener TODOS los profesionales activos
         const allActiveProfessionals = await getAllActiveProfessionals(db);
 
-        // 2. Filtrar por categoría en el código
         const professionalsInCategory = allActiveProfessionals.filter(p => 
             p.categoryIds.includes(category.id)
         );
-
-        // 3. Separar destacados de regulares
-        const featured = professionalsInCategory.filter(p => p.isFeatured === true);
-        const regular = professionalsInCategory.filter(p => !p.isFeatured);
         
-        // Ordenar destacados por rating
-        featured.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
-
-        setFeaturedProfessionals(featured);
-        setAllProfessionals(regular);
+        setAllProfessionals(professionalsInCategory);
         
       } catch (error) {
         console.error('Error fetching professionals:', error);
@@ -110,33 +98,43 @@ export default function CategoryPage() {
   }, [category, toast]);
 
   const sortedProfessionals = useMemo(() => {
-    let sorted = [...allProfessionals];
+    // 1. Separar destacados de regulares
+    const featured = allProfessionals.filter(p => p.isFeatured);
+    const regular = allProfessionals.filter(p => !p.isFeatured);
+
+    // 2. Ordenar destacados por rating (siempre)
+    featured.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
+
+    // 3. Ordenar regulares según el filtro seleccionado
+    let sortedRegular = [...regular];
     switch (sortBy) {
       case 'rating':
-        sorted.sort((a, b) => b.avgRating - a.avgRating);
+        sortedRegular.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
         break;
       case 'verified':
-        sorted = sorted.filter(p => p.isVerified);
-        // Opcional: ordenar los verificados por rating
-        sorted.sort((a, b) => b.avgRating - a.avgRating);
+        // Muestra verificados primero, luego no verificados. Dentro de cada grupo, ordena por rating.
+        sortedRegular.sort((a, b) => {
+            if (a.isVerified && !b.isVerified) return -1;
+            if (!a.isVerified && b.isVerified) return 1;
+            return (b.avgRating || 0) - (a.avgRating || 0);
+        });
         break;
       case 'availability':
-        sorted.sort((a, b) => {
+        sortedRegular.sort((a, b) => {
           const aIsAvailable = isAvailableNow(a.schedule);
           const bIsAvailable = isAvailableNow(b.schedule);
           if (aIsAvailable && !bIsAvailable) return -1;
           if (!aIsAvailable && bIsAvailable) return 1;
-          // As a secondary sort, use rating for available professionals
-          if (aIsAvailable && bIsAvailable) return b.avgRating - a.avgRating;
-          return 0; // Keep original order if both are unavailable
+          if (aIsAvailable && bIsAvailable) return (b.avgRating || 0) - (a.avgRating || 0);
+          return 0;
         });
         break;
       default:
-        // Default sort by rating
-        sorted.sort((a, b) => b.avgRating - a.avgRating);
+        sortedRegular.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
         break;
     }
-    return sorted;
+    // 4. Unir las listas, con los destacados siempre al principio
+    return [...featured, ...sortedRegular];
   }, [allProfessionals, sortBy]);
 
   const totalPages = Math.ceil(sortedProfessionals.length / PAGE_SIZE);
@@ -151,7 +149,7 @@ export default function CategoryPage() {
   
   const handleSortChange = (sortValue: SortType) => {
     setSortBy(sortValue);
-    setCurrentPage(1); // Reset page to 1 when sort order changes
+    setCurrentPage(1);
   }
 
   if (!category && !loading) {
@@ -200,47 +198,21 @@ export default function CategoryPage() {
         </div>
       ) : (
         <>
-          {featuredProfessionals.length > 0 && (
-            <section className="mb-12">
-              <div className="flex items-center gap-2 mb-4">
-                <Sparkles className="w-6 h-6 text-yellow-500" />
-                <h2 className="text-2xl font-bold font-headline">Profesionales Recomendados</h2>
-              </div>
-              <Carousel
-                opts={{ align: 'start', loop: featuredProfessionals.length > 1 }}
-                className="w-full"
-              >
-                <CarouselContent className="-ml-4">
-                  {featuredProfessionals.map((professional) => (
-                    <CarouselItem key={professional.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
-                      <ProfessionalCard professional={professional} />
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 hidden md:inline-flex" />
-                <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 hidden md:inline-flex" />
-              </Carousel>
-              <hr className="my-8"/>
-            </section>
-          )}
-
           {currentProfessionals.length > 0 ? (
             <div className="space-y-6">
               {currentProfessionals.map((professional) => (
                 <ProfessionalCard
                   key={professional.id as string}
                   professional={professional}
+                  isFeatured={professional.isFeatured}
                 />
               ))}
             </div>
           ) : (
-             (featuredProfessionals.length === 0 && currentProfessionals.length === 0) && (
+             (allProfessionals.length === 0) && (
                  <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-lg text-center p-4">
                     <p className="text-lg font-medium text-muted-foreground">
-                        {sortBy === 'verified'
-                        ? `No se encontraron profesionales verificados en "${category?.name}".`
-                        : `Aún no hay profesionales en "${category?.name}".`
-                        }
+                        {`Aún no hay profesionales en "${category?.name}".`}
                     </p>
                     <p className="text-sm text-muted-foreground mt-2">
                         ¡Sé el primero en registrarte en esta categoría!
