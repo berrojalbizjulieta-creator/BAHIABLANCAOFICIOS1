@@ -26,10 +26,11 @@ import ProfessionalsTable from '@/components/admin/professionals-table';
 import ClientsTable from '@/components/admin/clients-table';
 import VerificationRequests from '@/components/admin/verification-requests';
 import AdManagement from '@/components/admin/ad-management';
-import { collection, getDocs, query, where, Timestamp, getCountFromServer } from 'firebase/firestore';
+import { collection, getDocs, query, where, Timestamp, getCountFromServer, DocumentData } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Professional, User as AppUser } from '@/lib/types';
 import { subMonths, startOfMonth, endOfMonth, eachMonthOfInterval } from 'date-fns';
+import FeaturedManagement from '@/components/admin/featured-management';
 
 interface DashboardStats {
   totalRevenue: number;
@@ -41,14 +42,38 @@ interface DashboardStats {
   overviewData: { name: string; total: number }[];
 }
 
+// Simplified function to fetch and filter in code
 async function getCountForPeriod(collectionName: string, role: string | null, startDate: Date, endDate: Date) {
-    let q = query(collection(db, collectionName), where('registrationDate', '>=', startDate), where('registrationDate', '<', endDate));
+    let q;
     if (role) {
-        q = query(q, where('role', '==', role));
+        q = query(collection(db, collectionName), where('role', '==', role));
+    } else {
+        q = query(collection(db, collectionName));
     }
-    const snapshot = await getCountFromServer(q);
-    return snapshot.data().count;
+    
+    const snapshot = await getDocs(q);
+    
+    const filteredDocs = snapshot.docs.filter(doc => {
+        const data = doc.data();
+        const regDate = data.registrationDate?.toDate ? data.registrationDate.toDate() : null;
+        if (!regDate) return false;
+        return regDate >= startDate && regDate < endDate;
+    });
+
+    return filteredDocs.length;
 }
+
+
+async function getProfessionalsForPeriod(startDate: Date, endDate: Date) {
+    const q = query(
+        collection(db, 'professionalsDetails'),
+        where('registrationDate', '>=', startDate),
+        where('registrationDate', '<', endDate)
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.size;
+}
+
 
 function AdminDashboard() {
     const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -66,51 +91,41 @@ function AdminDashboard() {
                 const oneMonthAgo = subMonths(now, 1);
                 const twoMonthsAgo = subMonths(now, 2);
 
-                const newClientsCount = await getCountForPeriod('users', 'client', oneMonthAgo, now);
-                const prevMonthNewClientsCount = await getCountForPeriod('users', 'client', twoMonthsAgo, oneMonthAgo);
+                const [
+                    newClientsCount,
+                    prevMonthNewClientsCount,
+                    allProfessionalsSnapshot,
+                    overviewData,
+                ] = await Promise.all([
+                    getCountForPeriod('users', 'client', oneMonthAgo, now),
+                    getCountForPeriod('users', 'client', twoMonthsAgo, oneMonthAgo),
+                    getDocs(query(collection(db, 'professionalsDetails'), where('subscription.isSubscriptionActive', '==', true))),
+                    Promise.all(eachMonthOfInterval({ start: subMonths(now, 11), end: now }).map(async (monthStart) => {
+                        const monthEnd = endOfMonth(monthStart);
+                        const monthName = monthStart.toLocaleString('es-ES', { month: 'short' }).replace('.', '').replace(/^\w/, (c) => c.toUpperCase());
+                        const count = await getProfessionalsForPeriod(monthStart, monthEnd);
+                        return { name: monthName, total: count };
+                    }))
+                ]);
 
-                const newProfessionalsCount = await getCountForPeriod('professionalsDetails', null, oneMonthAgo, now);
-                const prevMonthNewProfessionalsCount = await getCountForPeriod('professionalsDetails', null, twoMonthsAgo, oneMonthAgo);
-                
-                const activeSubsSnapshot = await getCountFromServer(query(collection(db, 'professionalsDetails'), where('subscription.isSubscriptionActive', '==', true)));
-                const activeSubscriptions = activeSubsSnapshot.data().count;
-
-                const allProfessionalsSnapshot = await getDocs(query(collection(db, 'professionalsDetails'), where('subscription.isSubscriptionActive', '==', true)));
-                const totalRevenue = allProfessionalsSnapshot.size * 15800; // Assuming fixed price
+                const activeSubscriptions = allProfessionalsSnapshot.size;
+                const totalRevenue = activeSubscriptions * 15800; // Assuming fixed price
 
                 const calculatePercentageChange = (current: number, previous: number) => {
                     if (previous === 0) return current > 0 ? 100 : 0;
                     return ((current - previous) / previous) * 100;
                 };
 
-                // Fetch overview data more efficiently
-                const last12Months = eachMonthOfInterval({
-                    start: subMonths(now, 11),
-                    end: now
-                });
-                
-                const overviewDataPromises = last12Months.map(async (monthStart) => {
-                    const monthEnd = endOfMonth(monthStart);
-                    const monthName = monthStart.toLocaleString('es-ES', { month: 'short' }).replace('.', '').replace(/^\w/, (c) => c.toUpperCase());
-                    
-                    const q = query(
-                        collection(db, "professionalsDetails"),
-                        where('registrationDate', '>=', monthStart),
-                        where('registrationDate', '<=', monthEnd)
-                    );
-                    const snapshot = await getCountFromServer(q);
-                    return { name: monthName, total: snapshot.data().count };
-                });
+                const newProfessionalsCount = overviewData.find(d => d.name === now.toLocaleString('es-ES', { month: 'short' }).replace('.', '').replace(/^\w/, (c) => c.toUpperCase()))?.total || 0;
+                const prevMonthProfessionalsCount = overviewData.find(d => d.name === oneMonthAgo.toLocaleString('es-ES', { month: 'short' }).replace('.', '').replace(/^\w/, (c) => c.toUpperCase()))?.total || 0;
 
-                const overviewData = await Promise.all(overviewDataPromises);
 
                 setStats({
                     totalRevenue,
-                    revenueChange: 0, // Placeholder
                     newClients: newClientsCount,
                     newClientsChange: calculatePercentageChange(newClientsCount, prevMonthNewClientsCount),
                     newProfessionals: newProfessionalsCount,
-                    newProfessionalsChange: calculatePercentageChange(newProfessionalsCount, prevMonthNewProfessionalsCount),
+                    newProfessionalsChange: calculatePercentageChange(newProfessionalsCount, prevMonthProfessionalsCount),
                     activeSubscriptions,
                     overviewData,
                 });
@@ -142,6 +157,7 @@ function AdminDashboard() {
             <TabsTrigger value="clients">Clientes</TabsTrigger>
             <TabsTrigger value="verifications">Verificaciones</TabsTrigger>
             <TabsTrigger value="ads">Publicidad</TabsTrigger>
+            <TabsTrigger value="featured">Destacados</TabsTrigger>
             <TabsTrigger value="analytics" disabled>
               Analytics (Próximamente)
             </TabsTrigger>
@@ -248,6 +264,10 @@ function AdminDashboard() {
 
           <TabsContent value="ads" className="space-y-4">
             <AdManagement />
+          </TabsContent>
+          
+          <TabsContent value="featured" className="space-y-4">
+            <FeaturedManagement />
           </TabsContent>
 
         </Tabs>
