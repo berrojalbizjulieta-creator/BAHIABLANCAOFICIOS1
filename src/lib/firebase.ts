@@ -1,4 +1,3 @@
-
 // src/lib/firebase.ts
 import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
 import { getAuth, Auth } from "firebase/auth";
@@ -14,56 +13,17 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
-let app: FirebaseApp;
-let auth: Auth;
-let db: Firestore;
-let storage: FirebaseStorage;
+// Inicialización segura de la app de Firebase
+const app: FirebaseApp = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 
-// Inicialización perezosa para evitar errores durante el build
-function initializeFirebase() {
-  if (getApps().length === 0) {
-    app = initializeApp(firebaseConfig);
-  } else {
-    app = getApp();
-  }
-  auth = getAuth(app);
-  db = getFirestore(app);
-  storage = getStorage(app);
-}
+const auth: Auth = getAuth(app);
+const db: Firestore = getFirestore(app);
+const storage: FirebaseStorage = getStorage(app);
 
-// Solo inicializa en el lado del cliente o en un entorno donde las variables estén definidas
-if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
-  initializeFirebase();
-}
-
-// Exportamos una función que asegura la inicialización antes de usar los servicios
-const ensureFirebaseInitialized = () => {
-  if (!getApps().length) {
-    initializeFirebase();
-  }
-};
-
-// Se exportan getters en lugar de las instancias directas
-export const getFirebaseAuth = () => {
-  ensureFirebaseInitialized();
-  return auth;
-}
-
-export const getFirestoreDb = () => {
-    ensureFirebaseInitialized();
-    return db;
-}
-
-export const getFirebaseStorage = () => {
-    ensureFirebaseInitialized();
-    return storage;
-}
-
-// Exportamos las instancias para los archivos que ya las usan,
-// pero la inicialización ahora es más segura.
-// Esto evita tener que refactorizar todos los archivos que importan 'db', 'auth', etc.
-if (!getApps().length && process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
-  initializeFirebase();
-}
-
+// Exportamos las instancias para compatibilidad
 export { app, auth, db, storage };
+
+// Exportamos getters que son la forma recomendada de acceder
+export const getFirebaseAuth = () => getAuth(app);
+export const getFirestoreDb = () => getFirestore(app);
+export const getFirebaseStorage = () => getStorage(app);
