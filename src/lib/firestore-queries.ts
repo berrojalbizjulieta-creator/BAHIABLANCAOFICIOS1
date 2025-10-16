@@ -19,16 +19,13 @@ export async function getProfessionalsForCategoryByFeaturedStatus(
     categoryId: number,
     featured: boolean
 ): Promise<Professional[]> {
-    let professionalsQuery: Query<DocumentData> = collection(firestore, 'professionalsDetails');
-
-    const constraints = [
+    const professionalsQuery = query(
+        collection(firestore, 'professionalsDetails'),
         where('categoryIds', 'array-contains', categoryId),
         where('isActive', '==', true),
         where('subscription.isSubscriptionActive', '==', true),
-        where('isFeatured', '==', featured) // Usamos el parámetro 'featured' directamente
-    ];
-
-    professionalsQuery = query(professionalsQuery, ...constraints);
+        where('isFeatured', '==', featured)
+    );
 
     const querySnapshot = await getDocs(professionalsQuery);
 
@@ -137,4 +134,38 @@ export async function getReviewsForProfessional(firestore: Firestore, profession
     reviews.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
     return reviews;
+}
+
+
+/**
+ * Obtiene TODOS los profesionales activos y con suscripción paga.
+ * Esta función es más simple y se usa para evitar consultas complejas que requieren índices.
+ * El filtrado por categoría se debe hacer en el cliente.
+ *
+ * @param firestore La instancia de Firestore.
+ * @returns Una promesa que resuelve con un array de objetos Professional.
+ */
+export async function getAllActiveProfessionals(firestore: Firestore): Promise<Professional[]> {
+    const q = query(
+        collection(firestore, 'professionalsDetails'),
+        where('isActive', '==', true),
+        where('subscription.isSubscriptionActive', '==', true)
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        // Conversión de Timestamps a Dates
+        if (data.registrationDate && data.registrationDate.toDate) {
+            data.registrationDate = data.registrationDate.toDate();
+        }
+        if (data.lastPaymentDate && data.lastPaymentDate.toDate) {
+            data.lastPaymentDate = data.lastPaymentDate.toDate();
+        }
+        return {
+            id: doc.id,
+            ...data
+        } as Professional;
+    });
 }

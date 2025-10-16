@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useMemo, useState, useEffect } from 'react';
 import type { Professional, Schedule } from '@/lib/types';
-import { getProfessionalsForCategoryByFeaturedStatus } from '@/lib/firestore-queries';
+import { getAllActiveProfessionals } from '@/lib/firestore-queries';
 import { db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
@@ -76,12 +76,24 @@ export default function CategoryPage() {
     const fetchProfessionals = async () => {
       setLoading(true);
       try {
-        const [featured, regular] = await Promise.all([
-          getProfessionalsForCategoryByFeaturedStatus(db, category.id, true),
-          getProfessionalsForCategoryByFeaturedStatus(db, category.id, false)
-        ]);
+        // 1. Obtener TODOS los profesionales activos
+        const allActiveProfessionals = await getAllActiveProfessionals(db);
+
+        // 2. Filtrar por categoría en el código
+        const professionalsInCategory = allActiveProfessionals.filter(p => 
+            p.categoryIds.includes(category.id)
+        );
+
+        // 3. Separar destacados de regulares
+        const featured = professionalsInCategory.filter(p => p.isFeatured === true);
+        const regular = professionalsInCategory.filter(p => !p.isFeatured);
+        
+        // Ordenar destacados por rating
+        featured.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
+
         setFeaturedProfessionals(featured);
         setAllProfessionals(regular);
+        
       } catch (error) {
         console.error('Error fetching professionals:', error);
         toast({
@@ -222,17 +234,19 @@ export default function CategoryPage() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-lg text-center p-4">
-              <p className="text-lg font-medium text-muted-foreground">
-                {sortBy === 'verified'
-                  ? `No se encontraron profesionales verificados en "${category?.name}".`
-                  : `Aún no hay profesionales en "${category?.name}".`
-                }
-              </p>
-              <p className="text-sm text-muted-foreground mt-2">
-                ¡Sé el primero en registrarte en esta categoría!
-              </p>
-            </div>
+             (featuredProfessionals.length === 0 && currentProfessionals.length === 0) && (
+                 <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-lg text-center p-4">
+                    <p className="text-lg font-medium text-muted-foreground">
+                        {sortBy === 'verified'
+                        ? `No se encontraron profesionales verificados en "${category?.name}".`
+                        : `Aún no hay profesionales en "${category?.name}".`
+                        }
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                        ¡Sé el primero en registrarte en esta categoría!
+                    </p>
+                </div>
+             )
           )}
 
           {totalPages > 1 && (
