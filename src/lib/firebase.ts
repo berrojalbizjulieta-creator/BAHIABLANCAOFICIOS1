@@ -5,14 +5,14 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
-// La configuración ahora se lee desde variables de entorno seguras.
+// Se inserta la configuración directamente para evitar problemas con variables de entorno en el build.
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
+  apiKey: "AIzaSyAkwEuIqBsIIY_cKmrAkSQhVVUhdrn1xhc",
+  authDomain: "studio-4820039016-5ae38.firebaseapp.com",
+  projectId: "studio-4820039016-5ae38",
+  storageBucket: "studio-4820039016-5ae38.appspot.com",
+  messagingSenderId: "821979814317",
+  appId: "1:821979814317:web:abd23395565fe4e58f6924"
 };
 
 // Inicializa Firebase solo si no hay apps inicializadas
