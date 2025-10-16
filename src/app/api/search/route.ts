@@ -4,6 +4,8 @@ import { getFirestoreDb } from '@/lib/firebase';
 import { CATEGORIES, CATEGORY_SPECIALTIES } from '@/lib/data';
 import type { Professional } from '@/lib/types';
 
+export const dynamic = 'force-dynamic'; // Evita que se ejecute en tiempo de compilación
+
 // Función para normalizar texto (quitar acentos y a minúsculas)
 const normalizeText = (text: string | null | undefined): string => {
     return (text || '')
