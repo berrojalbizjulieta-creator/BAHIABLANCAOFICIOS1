@@ -560,6 +560,10 @@ export default function ProfilePage() {
       }
     };
 
+    const whatsappNumber = '2915276388';
+    const whatsappMessage = encodeURIComponent(`¡Hola! Soy ${professional.name} y me gustaría destacar mi perfil en BahiaBlancaOficios.`);
+    const recommendationWAppLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
+
 
   return (
     <>
@@ -934,6 +938,29 @@ export default function ProfilePage() {
           </div>
 
           <div className="space-y-8">
+            {!professional.isFeatured && (
+              <Card className="bg-blue-50 border-blue-200 text-blue-900 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <PremiumIcon className="text-blue-500" />
+                    ¡Destacá tu Perfil!
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm">
+                    Aparecé primero en las búsquedas de tu rubro y conseguí más clientes. ¡Contactanos para saber cómo!
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <Button asChild className="w-full bg-blue-600 hover:bg-blue-700">
+                    <a href={recommendationWAppLink} target="_blank" rel="noopener noreferrer">
+                      <Phone className="mr-2" /> Quiero ser recomendado
+                    </a>
+                  </Button>
+                </CardFooter>
+              </Card>
+            )}
+
             <Card>
               <CardHeader>
                 <CardTitle>Métodos de Pago</CardTitle>
