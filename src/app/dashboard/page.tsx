@@ -30,7 +30,6 @@ import { collection, getDocs, query, where, Timestamp, getCountFromServer, Docum
 import { db } from '@/lib/firebase';
 import type { Professional, User as AppUser } from '@/lib/types';
 import { subMonths, startOfMonth, endOfMonth, eachMonthOfInterval } from 'date-fns';
-import FeaturedManagement from '@/components/admin/featured-management';
 
 interface DashboardStats {
   totalRevenue: number;
@@ -157,7 +156,6 @@ function AdminDashboard() {
             <TabsTrigger value="clients">Clientes</TabsTrigger>
             <TabsTrigger value="verifications">Verificaciones</TabsTrigger>
             <TabsTrigger value="ads">Publicidad</TabsTrigger>
-            <TabsTrigger value="featured">Destacados</TabsTrigger>
             <TabsTrigger value="analytics" disabled>
               Analytics (Próximamente)
             </TabsTrigger>
@@ -195,7 +193,7 @@ function AdminDashboard() {
                 <CardContent>
                   <div className="text-2xl font-bold">+{stats.newClients}</div>
                   <p className="text-xs text-muted-foreground">
-                    {stats.newClientsChange >= 0 ? '+' : ''}{stats.newClientsChange.toFixed(1)}% desde el mes pasado
+                    {stats.newClientsChange.toFixed(1)}% desde el mes pasado
                   </p>
                 </CardContent>
               </Card>
@@ -209,7 +207,7 @@ function AdminDashboard() {
                 <CardContent>
                   <div className="text-2xl font-bold">+{stats.newProfessionals}</div>
                   <p className="text-xs text-muted-foreground">
-                    {stats.newProfessionalsChange >= 0 ? '+' : ''}{stats.newProfessionalsChange.toFixed(1)}% desde el mes pasado
+                    {stats.newProfessionalsChange.toFixed(1)}% desde el mes pasado
                   </p>
                 </CardContent>
               </Card>
@@ -264,10 +262,6 @@ function AdminDashboard() {
 
           <TabsContent value="ads" className="space-y-4">
             <AdManagement />
-          </TabsContent>
-          
-          <TabsContent value="featured" className="space-y-4">
-            <FeaturedManagement />
           </TabsContent>
 
         </Tabs>
