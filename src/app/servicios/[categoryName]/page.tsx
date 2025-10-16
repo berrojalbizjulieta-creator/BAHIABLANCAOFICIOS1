@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useParams } from 'next/navigation';
@@ -13,7 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useMemo, useState, useEffect } from 'react';
 import type { Professional, Schedule } from '@/lib/types';
-import { getProfessionalsFilteredAndSorted, getFeaturedProfessionalsForCategory } from '@/lib/firestore-queries';
+import { getProfessionalsForCategoryByFeaturedStatus } from '@/lib/firestore-queries';
 import { db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
@@ -76,8 +77,8 @@ export default function CategoryPage() {
       setLoading(true);
       try {
         const [featured, regular] = await Promise.all([
-          getFeaturedProfessionalsForCategory(db, category.id, true),
-          getFeaturedProfessionalsForCategory(db, category.id, false)
+          getProfessionalsForCategoryByFeaturedStatus(db, category.id, true),
+          getProfessionalsForCategoryByFeaturedStatus(db, category.id, false)
         ]);
         setFeaturedProfessionals(featured);
         setAllProfessionals(regular);

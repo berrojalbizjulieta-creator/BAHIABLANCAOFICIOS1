@@ -1,3 +1,4 @@
+
 // src/lib/firestore-queries.ts
 
 import { collection, query, where, orderBy, getDocs, Firestore, Query, DocumentData } from 'firebase/firestore';
@@ -10,10 +11,10 @@ import type { Professional, Testimonial, Review } from '@/lib/types';
  *
  * @param firestore La instancia de Firestore.
  * @param categoryId El ID de la categoría para filtrar.
- * @param featured `true` para obtener solo destacados, `false` para no destacados, `undefined` para todos.
+ * @param featured `true` para obtener solo destacados, `false` para no destacados.
  * @returns Una promesa que resuelve con un array de objetos Professional.
  */
-export async function getFeaturedProfessionalsForCategory(
+export async function getProfessionalsForCategoryByFeaturedStatus(
     firestore: Firestore,
     categoryId: number,
     featured: boolean
@@ -24,7 +25,7 @@ export async function getFeaturedProfessionalsForCategory(
         where('categoryIds', 'array-contains', categoryId),
         where('isActive', '==', true),
         where('subscription.isSubscriptionActive', '==', true),
-        where('isFeatured', '==', featured)
+        where('isFeatured', '==', featured) // Usamos el parámetro 'featured' directamente
     ];
 
     professionalsQuery = query(professionalsQuery, ...constraints);
@@ -44,6 +45,11 @@ export async function getFeaturedProfessionalsForCategory(
             ...data
         } as Professional;
     });
+
+    // Ordenar los destacados por rating para que los mejores aparezcan primero
+    if (featured) {
+        professionals.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
+    }
 
     return professionals;
 }
