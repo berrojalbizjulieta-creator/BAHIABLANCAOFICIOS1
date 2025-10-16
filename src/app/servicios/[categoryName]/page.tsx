@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useParams } from 'next/navigation';
@@ -206,25 +207,19 @@ export default function CategoryPage() {
                 <Sparkles className="w-5 h-5 text-primary"/>
                 Profesionales Recomendados
               </h2>
-              {featuredProfessionals.length > 1 ? (
-                <Carousel 
-                    opts={{ align: "start", loop: true }}
-                    plugins={[Autoplay({ delay: 5000 })]}
-                    className="w-full"
+               <Carousel 
+                  opts={{ align: "start", loop: true }}
+                  plugins={[Autoplay({ delay: 5000, stopOnInteraction: false })]}
+                  className="w-full"
                 >
-                    <CarouselContent className="-ml-4">
-                        {featuredProfessionals.map((prof) => (
-                            <CarouselItem key={prof.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
-                               <ProfessionalCard professional={prof} isFeatured={true} />
-                            </CarouselItem>
-                        ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
-                    <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
-                </Carousel>
-              ) : (
-                 <ProfessionalCard professional={featuredProfessionals[0]} isFeatured={true} />
-              )}
+                  <CarouselContent>
+                      {featuredProfessionals.map((prof) => (
+                          <CarouselItem key={prof.id}>
+                              <ProfessionalCard professional={prof} isFeatured={true} />
+                          </CarouselItem>
+                      ))}
+                  </CarouselContent>
+              </Carousel>
             </section>
           )}
 
