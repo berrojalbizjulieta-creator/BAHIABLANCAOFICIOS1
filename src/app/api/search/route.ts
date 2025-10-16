@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { getFirestoreDb } from '@/lib/firebase';
 import { CATEGORIES, CATEGORY_SPECIALTIES } from '@/lib/data';
 import type { Professional } from '@/lib/types';
 
@@ -15,6 +15,7 @@ const normalizeText = (text: string | null | undefined): string => {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const q = searchParams.get('q');
+  const db = getFirestoreDb();
 
   if (!q) {
     return NextResponse.json([]);
