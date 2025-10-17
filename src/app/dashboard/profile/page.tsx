@@ -533,32 +533,39 @@ export default function ProfilePage() {
     };
     
     const handleShare = async () => {
-      if (!professional) return;
-  
-      const shareData = {
-        title: `Perfil de ${professional.name} en BahiaBlancaOficios`,
-        text: `¡Mirá el perfil de este profesional en BahiaBlancaOficios!`,
-        url: `${window.location.origin}/profesional/${professional.id}`,
-      };
-  
-      if (navigator.share) {
-        try {
-          await navigator.share(shareData);
-        } catch (error) {
-          console.error('Error al compartir:', error);
-          toast({
-            title: 'Error al compartir',
-            description: 'No se pudo abrir el diálogo para compartir.',
-            variant: 'destructive',
-          });
+        if (!professional) return;
+    
+        const shareData = {
+          title: `Perfil de ${professional.name} en BahiaBlancaOficios`,
+          text: `¡Mirá el perfil de este profesional en BahiaBlancaOficios!`,
+          url: `${window.location.origin}/profesional/${professional.id}`,
+        };
+    
+        if (navigator.share) {
+          try {
+            await navigator.share(shareData);
+          } catch (error) {
+            console.error('Error al compartir:', error);
+            // No mostrar error si el usuario cancela, es un comportamiento normal.
+          }
+        } else {
+          // Fallback para escritorio: copiar al portapapeles
+          try {
+            await navigator.clipboard.writeText(shareData.url);
+            toast({
+              title: '¡Enlace Copiado!',
+              description: 'El enlace al perfil ha sido copiado a tu portapapeles.',
+            });
+          } catch (err) {
+            console.error('Error al copiar el enlace:', err);
+            toast({
+              title: 'Error al Copiar',
+              description: 'No se pudo copiar el enlace. Inténtalo manualmente.',
+              variant: 'destructive',
+            });
+          }
         }
-      } else {
-        // Fallback para navegadores que no soportan la Web Share API (ej. desktop)
-        const message = encodeURIComponent(`${shareData.text}\n\n${shareData.url}`);
-        const whatsappUrl = `https://wa.me/?text=${message}`;
-        window.open(whatsappUrl, '_blank');
-      }
-    };
+      };
 
     const whatsappNumber = '2915276388';
     const whatsappMessage = encodeURIComponent(`¡Hola! Soy ${professional.name} y me gustaría destacar mi perfil en BahiaBlancaOficios.`);

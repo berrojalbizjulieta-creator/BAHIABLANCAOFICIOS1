@@ -318,6 +318,40 @@ export default function PublicProfilePage() {
     }
   };
 
+  const handleShare = async () => {
+    if (!professional) return;
+
+    const shareData = {
+      title: `Perfil de ${professional.name} en BahiaBlancaOficios`,
+      text: `¡Mirá el perfil de este profesional en BahiaBlancaOficios!`,
+      url: window.location.href, // La URL actual es la del perfil público
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (error) {
+        console.error('Error al usar Web Share API:', error);
+        // No se muestra error si el usuario cancela la acción
+      }
+    } else {
+      // Fallback para escritorio: copiar al portapapeles
+      try {
+        await navigator.clipboard.writeText(shareData.url);
+        toast({
+          title: '¡Enlace Copiado!',
+          description: 'El enlace al perfil se ha copiado a tu portapapeles.',
+        });
+      } catch (err) {
+        console.error('Error al copiar al portapapeles:', err);
+        toast({
+          title: 'Error',
+          description: 'No se pudo copiar el enlace. Inténtalo manualmente.',
+          variant: 'destructive',
+        });
+      }
+    }
+  };
 
   if (loading || userLoading) {
     return (
@@ -403,7 +437,7 @@ export default function PublicProfilePage() {
                             <Phone className="mr-2" /> Whatsapp
                         </a>
                       </Button>
-                      <Button variant="outline" className="w-full sm:w-auto">
+                      <Button variant="outline" className="w-full sm:w-auto" onClick={handleShare}>
                         <Share2 className="mr-2 h-4 w-4" />
                         Compartir
                       </Button>
