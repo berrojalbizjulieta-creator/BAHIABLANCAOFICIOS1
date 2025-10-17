@@ -64,21 +64,25 @@ export default function JobRequestsPage() {
     const fetchJobRequests = async () => {
       setLoadingRequests(true);
       try {
+        // Consulta simplificada para evitar la necesidad de un índice complejo.
+        // Se ordena por fecha y luego se filtra por estado en el cliente.
         const q = query(
           collection(db, 'jobRequests'),
-          where('status', '==', 'open'), 
           orderBy('createdAt', 'desc'),
-          limit(50) // Limit initial load for performance
+          limit(100) // Cargar un poco más para tener suficientes trabajos "abiertos"
         );
         const querySnapshot = await getDocs(q);
-        const requestsData = querySnapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            ...data,
-            createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
-          } as JobRequest;
-        });
+        const requestsData = querySnapshot.docs
+          .map(doc => {
+            const data = doc.data();
+            return {
+              id: doc.id,
+              ...data,
+              createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
+            } as JobRequest;
+          })
+          .filter(request => request.status === 'open'); // Filtrar por estado aquí
+
         setJobRequests(requestsData);
       } catch (error) {
         console.error("Error fetching job requests: ", error);
