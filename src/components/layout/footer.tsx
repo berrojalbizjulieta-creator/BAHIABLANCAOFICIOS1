@@ -30,25 +30,22 @@ export function Footer() {
               </p>
               <div className="mt-6 flex space-x-4 justify-center lg:justify-start">
                 <Link
-                  href="#"
+                  href="https://www.facebook.com/share/1CCm6VA8BM/?mibextid=wwXIfr"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-primary"
                 >
                   <span className="sr-only">Facebook</span>
                   <Facebook className="h-6 w-6" />
                 </Link>
                 <Link
-                  href="#"
+                  href="https://www.instagram.com/bahiablancaoficios?igsh=ZzJlYzJwMzhtYjBp"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-primary"
                 >
                   <span className="sr-only">Instagram</span>
                   <Instagram className="h-6 w-6" />
-                </Link>
-                <Link
-                  href="#"
-                  className="text-muted-foreground hover:text-primary"
-                >
-                  <span className="sr-only">Twitter</span>
-                  <Twitter className="h-6 w-6" />
                 </Link>
               </div>
             </div>
