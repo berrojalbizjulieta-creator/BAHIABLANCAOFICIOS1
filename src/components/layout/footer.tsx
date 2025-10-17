@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Facebook, Instagram, Twitter, Phone, Mail } from 'lucide-react';
+import { Facebook, Instagram, Phone, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { Logo } from '../icons/logo';
 import { useState } from 'react';
