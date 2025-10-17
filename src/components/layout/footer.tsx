@@ -55,10 +55,10 @@ export function Footer() {
                 <p className="font-bold text-foreground">Servicios</p>
                 <nav className="mt-4 flex flex-col space-y-2 text-sm">
                   <Link
-                    href="/servicios/plomeria"
+                    href="/servicios/mudanzas"
                     className="text-muted-foreground hover:text-primary"
                   >
-                    Plomería
+                    Mudanzas
                   </Link>
                   <Link
                     href="/servicios/electricista"
@@ -73,10 +73,10 @@ export function Footer() {
                     Pintura
                   </Link>
                   <Link
-                    href="/servicios/jardineria"
+                    href="/servicios/reparaciones"
                     className="text-muted-foreground hover:text-primary"
                   >
-                    Jardinería
+                    Reparaciones
                   </Link>
                 </nav>
               </div>
