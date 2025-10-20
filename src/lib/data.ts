@@ -31,6 +31,7 @@ import { placeholderImages } from './placeholder-images';
 import { subMonths, subDays, subHours } from 'date-fns';
 import { PLOMERIA_KEYWORDS } from './keywords/plomeria';
 import { GASISTA_KEYWORDS } from './keywords/gasista';
+import { PINTORES_KEYWORDS } from './keywords/pintores';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -106,18 +107,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   17: { // Pintores
     name: 'Pintores',
-    specialties: [
-      'Pintura de interiores',
-      'Pintura de exteriores',
-      'Enduido y lijado',
-      'Pintura de aberturas',
-      'Impermeabilización',
-      'Revestimientos plásticos',
-      'Pintura de piletas',
-      'Pintura epoxi',
-      'Trabajos en altura',
-      'Quitar empapelado'
-    ]
+    specialties: PINTORES_KEYWORDS,
   },
   3: { // Limpieza
     name: 'Limpieza',
