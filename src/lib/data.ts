@@ -47,6 +47,7 @@ import { ENTRENADORES_KEYWORDS } from './keywords/entrenadores';
 import { MASCOTAS_KEYWORDS } from './keywords/mascotas';
 import { TECNOLOGIA_KEYWORDS } from './keywords/tecnologia';
 import { CERRAJERIA_KEYWORDS } from './keywords/cerrajeria';
+import { AIRE_ACONDICIONADO_KEYWORDS } from './keywords/aire-acondicionado';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -188,18 +189,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   67: { // Aire Acondicionado
     name: 'Aire Acondicionado',
-    specialties: [
-      'Instalación de split',
-      'Carga de gas',
-      'Limpieza de filtros',
-      'Reparación de equipos',
-      'Mantenimiento preventivo',
-      'Desinstalación de equipos',
-      'Reparación de plaquetas',
-      'Instalación de centrales',
-      'Control remoto',
-      'Asesoramiento de compra'
-    ]
+    specialties: AIRE_ACONDICIONADO_KEYWORDS
   },
   65: { // Vidriería
     name: 'Vidriería',
@@ -739,6 +729,7 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
 
 
