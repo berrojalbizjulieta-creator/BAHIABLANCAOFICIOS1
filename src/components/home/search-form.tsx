@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -10,6 +9,7 @@ import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Star } from 'lucide-react';
 import { Separator } from '../ui/separator';
+import Fuse from 'fuse.js';
 
 interface SearchResult {
   id: number;
@@ -54,6 +54,10 @@ export default function SearchForm() {
         fetch(`/api/sugerencia?q=${encodeURIComponent(query)}`)
       ]);
 
+      if (!profRes.ok || !sugRes.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
+
       const professionals: SearchResult[] = await profRes.json();
       const suggestionData: { suggestedTrades: string[] } = await sugRes.json();
       
@@ -61,7 +65,7 @@ export default function SearchForm() {
       setSuggestions(suggestionData.suggestedTrades || []);
 
       setIsDropdownOpen(true);
-    } catch (e: any) => {
+    } catch (e: any) {
       console.error('Error fetching data:', e);
       setResults([]);
       setSuggestions([]);
@@ -133,7 +137,7 @@ export default function SearchForm() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
-                className="absolute top-full mt-2 w-full border bg-background text-foreground rounded-md shadow-lg max-h-80 md:max-h-96 overflow-auto z-20 text-left"
+                className="absolute top-full mt-2 w-full border bg-background text-foreground rounded-md shadow-lg max-h-80 md:max-h-[22rem] overflow-y-auto z-20 text-left"
               >
                 {isLoading && <li className="px-4 py-3 text-muted-foreground">Buscando...</li>}
                 
