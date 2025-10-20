@@ -39,6 +39,7 @@ import { LIMPIEZA_KEYWORDS } from './keywords/limpieza';
 import { JARDINERIA_KEYWORDS } from './keywords/jardineria';
 import { MUDANZAS_KEYWORDS } from './keywords/mudanzas';
 import { ALBANILERIA_KEYWORDS } from './keywords/albanileria';
+import { HERRERIA_KEYWORDS } from './keywords/herreria';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -127,18 +128,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   16: { // Herrería
     name: 'Herrería',
-    specialties: [
-      'Rejas de seguridad',
-      'Portones corredizos y levadizos',
-      'Escaleras de metal',
-      'Barandas y pasamanos',
-      'Estructuras metálicas',
-      'Protecciones para balcones',
-      'Soldaduras en general',
-      'Muebles de hierro',
-      'Cestos de basura',
-      'Reparaciones de herrería'
-    ]
+    specialties: HERRERIA_KEYWORDS
   },
   5: { // Reparaciones
     name: 'Reparaciones',
@@ -820,6 +810,7 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
 
 
