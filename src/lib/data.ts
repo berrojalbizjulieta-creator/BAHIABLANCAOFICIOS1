@@ -49,6 +49,7 @@ import { TECNOLOGIA_KEYWORDS } from './keywords/tecnologia';
 import { CERRAJERIA_KEYWORDS } from './keywords/cerrajeria';
 import { AIRE_ACONDICIONADO_KEYWORDS } from './keywords/aire-acondicionado';
 import { VIDRIERIA_KEYWORDS } from './keywords/vidrieria';
+import { CONTROL_DE_PLAGAS_KEYWORDS } from './keywords/control-de-plagas';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -198,18 +199,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   66: { // Control de Plagas
     name: 'Control de Plagas',
-    specialties: [
-      'Fumigación de cucarachas',
-      'Desratización',
-      'Control de hormigas',
-      'Eliminación de pulgas',
-      'Ahuyentamiento de palomas',
-      'Control de arañas',
-      'Tratamientos para madera (termitas)',
-      'Desinfección de tanques',
-      'Control de alacranes',
-      'Abonos para comercios'
-    ]
+    specialties: CONTROL_DE_PLAGAS_KEYWORDS,
   },
   68: { // Mecánicos Auto/Motos
     name: 'Mecánicos Auto/Motos',
@@ -672,7 +662,7 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     'Armar un mueble de IKEA',
     'Pasear perro mediano 3 veces por semana',
     'Limpiar vidrios de un local comercial',
-    'Formatear una notebook e instalar Windows',
+    'Formatear una notebook e instalar Windows 10',
     'Revisar instalación de gas por posible pérdida',
     'Hacer un portón de reja corredizo',
     'Cambiar cuerito de una canilla que gotea',
@@ -719,6 +709,7 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
 
 
