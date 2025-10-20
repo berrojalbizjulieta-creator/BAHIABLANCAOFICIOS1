@@ -48,6 +48,7 @@ import { MASCOTAS_KEYWORDS } from './keywords/mascotas';
 import { TECNOLOGIA_KEYWORDS } from './keywords/tecnologia';
 import { CERRAJERIA_KEYWORDS } from './keywords/cerrajeria';
 import { AIRE_ACONDICIONADO_KEYWORDS } from './keywords/aire-acondicionado';
+import { VIDRIERIA_KEYWORDS } from './keywords/vidrieria';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -193,18 +194,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   65: { // Vidriería
     name: 'Vidriería',
-    specialties: [
-      'Cambio de vidrios rotos',
-      'Espejos a medida',
-      'Vidrios de seguridad (laminados)',
-      'Frentes de locales',
-      'Mamparas de baño',
-      'Tapas de mesa de vidrio',
-      'Vidrios para ventanas',
-      'Claraboyas',
-      'Policarbonato y acrílico',
-      'Urgencias a domicilio'
-    ]
+    specialties: VIDRIERIA_KEYWORDS,
   },
   66: { // Control de Plagas
     name: 'Control de Plagas',
@@ -729,6 +719,7 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
 
 
