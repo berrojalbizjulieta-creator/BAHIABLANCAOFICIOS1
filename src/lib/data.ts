@@ -1,3 +1,4 @@
+
 import {
   Wrench,
   Plug,
@@ -34,6 +35,7 @@ import { GASISTA_KEYWORDS } from './keywords/gasista';
 import { PINTORES_KEYWORDS } from './keywords/pintores';
 import { CARPINTERIA_KEYWORDS } from './keywords/carpinteria';
 import { ELECTRICISTA_KEYWORDS } from './keywords/electricista';
+import { LIMPIEZA_KEYWORDS } from './keywords/limpieza';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -102,18 +104,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   3: { // Limpieza
     name: 'Limpieza',
-    specialties: [
-      'Limpieza de oficinas',
-      'Limpieza final de obra',
-      'Limpieza de tapizados',
-      'Limpieza de alfombras',
-      'Limpieza de vidrios en altura',
-      'Limpieza de casas particulares',
-      'Limpieza profunda de cocinas',
-      'Limpieza de consorcios',
-      'Personal de limpieza por hora',
-      'Limpieza industrial'
-    ]
+    specialties: LIMPIEZA_KEYWORDS
   },
   2: { // Jardinería
     name: 'Jardinería',
@@ -859,3 +850,4 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
