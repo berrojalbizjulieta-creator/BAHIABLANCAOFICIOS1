@@ -30,6 +30,7 @@ import type { Category, Professional, Banner, Client, JobRequest, CategorySpecia
 import { placeholderImages } from './placeholder-images';
 import { subMonths, subDays, subHours } from 'date-fns';
 import { PLOMERIA_KEYWORDS } from './keywords/plomeria';
+import { GASISTA_KEYWORDS } from './keywords/gasista';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -318,18 +319,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   12: { // Gasista Matriculado
     name: 'Gasista Matriculado',
-    specialties: [
-      'Instalación de calefactores',
-      'Reparación de termotanques',
-      'Revisión de estufas',
-      'Prueba de hermeticidad',
-      'Cambio de flexibles',
-      'Instalación de cocinas',
-      'Habilitación de medidor',
-      'Reparación de calderas',
-      'Planos de gas',
-      'Urgencias de gas 24hs'
-    ]
+    specialties: GASISTA_KEYWORDS,
   },
   64: { // Cerrajería
     name: 'Cerrajería',
