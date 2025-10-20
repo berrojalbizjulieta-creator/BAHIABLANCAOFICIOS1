@@ -50,6 +50,7 @@ import { CERRAJERIA_KEYWORDS } from './keywords/cerrajeria';
 import { AIRE_ACONDICIONADO_KEYWORDS } from './keywords/aire-acondicionado';
 import { VIDRIERIA_KEYWORDS } from './keywords/vidrieria';
 import { CONTROL_DE_PLAGAS_KEYWORDS } from './keywords/control-de-plagas';
+import { MECANICA_KEYWORDS } from './keywords/mecanica';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -203,18 +204,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   68: { // Mecánicos Auto/Motos
     name: 'Mecánicos Auto/Motos',
-    specialties: [
-      'Cambio de aceite y filtro',
-      'Tren delantero',
-      'Frenos',
-      'Embrague',
-      'Afinación de motor',
-      'Service de motos',
-      'Diagnóstico con scanner',
-      'Revisión para VTV',
-      'Reparación de motor',
-      'Auxilio mecánico ligero'
-    ]
+    specialties: MECANICA_KEYWORDS,
   }
 };
 
@@ -709,6 +699,7 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
 
 
