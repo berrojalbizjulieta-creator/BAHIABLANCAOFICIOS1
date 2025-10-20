@@ -40,6 +40,7 @@ import { JARDINERIA_KEYWORDS } from './keywords/jardineria';
 import { MUDANZAS_KEYWORDS } from './keywords/mudanzas';
 import { ALBANILERIA_KEYWORDS } from './keywords/albanileria';
 import { HERRERIA_KEYWORDS } from './keywords/herreria';
+import { FOTOGRAFIA_KEYWORDS } from './keywords/fotografia';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -133,9 +134,9 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   5: { // Reparaciones
     name: 'Reparaciones',
     specialties: [
-      'Arreglo de persianas',
-      'Cambio de persiana',
-      'Colocacion de persiana',
+      'arreglo de persiana',
+      'cambio de persiana',
+      'colocacion de persiana',
       'Colgar cuadros y estantes',
       'Armado de muebles',
       'Instalación de cortinas',
@@ -149,21 +150,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   9: { // Fotografía
     name: 'Fotografía',
-    specialties: [
-      'Eventos sociales',
-      'Sesiones de fotos familiares',
-      'Fotografía de productos',
-      'Fotografía para CV/LinkedIn',
-      'Books de 15 años',
-      'Bautismos y comuniones',
-      'Sesiones de embarazo',
-      'Fotografía de mascotas',
-      'Retoque digital',
-      'Impresión de fotos comunes',
-      'Fotos Polaroid',
-      'Venta de cuadros decorativos',
-      'Deco con fotos'
-    ]
+    specialties: FOTOGRAFIA_KEYWORDS,
   },
   6: { // Eventos
     name: 'Eventos',
@@ -812,6 +799,7 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
 
 
