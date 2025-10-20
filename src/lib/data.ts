@@ -46,6 +46,7 @@ import { CLASES_KEYWORDS } from './keywords/clases';
 import { ENTRENADORES_KEYWORDS } from './keywords/entrenadores';
 import { MASCOTAS_KEYWORDS } from './keywords/mascotas';
 import { TECNOLOGIA_KEYWORDS } from './keywords/tecnologia';
+import { CERRAJERIA_KEYWORDS } from './keywords/cerrajeria';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -183,18 +184,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   64: { // Cerrajería
     name: 'Cerrajería',
-    specialties: [
-      'Apertura de puertas',
-      'Cambio de combinación',
-      'Cerraduras de auto',
-      'Copias de llaves',
-      'Cerraduras de seguridad',
-      'Reparación de cerraduras',
-      'Apertura de cajas fuertes',
-      'Puertas blindadas',
-      'Urgencias 24hs',
-      'Cerrojos y pasadores'
-    ]
+    specialties: CERRAJERIA_KEYWORDS,
   },
   67: { // Aire Acondicionado
     name: 'Aire Acondicionado',
@@ -749,6 +739,7 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
 
 
