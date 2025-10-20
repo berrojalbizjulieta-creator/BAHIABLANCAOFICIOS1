@@ -44,6 +44,7 @@ import { FOTOGRAFIA_KEYWORDS } from './keywords/fotografia';
 import { EVENTOS_KEYWORDS } from './keywords/eventos';
 import { CLASES_KEYWORDS } from './keywords/clases';
 import { ENTRENADORES_KEYWORDS } from './keywords/entrenadores';
+import { MASCOTAS_KEYWORDS } from './keywords/mascotas';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -169,18 +170,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   55: { // Mascotas
     name: 'Mascotas',
-    specialties: [
-      'Paseo de perros',
-      'Cuidado a domicilio',
-      'Adiestramiento canino',
-      'Peluquería canina',
-      'Traslado de mascotas',
-      'Cuidado de gatos',
-      'Paseos en grupo',
-      'Paseos individuales',
-      'Guardería de día',
-      'Acompañamiento veterinario'
-    ]
+    specialties: MASCOTAS_KEYWORDS
   },
   38: { // Tecnología
     name: 'Tecnología',
@@ -769,6 +759,7 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
 
 
