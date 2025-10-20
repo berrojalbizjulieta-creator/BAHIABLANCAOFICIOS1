@@ -38,6 +38,7 @@ import { ELECTRICISTA_KEYWORDS } from './keywords/electricista';
 import { LIMPIEZA_KEYWORDS } from './keywords/limpieza';
 import { JARDINERIA_KEYWORDS } from './keywords/jardineria';
 import { MUDANZAS_KEYWORDS } from './keywords/mudanzas';
+import { ALBANILERIA_KEYWORDS } from './keywords/albanileria';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -122,18 +123,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   13: { // Albañilería
     name: 'Albañilería',
-    specialties: [
-      'Construcción en seco (Durlock)',
-      'Colocación de cerámicos y porcelanato',
-      'Revoques finos y gruesos',
-      'Contrapisos y carpetas',
-      'Levantamiento de paredes',
-      'Losas y vigas',
-      'Reparación de humedades',
-      'Demoliciones',
-      'Hormigón armado',
-      'Parrillas y asadores'
-    ]
+    specialties: ALBANILERIA_KEYWORDS
   },
   16: { // Herrería
     name: 'Herrería',
@@ -830,6 +820,7 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
 
 
