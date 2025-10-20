@@ -61,7 +61,7 @@ export default function SearchForm() {
       setSuggestions(suggestionData.suggestedTrades || []);
 
       setIsDropdownOpen(true);
-    } catch (e: any) {
+    } catch (e: any) => {
       console.error('Error fetching data:', e);
       setResults([]);
       setSuggestions([]);
@@ -133,14 +133,14 @@ export default function SearchForm() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
-                className="absolute top-full mt-2 w-full border bg-background text-foreground rounded-md shadow-lg max-h-96 overflow-auto z-20 text-left"
+                className="absolute top-full mt-2 w-full border bg-background text-foreground rounded-md shadow-lg max-h-80 md:max-h-96 overflow-auto z-20 text-left"
               >
                 {isLoading && <li className="px-4 py-3 text-muted-foreground">Buscando...</li>}
                 
                 {!isLoading && suggestions.length > 0 && (
                    <>
                     <li className="px-4 pt-3 pb-1 text-xs font-semibold text-muted-foreground uppercase">Sugerencias de Oficios</li>
-                    {suggestions.map((suggestion) => (
+                    {suggestions.slice(0, 3).map((suggestion) => (
                       <li 
                         key={suggestion} 
                         className="px-4 py-2 cursor-pointer hover:bg-muted font-medium"
@@ -156,7 +156,7 @@ export default function SearchForm() {
                 {!isLoading && results.length > 0 && (
                   <>
                   <li className="px-4 pt-3 pb-1 text-xs font-semibold text-muted-foreground uppercase">Profesionales</li>
-                  {results.map((r) => (
+                  {results.slice(0, 5).map((r) => (
                     <li key={r.id}>
                         <Link href={`/profesional/${r.id}`} className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-muted" onClick={() => setIsDropdownOpen(false)}>
                             <Avatar>

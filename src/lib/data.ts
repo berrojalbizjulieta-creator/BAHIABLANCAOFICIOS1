@@ -29,6 +29,7 @@ import {
 import type { Category, Professional, Banner, Client, JobRequest, CategorySpecialties, Schedule } from '@/lib/types';
 import { placeholderImages } from './placeholder-images';
 import { subMonths, subDays, subHours } from 'date-fns';
+import { PLOMERIA_KEYWORDS } from './keywords/plomeria';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -85,18 +86,7 @@ export const CATEGORIES: Category[] = [
 export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   11: { // Plomería
     name: 'Plomería',
-    specialties: [
-      'Destapar cañerías',
-      'Cambio cuerito',
-      'Instalación grifería',
-      'Reparación inodoro',
-      'Colocación bidet',
-      'Perdida de agua',
-      'Bomba de agua',
-      'Termotanque instalación',
-      'Calefón reparación',
-      'Tanque de agua limpieza'
-    ]
+    specialties: PLOMERIA_KEYWORDS,
   },
   14: { // Electricista
     name: 'Electricista',
@@ -781,7 +771,7 @@ export const BANNERS: Banner[] = [
     title: 'Servicios de limpieza',
     description:
       'De casas, departamentos y limpieza post obra',
-    imageUrl: 'https://i.pinimg.com/1200x/65/bd/62/65bd622b8c2073058b8c0d669fdfde5a.jpg',
+    imageUrl: 'https://i.pinimg.com/1200x/a9/62/f8/a962f83ae2df31290e8d59487cb213f8.jpg',
     imageHint: 'cleaning products',
     buttonText: 'Contratar Jardineros',
     buttonLink: '/servicios/jardineria-y-paisajismo',

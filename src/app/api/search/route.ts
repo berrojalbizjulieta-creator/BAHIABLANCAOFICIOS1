@@ -1,18 +1,36 @@
 import { NextResponse } from 'next/server';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where, addDoc, serverTimestamp } from 'firebase/firestore';
 import { getFirestoreDb } from '@/lib/firebase';
 import { CATEGORIES, CATEGORY_SPECIALTIES } from '@/lib/data';
 import type { Professional } from '@/lib/types';
+import Fuse from 'fuse.js';
 
-export const dynamic = 'force-dynamic'; // Evita que se ejecute en tiempo de compilación
+export const dynamic = 'force-dynamic';
 
-// Función para normalizar texto (quitar acentos y a minúsculas)
-const normalizeText = (text: string | null | undefined): string => {
-    return (text || '')
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
+// Opciones de configuración para Fuse.js para una búsqueda tolerante a errores
+const fuseOptions = {
+  includeScore: true,
+  threshold: 0.4, // Umbral de coincidencia (0.0 es exacto, 1.0 es cualquiera)
+  minMatchCharLength: 3,
+  keys: [
+    { name: 'name', weight: 0.4 },
+    { name: 'description', weight: 0.2 },
+    { name: 'specialties', weight: 0.4 },
+  ],
 };
+
+const logFailedSearch = async (term: string) => {
+    if (!term || term.trim().length < 3) return;
+    try {
+        await addDoc(collection(getFirestoreDb(), 'searchAnalytics'), {
+            term: term,
+            timestamp: serverTimestamp(),
+            status: 'failed',
+        });
+    } catch (error) {
+        console.error("Error logging failed search:", error);
+    }
+}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -23,72 +41,75 @@ export async function GET(request: Request) {
     return NextResponse.json([]);
   }
 
-  const normalizedQuery = normalizeText(q);
-  const queryWords = normalizedQuery.split(' ').filter(w => w.length > 0);
-
   try {
-    // 1. Encontrar categorías que coincidan con la búsqueda a través de sus especialidades
-    const matchingCategoryIds = new Set<number>();
-    for (const catId in CATEGORY_SPECIALTIES) {
-      const categoryData = CATEGORY_SPECIALTIES[Number(catId)];
-      const specialtiesText = categoryData.specialties.map(normalizeText).join(' ');
-      const categoryNameText = normalizeText(categoryData.name);
-      
-      const categoryContent = `${categoryNameText} ${specialtiesText}`;
-
-      if (queryWords.every(word => categoryContent.includes(word))) {
-        matchingCategoryIds.add(Number(catId));
-      }
-    }
-
-    // 2. Obtener todos los profesionales
+    // 1. Obtener todos los profesionales activos.
     const professionalsRef = collection(db, 'professionalsDetails');
-    const professionalsSnapshot = await getDocs(professionalsRef);
+    const professionalsSnapshot = await getDocs(
+      query(professionalsRef, where('isActive', '==', true), where('subscription.isSubscriptionActive', '==', true))
+    );
     
     const allProfessionals = professionalsSnapshot.docs.map(doc => ({ 
         id: doc.id, 
         ...doc.data() 
     } as Professional));
 
-    // 3. Filtrar profesionales
-    const results = allProfessionals.filter(prof => {
-      // Solo incluir profesionales activos y con suscripción
-      if (!prof.isActive || !prof.subscription?.isSubscriptionActive) {
-          return false;
-      }
-        
-      // Filtrar por perfil del profesional (nombre, descripción, especialidades propias)
-      const name = normalizeText(prof.name);
-      const description = normalizeText(prof.description);
-      const specialties = prof.specialties?.map(normalizeText).join(' ') || '';
-      const professionalProfileText = `${name} ${description} ${specialties}`;
+    // 2. Usar Fuse.js para realizar la búsqueda "fuzzy" sobre los profesionales.
+    const fuse = new Fuse(allProfessionals, fuseOptions);
+    const fuseResults = fuse.search(q);
 
-      // Búsqueda mejorada: todas las palabras de la consulta deben estar presentes
-      if (queryWords.every(word => professionalProfileText.includes(word))) {
-        return true;
-      }
-      
-      // Filtrar si el profesional pertenece a una de las categorías que coinciden con la búsqueda
-      if (prof.categoryIds.some(id => matchingCategoryIds.has(id))) {
-          return true;
-      }
+    // Mapear los resultados para darles una estructura consistente.
+    let results = fuseResults.map(result => ({
+      ...result.item,
+      score: result.score, // Mantener el score para posible ordenación avanzada
+    }));
 
-      return false;
-    });
-    
+    // 3. Si la búsqueda directa no da resultados, buscar por categoría/especialidad global
     if (results.length === 0) {
+        const normalizedQuery = q.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const queryWords = normalizedQuery.split(' ').filter(w => w.length > 0);
+
+        const matchingCategoryIds = new Set<number>();
+        for (const catId in CATEGORY_SPECIALTIES) {
+            const categoryData = CATEGORY_SPECIALTIES[Number(catId)];
+            const categoryContent = `${categoryData.name.toLowerCase()} ${categoryData.specialties.join(' ')}`.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+            if (queryWords.some(word => categoryContent.includes(word))) {
+                matchingCategoryIds.add(Number(catId));
+            }
+        }
+        
+        if (matchingCategoryIds.size > 0) {
+            const categoryResults = allProfessionals.filter(prof => 
+                prof.categoryIds.some(id => matchingCategoryIds.has(id))
+            );
+            // Asignar un score más bajo (mejor) para estos resultados
+            results = categoryResults.map(item => ({ ...item, score: 0.5 }));
+        }
+    }
+    
+    // 4. Si después de todo no hay resultados, registrar la búsqueda fallida.
+    if (results.length === 0) {
+      await logFailedSearch(q);
       return NextResponse.json([]);
     }
     
-    // Devolvemos solo los datos necesarios para la UI de resultados
-    return NextResponse.json(results.map(p => {
+    // Ordenar por score (menor es mejor) y luego por rating
+    results.sort((a, b) => {
+        if (a.score !== b.score) {
+            return (a.score || 1) - (b.score || 1);
+        }
+        return (b.avgRating || 0) - (a.avgRating || 0);
+    });
+
+    // Devolvemos solo los datos necesarios para la UI, tomando los 10 mejores.
+    return NextResponse.json(results.slice(0, 10).map(p => {
       const primaryCategory = CATEGORIES.find(c => c.id === p.categoryIds[0]);
       return {
           id: p.id,
           nombre: p.name,
           rubro: primaryCategory?.name || 'Sin categoría',
           photoUrl: p.photoUrl,
-          avgRating: p.avgRating
+          avgRating: p.avgRating || 0,
       }
     }));
 
