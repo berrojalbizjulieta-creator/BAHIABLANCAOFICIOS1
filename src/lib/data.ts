@@ -134,6 +134,8 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
     name: 'Reparaciones',
     specialties: [
       'Arreglo de persianas',
+      'Cambio de persiana',
+      'Colocacion de persiana',
       'Colgar cuadros y estantes',
       'Armado de muebles',
       'Instalación de cortinas',
@@ -810,6 +812,7 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
 
 
