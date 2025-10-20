@@ -37,6 +37,7 @@ import { CARPINTERIA_KEYWORDS } from './keywords/carpinteria';
 import { ELECTRICISTA_KEYWORDS } from './keywords/electricista';
 import { LIMPIEZA_KEYWORDS } from './keywords/limpieza';
 import { JARDINERIA_KEYWORDS } from './keywords/jardineria';
+import { MUDANZAS_KEYWORDS } from './keywords/mudanzas';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -117,18 +118,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   4: { // Mudanzas
     name: 'Mudanzas',
-    specialties: [
-      'Fletes',
-      'Mini fletes',
-      'Embalaje',
-      'Peones para carga y descarga',
-      'Traslado de pianos',
-      'Mudanzas de oficinas',
-      'Mudanzas locales',
-      'Mudanzas nacionales',
-      'Guardamuebles',
-      'Desarme y armado de muebles'
-    ]
+    specialties: MUDANZAS_KEYWORDS
   },
   13: { // Albañilería
     name: 'Albañilería',
@@ -840,5 +830,6 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
 
