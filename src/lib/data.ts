@@ -36,6 +36,7 @@ import { PINTORES_KEYWORDS } from './keywords/pintores';
 import { CARPINTERIA_KEYWORDS } from './keywords/carpinteria';
 import { ELECTRICISTA_KEYWORDS } from './keywords/electricista';
 import { LIMPIEZA_KEYWORDS } from './keywords/limpieza';
+import { JARDINERIA_KEYWORDS } from './keywords/jardineria';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -108,18 +109,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   2: { // Jardinería
     name: 'Jardinería',
-    specialties: [
-      'Corte de césped',
-      'Mantenimiento de jardines',
-      'Poda de árboles y arbustos',
-      'Diseño de jardines',
-      'Instalación de sistemas de riego',
-      'Control de plagas de jardín',
-      'Colocación de césped (panes)',
-      'Nivelación de terreno',
-      'Poda en altura',
-      'Desmalezamiento de terrenos'
-    ]
+    specialties: JARDINERIA_KEYWORDS,
   },
   15: { // Carpintería
     name: 'Carpintería',
@@ -850,4 +840,5 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
