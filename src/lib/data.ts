@@ -45,6 +45,7 @@ import { EVENTOS_KEYWORDS } from './keywords/eventos';
 import { CLASES_KEYWORDS } from './keywords/clases';
 import { ENTRENADORES_KEYWORDS } from './keywords/entrenadores';
 import { MASCOTAS_KEYWORDS } from './keywords/mascotas';
+import { TECNOLOGIA_KEYWORDS } from './keywords/tecnologia';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -174,18 +175,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   38: { // Tecnología
     name: 'Tecnología',
-    specialties: [
-      'Arreglo de PC',
-      'Limpieza de virus',
-      'Formateo e instalación',
-      'Reparación de notebooks',
-      'Cambio de pantalla celu',
-      'Armado de PC gamer',
-      'Configuración de redes WiFi',
-      'Recupero de datos',
-      'Clases de computación',
-      'Soporte técnico a domicilio'
-    ]
+    specialties: TECNOLOGIA_KEYWORDS,
   },
   12: { // Gasista Matriculado
     name: 'Gasista Matriculado',
@@ -759,6 +749,7 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
 
 
