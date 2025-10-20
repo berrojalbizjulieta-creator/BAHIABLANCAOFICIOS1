@@ -41,6 +41,7 @@ import { MUDANZAS_KEYWORDS } from './keywords/mudanzas';
 import { ALBANILERIA_KEYWORDS } from './keywords/albanileria';
 import { HERRERIA_KEYWORDS } from './keywords/herreria';
 import { FOTOGRAFIA_KEYWORDS } from './keywords/fotografia';
+import { EVENTOS_KEYWORDS } from './keywords/eventos';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -154,18 +155,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   6: { // Eventos
     name: 'Eventos',
-    specialties: [
-      'DJ para fiestas',
-      'Sonido e iluminación',
-      'Catering y lunch',
-      'Organización de eventos',
-      'Animación infantil',
-      'Alquiler de livings',
-      'Cabina de fotos',
-      'Mozos y camareras',
-      'Decoración con globos',
-      'Shows en vivo'
-    ]
+    specialties: EVENTOS_KEYWORDS,
   },
   7: { // Clases
     name: 'Clases',
@@ -799,6 +789,7 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
 
 
