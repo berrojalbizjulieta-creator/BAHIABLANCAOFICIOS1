@@ -43,6 +43,7 @@ import { HERRERIA_KEYWORDS } from './keywords/herreria';
 import { FOTOGRAFIA_KEYWORDS } from './keywords/fotografia';
 import { EVENTOS_KEYWORDS } from './keywords/eventos';
 import { CLASES_KEYWORDS } from './keywords/clases';
+import { ENTRENADORES_KEYWORDS } from './keywords/entrenadores';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -164,18 +165,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   58: { // Entrenadores
     name: 'Entrenadores',
-    specialties: [
-      'Personal Trainer',
-      'Clases de Yoga',
-      'Clases de Pilates',
-      'Entrenamiento funcional',
-      'Preparación física',
-      'Rutinas para gimnasio',
-      'Clases de Zumba',
-      'Entrenamiento a domicilio',
-      'Asesoramiento online',
-      'Boxeo recreativo'
-    ]
+    specialties: ENTRENADORES_KEYWORDS,
   },
   55: { // Mascotas
     name: 'Mascotas',
@@ -779,6 +769,7 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
 
 
