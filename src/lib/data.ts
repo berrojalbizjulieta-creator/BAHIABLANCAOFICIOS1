@@ -33,6 +33,7 @@ import { PLOMERIA_KEYWORDS } from './keywords/plomeria';
 import { GASISTA_KEYWORDS } from './keywords/gasista';
 import { PINTORES_KEYWORDS } from './keywords/pintores';
 import { CARPINTERIA_KEYWORDS } from './keywords/carpinteria';
+import { ELECTRICISTA_KEYWORDS } from './keywords/electricista';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -93,18 +94,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   14: { // Electricista
     name: 'Electricista',
-    specialties: [
-      'Instalaciones eléctricas',
-      'Tableros eléctricos',
-      'Reparación de cortocircuitos',
-      'Cableado estructurado',
-      'Iluminación LED',
-      'Porteros eléctricos',
-      'Tomas y enchufes',
-      'Ventiladores de techo',
-      'Certificados DCI',
-      'Urgencias 24hs'
-    ]
+    specialties: ELECTRICISTA_KEYWORDS,
   },
   17: { // Pintores
     name: 'Pintores',
