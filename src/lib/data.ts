@@ -32,6 +32,7 @@ import { subMonths, subDays, subHours } from 'date-fns';
 import { PLOMERIA_KEYWORDS } from './keywords/plomeria';
 import { GASISTA_KEYWORDS } from './keywords/gasista';
 import { PINTORES_KEYWORDS } from './keywords/pintores';
+import { CARPINTERIA_KEYWORDS } from './keywords/carpinteria';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -141,18 +142,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   15: { // Carpintería
     name: 'Carpintería',
-    specialties: [
-      'Muebles a medida',
-      'Restauración de muebles',
-      'Instalación de puertas y ventanas',
-      'Decks y pérgolas',
-      'Escaleras de madera',
-      'Revestimientos de madera',
-      'Reparación de muebles',
-      'Carpintería de obra',
-      'Lustre y laqueado',
-      'Amoblamientos de cocina'
-    ]
+    specialties: CARPINTERIA_KEYWORDS,
   },
   4: { // Mudanzas
     name: 'Mudanzas',
