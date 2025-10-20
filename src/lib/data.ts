@@ -42,6 +42,7 @@ import { ALBANILERIA_KEYWORDS } from './keywords/albanileria';
 import { HERRERIA_KEYWORDS } from './keywords/herreria';
 import { FOTOGRAFIA_KEYWORDS } from './keywords/fotografia';
 import { EVENTOS_KEYWORDS } from './keywords/eventos';
+import { CLASES_KEYWORDS } from './keywords/clases';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -159,18 +160,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   7: { // Clases
     name: 'Clases',
-    specialties: [
-      'Apoyo escolar',
-      'Clases de Inglés',
-      'Clases de Guitarra',
-      'Clases de Matemática',
-      'Clases de Canto',
-      'Preparación de exámenes',
-      'Clases de computación',
-      'Clases de Portugués',
-      'Ayuda con TPs',
-      'Clases de piano'
-    ]
+    specialties: CLASES_KEYWORDS,
   },
   58: { // Entrenadores
     name: 'Entrenadores',
@@ -789,6 +779,7 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
     }
   ],
 }));
+
 
 
 
