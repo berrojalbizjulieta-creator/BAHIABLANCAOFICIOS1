@@ -89,37 +89,37 @@ const suggestionFlow = ai.defineFlow(
     outputSchema: SuggestionOutputSchema,
   },
   async (input) => {
+    // Primero, revisamos si la búsqueda es un sinónimo directo
+    const normalizedQuery = normalize(input.query);
+    if (synonyms[normalizedQuery]) {
+      const directMatch = synonyms[normalizedQuery];
+      // Si hay un sinónimo, lo devolvemos como una lista (¡este era el error!)
+      return { suggestedTrades: [directMatch] };
+    }
+
+    // Si no es un sinónimo, usamos el modelo de IA
     const llmResponse = await suggestionPrompt(input);
     const rawOutput = llmResponse.output;
 
-    // console.log('🧠 Respuesta cruda del modelo:', rawOutput);
-
     const rawSuggestions = rawOutput?.suggestedTrades || [];
-
-    // 1. Mapear sinónimos y normalizar las sugerencias de la IA
-    const mappedSuggestions = rawSuggestions.map((s) => {
-      const clean = normalize(s);
-      // Buscar en sinónimos primero
-      const synonymMatch = Object.keys(synonyms).find(key => clean.includes(normalize(key)));
-      if (synonymMatch) {
-        return synonyms[synonymMatch];
-      }
-      return s; // Devolver original si no hay sinónimo
-    });
     
-    // 2. Crear un mapa de categorías normalizadas para una búsqueda eficiente
+    // Crear un mapa de categorías normalizadas para una búsqueda eficiente
     const categoryMap = new Map(input.categories.map(cat => [normalize(cat), cat]));
 
-    // 3. Filtrar y validar las sugerencias mapeadas contra las categorías reales
-    const validSuggestions = mappedSuggestions
+    // Filtrar y validar las sugerencias de la IA contra las categorías reales
+    const validSuggestions = rawSuggestions
       .map(trade => {
         const normalizedTrade = normalize(trade);
+        // Primero, buscar en sinónimos si la IA devuelve algo parecido
+        const synonymMatch = Object.keys(synonyms).find(key => normalizedTrade.includes(normalize(key)));
+        if (synonymMatch) {
+            return synonyms[synonymMatch];
+        }
+        // Luego, buscar una coincidencia directa en las categorías
         return categoryMap.get(normalizedTrade);
       })
       .filter((trade): trade is string => !!trade); // Filtrar undefined
 
-    // console.log('✅ Sugerencias finales:', [...new Set(validSuggestions)]);
-    
     return { suggestedTrades: [...new Set(validSuggestions)] }; // Usar Set para evitar duplicados
   }
 );
