@@ -90,44 +90,50 @@ const suggestionFlow = ai.defineFlow(
     outputSchema: SuggestionOutputSchema,
   },
   async (input) => {
-    // Usamos siempre el modelo de IA para obtener las sugerencias iniciales
+    // 1. Usar siempre el modelo de IA para obtener las sugerencias iniciales
     const llmResponse = await suggestionPrompt(input);
-    const rawOutput = llmResponse.output;
-
-    const rawSuggestions = rawOutput?.suggestedTrades || [];
+    const rawSuggestions = llmResponse.output?.suggestedTrades || [];
     
-    // Crear un mapa de categorías normalizadas para una búsqueda eficiente
+    // 2. Crear un mapa de categorías normalizadas para una búsqueda eficiente
     const categoryMap = new Map(input.categories.map(cat => [normalize(cat), cat]));
 
-    // Añadir la consulta original del usuario a las sugerencias para validar si es un sinónimo directo
+    // 3. Unificar la búsqueda del usuario con las sugerencias de la IA
     const allPossibleSuggestions = [...new Set([input.query, ...rawSuggestions])];
 
-    // Filtrar y validar las sugerencias de la IA contra las categorías reales
+    // 4. Mapear y validar todas las posibilidades
     const validSuggestions = allPossibleSuggestions
       .map(trade => {
         const normalizedTrade = normalize(trade);
 
-        // Primero, buscar si es un sinónimo directo
+        // A. Buscar si la palabra es un sinónimo directo de un oficio
         if (synonyms[normalizedTrade]) {
           return synonyms[normalizedTrade];
         }
 
-        // Luego, buscar una coincidencia directa en las categorías
+        // B. Buscar si la palabra es el nombre exacto (normalizado) de un oficio
         if (categoryMap.has(normalizedTrade)) {
           return categoryMap.get(normalizedTrade);
         }
 
-        // Finalmente, verificar si la sugerencia contiene un sinónimo
-        const synonymMatch = Object.keys(synonyms).find(key => normalizedTrade.includes(normalize(key)));
-        if (synonymMatch) {
-            return synonyms[synonymMatch];
+        // C. Buscar si la palabra CONTIENE un sinónimo conocido
+        // (Ej: "arreglo de persianas" contiene "persianas")
+        const synonymKey = Object.keys(synonyms).find(key => normalizedTrade.includes(normalize(key)));
+        if (synonymKey) {
+            return synonyms[synonymKey];
+        }
+        
+        // D. Buscar si la palabra CONTIENE el nombre de una categoría
+        const categoryKey = [...categoryMap.keys()].find(key => normalizedTrade.includes(key));
+        if (categoryKey) {
+            return categoryMap.get(categoryKey);
         }
 
-        return undefined; // No se encontró coincidencia
+        return undefined; // No se encontró coincidencia válida
       })
-      .filter((trade): trade is string => !!trade); // Filtrar undefined
+      .filter((trade): trade is string => !!trade); // Filtrar los undefined
 
-    return { suggestedTrades: [...new Set(validSuggestions)] }; // Usar Set para evitar duplicados
+    // 5. Devolver resultados únicos
+    return { suggestedTrades: [...new Set(validSuggestions)] };
   }
 );
 
