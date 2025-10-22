@@ -6,8 +6,7 @@ import { getStorage, FirebaseStorage } from "firebase/storage";
 import { getFunctions, Functions } from 'firebase/functions';
 
 // --- INICIO: Claves Hardcodeadas ---
-// Se ha insertado la configuración directamente en el código para solucionar
-// problemas de compilación con las variables de entorno.
+// Configuración de Firebase directamente en el código para asegurar la disponibilidad durante la compilación.
 const firebaseConfig = {
   apiKey: "AIzaSyAkwEuIqBsIIY_cKmrAkSQhVVUhdrn1xhc",
   authDomain: "studio-4820039016-5ae38.firebaseapp.com",
@@ -19,7 +18,7 @@ const firebaseConfig = {
 // --- FIN: Claves Hardcodeadas ---
 
 
-// Inicialización segura y directa de la app de Firebase
+// Inicialización segura de la app de Firebase
 let app: FirebaseApp;
 if (getApps().length === 0) {
   app = initializeApp(firebaseConfig);

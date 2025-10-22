@@ -15,9 +15,10 @@ import {
 import {
   ref,
   deleteObject,
+  uploadBytes,
+  getDownloadURL
 } from 'firebase/storage';
-import { getFunctions, httpsCallable } from 'firebase/functions';
-import { db, functions, storage } from '@/lib/firebase';
+import { db, storage } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import {
   Card,
@@ -51,7 +52,7 @@ interface AdBanner {
   imageUrl: string;
   alt: string;
   imageHint: string;
-  storagePath: string;
+  storagePath?: string; // Es opcional ya que los datos estáticos no lo tendrán
 }
 
 export default function AdManagement() {
@@ -75,16 +76,14 @@ export default function AdManagement() {
         if (bannersData.length > 0) {
           setBanners(bannersData);
         } else {
-          // Fallback to static data if firestore is empty, adding a mock storagePath
-          const staticBanners = AD_BANNERS.map(b => ({...b, id: String(b.id), storagePath: `static/${b.id}`}));
-          setBanners(staticBanners);
+          // Fallback a datos estáticos si firestore está vacío
+          setBanners(AD_BANNERS);
         }
 
       } catch (error) {
           console.error("Error fetching banners:", error);
           toast({ title: 'Error', description: 'No se pudieron cargar los banners. Mostrando datos de ejemplo.', variant: 'destructive' });
-          const staticBanners = AD_BANNERS.map(b => ({...b, id: String(b.id), storagePath: `static/${b.id}`}));
-          setBanners(staticBanners);
+          setBanners(AD_BANNERS);
       } finally {
         setLoading(false);
       }
@@ -98,13 +97,13 @@ export default function AdManagement() {
       if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
         toast({ title: 'Formato no permitido', description: 'Por favor, sube una imagen en formato JPG, PNG o WebP.', variant: 'destructive' });
         setNewBannerFile(null);
-        e.target.value = ""; // Reset file input
+        e.target.value = ""; // Resetear input
         return;
       }
       if (file.size > MAX_BANNER_SIZE_MB * 1024 * 1024) {
         toast({ title: 'Archivo muy grande', description: `La imagen no puede superar los ${MAX_BANNER_SIZE_MB}MB.`, variant: 'destructive' });
         setNewBannerFile(null);
-        e.target.value = ""; // Reset file input
+        e.target.value = ""; // Resetear input
         return;
       }
       setNewBannerFile(file);
@@ -120,84 +119,66 @@ export default function AdManagement() {
     }
 
     setIsUploading(true);
+    
     try {
-      const uploadFile = httpsCallable(functions, 'uploadFile');
+      const storagePath = `adBanners/${Date.now()}_${newBannerFile.name}`;
+      const storageRef = ref(storage, storagePath);
+      
+      // Subir archivo
+      await uploadBytes(storageRef, newBannerFile);
 
-      // We need to send the file content as a base64 string to the cloud function
-      const reader = new FileReader();
-      reader.readAsDataURL(newBannerFile);
-      reader.onload = async () => {
-        try {
-          const base64File = reader.result as string;
-          
-          const result = await uploadFile({ 
-            fileContent: base64File,
-            fileName: newBannerFile.name,
-            contentType: newBannerFile.type,
-            destination: 'adBanners' 
-          });
+      // Obtener URL pública
+      const downloadURL = await getDownloadURL(storageRef);
 
-          const data = result.data as { downloadURL: string; storagePath: string; };
-
-          const docRef = await addDoc(collection(db, 'adBanners'), {
-            imageUrl: data.downloadURL,
-            storagePath: data.storagePath,
-            alt: 'Banner publicitario',
-            imageHint: 'advertisement',
-            createdAt: serverTimestamp(),
-          });
-          
-          const newBanner = {
-              id: docRef.id,
-              imageUrl: data.downloadURL,
-              storagePath: data.storagePath,
-              alt: 'Banner publicitario',
-              imageHint: 'advertisement'
-          }
-
-          setBanners(prev => [newBanner, ...prev.filter(b => !b.storagePath.startsWith('static/'))]);
-          toast({ title: '¡Éxito!', description: 'El nuevo banner ha sido añadido.' });
-          
-          setNewBannerFile(null);
-          if (fileInputRef.current) {
-            fileInputRef.current.value = "";
-          }
-        } catch(e) {
-            console.error('Error inside function call:', e);
-            toast({ title: 'Error de Subida', description: 'No se pudo procesar el archivo. Revisa los logs de la función.', variant: 'destructive' });
-        } finally {
-            setIsUploading(false);
-        }
+      // Guardar en Firestore
+      const docRef = await addDoc(collection(db, 'adBanners'), {
+        imageUrl: downloadURL,
+        storagePath: storagePath,
+        alt: 'Banner publicitario',
+        imageHint: 'advertisement',
+        createdAt: serverTimestamp(),
+      });
+      
+      const newBanner = {
+          id: docRef.id,
+          imageUrl: downloadURL,
+          storagePath: storagePath,
+          alt: 'Banner publicitario',
+          imageHint: 'advertisement'
       }
-      reader.onerror = () => {
-        console.error("Error reading file");
-        toast({ title: 'Error', description: 'No se pudo leer el archivo seleccionado.', variant: 'destructive' });
-        setIsUploading(false);
+
+      setBanners(prev => [newBanner, ...prev.filter(b => b.id.toString() in AD_BANNERS.map(ab => ab.id.toString()) === false)]);
+      toast({ title: '¡Éxito!', description: 'El nuevo banner ha sido añadido.' });
+      
+      setNewBannerFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
       }
 
     } catch (error) {
-      console.error('Error adding banner:', error);
-      toast({ title: 'Error', description: 'No se pudo añadir el banner. Asegúrate de tener permisos de administrador.', variant: 'destructive' });
+      console.error('Error al subir el banner:', error);
+      toast({ title: 'Error de Subida', description: 'No se pudo subir el archivo. Revisa la configuración de CORS y los permisos de Storage.', variant: 'destructive' });
+    } finally {
       setIsUploading(false);
     }
   };
 
   const handleDeleteBanner = async (bannerToDelete: AdBanner) => {
-    // If it's a static fallback banner, just remove from UI
-    if (bannerToDelete.storagePath.startsWith('static/')) {
+    // Si es un banner estático, solo lo quitamos de la UI.
+    if (!bannerToDelete.storagePath) {
         setBanners(prevBanners => prevBanners.filter(b => b.id !== bannerToDelete.id));
         toast({ title: 'Banner de Ejemplo Eliminado', description: 'El banner de ejemplo ha sido eliminado de la vista.' });
         return;
     }
 
-    // Optimistically remove from UI
+    // Actualización optimista de la UI
     setBanners(prevBanners => prevBanners.filter(b => b.id !== bannerToDelete.id));
 
     try {
-      // Delete from Firestore
+      // Borrar de Firestore
       await deleteDoc(doc(db, 'adBanners', bannerToDelete.id));
 
-      // Delete from Storage
+      // Borrar de Storage
       const storageRef = ref(storage, bannerToDelete.storagePath);
       await deleteObject(storageRef);
 
@@ -205,7 +186,7 @@ export default function AdManagement() {
     } catch (error) {
       console.error('Error deleting banner:', error);
       toast({ title: 'Error', description: 'No se pudo eliminar el banner. Se restaurará la lista.', variant: 'destructive' });
-      // Rollback UI change on error
+      // Rollback en caso de error
       setBanners(prevBanners => [...prevBanners, bannerToDelete].sort((a,b) => b.id.localeCompare(a.id)));
     }
   };
@@ -219,7 +200,7 @@ export default function AdManagement() {
         </CardHeader>
         <CardContent className="flex flex-col sm:flex-row items-center gap-4">
           <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="picture">Imagen del Banner (JPG, PNG, WebP - Máx {MAX_BANNER_SIZE_MB}MB)</Label>
+            <Label htmlFor="picture">Imagen del Banner (JPG, PNG, WebP - Máx ${MAX_BANNER_SIZE_MB}MB)</Label>
             <Input id="picture" type="file" accept={ALLOWED_IMAGE_TYPES.join(',')} onChange={handleFileChange} ref={fileInputRef} />
           </div>
           <Button onClick={handleAddBanner} disabled={isUploading || !newBannerFile} className="w-full sm:w-auto mt-4 sm:mt-0">

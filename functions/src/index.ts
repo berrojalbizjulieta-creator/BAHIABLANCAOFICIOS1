@@ -3,60 +3,17 @@
 
 import * as admin from "firebase-admin";
 import { onDocumentWritten, Change, DocumentSnapshot, FirestoreEvent } from "firebase-functions/v2/firestore";
-import { onCall } from "firebase-functions/v2/https";
+// onCall ya no es necesario para la subida de archivos
+// import { onCall } from "firebase-functions/v2/https";
 import * as functions from "firebase-functions";
-import { v4 as uuidv4 } from "uuid";
+// import { v4 as uuidv4 } from "uuid"; // Ya no se usa para generar tokens
 
 
 admin.initializeApp();
 const db = admin.firestore();
-const storage = admin.storage();
+// const storage = admin.storage(); // Ya no es necesario si la subida es desde el cliente
 
-
-export const uploadFile = onCall({ cors: true }, async (request) => {
-  if (request.auth?.token.admin !== true) {
-    throw new functions.https.HttpsError(
-      "permission-denied",
-      "Debe ser un administrador para subir archivos."
-    );
-  }
-
-  const { fileContent, fileName, contentType, destination } = request.data;
-  
-  if (!fileContent || !fileName || !contentType) {
-      throw new functions.https.HttpsError("invalid-argument", "Faltan parámetros en la solicitud.");
-  }
-
-  const bucket = storage.bucket();
-  const finalDestination = destination || "adBanners";
-  const uniqueFilename = `${Date.now()}_${fileName}`;
-  const storagePath = `${finalDestination}/${uniqueFilename}`;
-  
-  const fileBuffer = Buffer.from(fileContent.split(';base64,').pop(), 'base64');
-  const file = bucket.file(storagePath);
-  
-  try {
-    await file.save(fileBuffer, {
-      metadata: {
-        contentType: contentType,
-        metadata: {
-          firebaseStorageDownloadTokens: uuidv4(),
-        },
-      },
-      public: true, // Hacemos el archivo público
-    });
-
-    // Construimos la URL pública manualmente
-    const downloadURL = `https://storage.googleapis.com/${bucket.name}/${storagePath}`;
-    
-    return { downloadURL, storagePath };
-
-  } catch (error) {
-    console.error("Error al subir a Firebase Storage:", error);
-    throw new functions.https.HttpsError("internal", "No se pudo subir el archivo.");
-  }
-});
-
+// La función 'uploadFile' se elimina ya que la lógica ahora reside en el cliente.
 
 /**
  * Esta es nuestra "herramienta automática". Se dispara (se activa) cada vez que:
