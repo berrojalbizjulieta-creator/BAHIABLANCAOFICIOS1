@@ -2,15 +2,102 @@
 // functions/src/index.ts
 
 import * as admin from "firebase-admin";
-// Importamos los tipos y la función del trigger para Cloud Functions V2
-import {onDocumentWritten, Change, DocumentSnapshot, FirestoreEvent} from "firebase-functions/v2/firestore";
-// Necesitamos importar * as functions para usar funciones auxiliares como functions.logger
+import { onDocumentWritten, Change, DocumentSnapshot, FirestoreEvent } from "firebase-functions/v2/firestore";
+import { onCall } from "firebase-functions/v2/https";
 import * as functions from "firebase-functions";
+import * as Busboy from "busboy";
+import { v4 as uuidv4 } from "uuid";
 
-// Inicializa el SDK de Firebase Admin para interactuar con Firestore.
-// Esto permite que tu función "hable" con tu base de datos de Firestore.
+
 admin.initializeApp();
 const db = admin.firestore();
+const storage = admin.storage();
+
+
+export const uploadFile = onCall({ cors: true }, async (request) => {
+  if (request.auth?.token.admin !== true) {
+    throw new functions.https.HttpsError(
+      "permission-denied",
+      "Debe ser un administrador para subir archivos."
+    );
+  }
+
+  const busboy = Busboy({ headers: request.rawRequest.headers });
+  const tmpdir = require("os").tmpdir();
+  const fs = require("fs");
+  const path = require("path");
+
+  const fileWrites: Promise<any>[] = [];
+  const fields: { [key: string]: string } = {};
+  
+  let fileData: { path: string, name: string, type: string } | null = null;
+
+  return new Promise((resolve, reject) => {
+    busboy.on("field", (fieldname, val) => {
+      fields[fieldname] = val;
+    });
+
+    busboy.on("file", (fieldname, file, filename) => {
+      const filepath = path.join(tmpdir, filename.filename);
+      const writeStream = fs.createWriteStream(filepath);
+      file.pipe(writeStream);
+
+      const promise = new Promise((resolve, reject) => {
+        file.on("end", () => {
+          writeStream.end();
+        });
+        writeStream.on("finish", () => {
+          fileData = { path: filepath, name: filename.filename, type: filename.mimeType };
+          resolve(filepath);
+        });
+        writeStream.on("error", reject);
+      });
+      fileWrites.push(promise);
+    });
+
+    busboy.on("finish", async () => {
+      await Promise.all(fileWrites);
+
+      if (!fileData) {
+        reject(new functions.https.HttpsError("invalid-argument", "No se encontró ningún archivo."));
+        return;
+      }
+      
+      const bucket = storage.bucket();
+      const destination = fields.destination || "adBanners";
+      const uniqueFilename = `${Date.now()}_${fileData.name}`;
+      const storagePath = `${destination}/${uniqueFilename}`;
+      
+      try {
+        const [uploadedFile] = await bucket.upload(fileData.path, {
+          destination: storagePath,
+          metadata: {
+            contentType: fileData.type,
+            metadata: {
+              firebaseStorageDownloadTokens: uuidv4(),
+            },
+          },
+        });
+
+        const downloadURL = await uploadedFile.getSignedUrl({
+            action: 'read',
+            expires: '03-09-2491'
+        }).then(urls => urls[0]);
+        
+        fs.unlinkSync(fileData.path);
+        
+        resolve({ downloadURL, storagePath });
+
+      } catch (error) {
+        console.error("Error al subir a Firebase Storage:", error);
+        reject(new functions.https.HttpsError("internal", "No se pudo subir el archivo."));
+      }
+    });
+
+    busboy.end(request.rawRequest.rawBody);
+  });
+});
+
 
 /**
  * Esta es nuestra "herramienta automática". Se dispara (se activa) cada vez que:

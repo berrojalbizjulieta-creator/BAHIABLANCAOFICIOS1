@@ -14,10 +14,9 @@ import {
 } from 'firebase/firestore';
 import {
   ref,
-  uploadBytes,
-  getDownloadURL,
   deleteObject,
 } from 'firebase/storage';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { db, storage } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -122,16 +121,20 @@ export default function AdManagement() {
 
     setIsUploading(true);
     try {
-      // 1. Upload to Storage
-      const storagePath = `adBanners/${Date.now()}_${newBannerFile.name}`;
-      const storageRef = ref(storage, storagePath);
-      const uploadResult = await uploadBytes(storageRef, newBannerFile);
-      const imageUrl = await getDownloadURL(uploadResult.ref);
+      const functions = getFunctions();
+      const uploadFile = httpsCallable(functions, 'uploadFile');
+
+      const formData = new FormData();
+      formData.append('file', newBannerFile);
+      formData.append('destination', 'adBanners');
+
+      const result = await uploadFile(formData);
+      const data = result.data as { downloadURL: string; storagePath: string; };
 
       // 2. Add to Firestore
       const docRef = await addDoc(collection(db, 'adBanners'), {
-        imageUrl,
-        storagePath,
+        imageUrl: data.downloadURL,
+        storagePath: data.storagePath,
         alt: 'Banner publicitario',
         imageHint: 'advertisement',
         createdAt: serverTimestamp(),
@@ -139,8 +142,8 @@ export default function AdManagement() {
       
       const newBanner = {
           id: docRef.id,
-          imageUrl,
-          storagePath,
+          imageUrl: data.downloadURL,
+          storagePath: data.storagePath,
           alt: 'Banner publicitario',
           imageHint: 'advertisement'
       }
@@ -158,7 +161,7 @@ export default function AdManagement() {
 
     } catch (error) {
       console.error('Error adding banner:', error);
-      toast({ title: 'Error', description: 'No se pudo añadir el banner.', variant: 'destructive' });
+      toast({ title: 'Error', description: 'No se pudo añadir el banner. Asegúrate de tener permisos de administrador.', variant: 'destructive' });
     } finally {
       setIsUploading(false);
     }
