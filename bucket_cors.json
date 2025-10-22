@@ -6,7 +6,8 @@
       "http://localhost:3000",
       "http://localhost:9002",
       "https://studio-4820039016-5ae38.firebaseapp.com",
-      "https://studio-4820039016-5ae38.web.app"
+      "https://studio-4820039016-5ae38.web.app",
+      "https://bahiablancaoficios1backend--studio-4820039016-5ae38.us-central1.hosted.app"
     ],
     "method": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"],
     "responseHeader": [
