@@ -5,7 +5,6 @@ import * as admin from "firebase-admin";
 import { onDocumentWritten, Change, DocumentSnapshot, FirestoreEvent } from "firebase-functions/v2/firestore";
 import { onCall } from "firebase-functions/v2/https";
 import * as functions from "firebase-functions";
-import * as Busboy from "busboy";
 import { v4 as uuidv4 } from "uuid";
 
 
@@ -22,80 +21,40 @@ export const uploadFile = onCall({ cors: true }, async (request) => {
     );
   }
 
-  const busboy = Busboy({ headers: request.rawRequest.headers });
-  const tmpdir = require("os").tmpdir();
-  const fs = require("fs");
-  const path = require("path");
-
-  const fileWrites: Promise<any>[] = [];
-  const fields: { [key: string]: string } = {};
+  const { fileContent, fileName, contentType, destination } = request.data;
   
-  let fileData: { path: string, name: string, type: string } | null = null;
+  if (!fileContent || !fileName || !contentType) {
+      throw new functions.https.HttpsError("invalid-argument", "Faltan parámetros en la solicitud.");
+  }
 
-  return new Promise((resolve, reject) => {
-    busboy.on("field", (fieldname, val) => {
-      fields[fieldname] = val;
+  const bucket = storage.bucket();
+  const finalDestination = destination || "adBanners";
+  const uniqueFilename = `${Date.now()}_${fileName}`;
+  const storagePath = `${finalDestination}/${uniqueFilename}`;
+  
+  const fileBuffer = Buffer.from(fileContent.split(';base64,').pop(), 'base64');
+  const file = bucket.file(storagePath);
+  
+  try {
+    await file.save(fileBuffer, {
+      metadata: {
+        contentType: contentType,
+        metadata: {
+          firebaseStorageDownloadTokens: uuidv4(),
+        },
+      },
+      public: true, // Hacemos el archivo público
     });
 
-    busboy.on("file", (fieldname, file, filename) => {
-      const filepath = path.join(tmpdir, filename.filename);
-      const writeStream = fs.createWriteStream(filepath);
-      file.pipe(writeStream);
+    // Construimos la URL pública manualmente
+    const downloadURL = `https://storage.googleapis.com/${bucket.name}/${storagePath}`;
+    
+    return { downloadURL, storagePath };
 
-      const promise = new Promise((resolve, reject) => {
-        file.on("end", () => {
-          writeStream.end();
-        });
-        writeStream.on("finish", () => {
-          fileData = { path: filepath, name: filename.filename, type: filename.mimeType };
-          resolve(filepath);
-        });
-        writeStream.on("error", reject);
-      });
-      fileWrites.push(promise);
-    });
-
-    busboy.on("finish", async () => {
-      await Promise.all(fileWrites);
-
-      if (!fileData) {
-        reject(new functions.https.HttpsError("invalid-argument", "No se encontró ningún archivo."));
-        return;
-      }
-      
-      const bucket = storage.bucket();
-      const destination = fields.destination || "adBanners";
-      const uniqueFilename = `${Date.now()}_${fileData.name}`;
-      const storagePath = `${destination}/${uniqueFilename}`;
-      
-      try {
-        const [uploadedFile] = await bucket.upload(fileData.path, {
-          destination: storagePath,
-          metadata: {
-            contentType: fileData.type,
-            metadata: {
-              firebaseStorageDownloadTokens: uuidv4(),
-            },
-          },
-        });
-
-        const downloadURL = await uploadedFile.getSignedUrl({
-            action: 'read',
-            expires: '03-09-2491'
-        }).then(urls => urls[0]);
-        
-        fs.unlinkSync(fileData.path);
-        
-        resolve({ downloadURL, storagePath });
-
-      } catch (error) {
-        console.error("Error al subir a Firebase Storage:", error);
-        reject(new functions.https.HttpsError("internal", "No se pudo subir el archivo."));
-      }
-    });
-
-    busboy.end(request.rawRequest.rawBody);
-  });
+  } catch (error) {
+    console.error("Error al subir a Firebase Storage:", error);
+    throw new functions.https.HttpsError("internal", "No se pudo subir el archivo.");
+  }
 });
 
 

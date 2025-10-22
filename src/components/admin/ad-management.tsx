@@ -17,7 +17,7 @@ import {
   deleteObject,
 } from 'firebase/storage';
 import { getFunctions, httpsCallable } from 'firebase/functions';
-import { db, storage } from '@/lib/firebase';
+import { getFirebaseServices } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import {
   Card,
@@ -66,6 +66,7 @@ export default function AdManagement() {
     const fetchBanners = async () => {
       setLoading(true);
       try {
+        const { db } = await getFirebaseServices();
         const q = query(collection(db, 'adBanners'), orderBy('createdAt', 'desc'));
         const querySnapshot = await getDocs(q);
         const bannersData = querySnapshot.docs.map(
@@ -121,48 +122,64 @@ export default function AdManagement() {
 
     setIsUploading(true);
     try {
-      const functions = getFunctions();
+      const { functions, db } = await getFirebaseServices();
       const uploadFile = httpsCallable(functions, 'uploadFile');
 
-      const formData = new FormData();
-      formData.append('file', newBannerFile);
-      formData.append('destination', 'adBanners');
+      // We need to send the file content as a base64 string to the cloud function
+      const reader = new FileReader();
+      reader.readAsDataURL(newBannerFile);
+      reader.onload = async () => {
+        try {
+          const base64File = reader.result as string;
+          
+          const result = await uploadFile({ 
+            fileContent: base64File,
+            fileName: newBannerFile.name,
+            contentType: newBannerFile.type,
+            destination: 'adBanners' 
+          });
 
-      const result = await uploadFile(formData);
-      const data = result.data as { downloadURL: string; storagePath: string; };
+          const data = result.data as { downloadURL: string; storagePath: string; };
 
-      // 2. Add to Firestore
-      const docRef = await addDoc(collection(db, 'adBanners'), {
-        imageUrl: data.downloadURL,
-        storagePath: data.storagePath,
-        alt: 'Banner publicitario',
-        imageHint: 'advertisement',
-        createdAt: serverTimestamp(),
-      });
-      
-      const newBanner = {
-          id: docRef.id,
-          imageUrl: data.downloadURL,
-          storagePath: data.storagePath,
-          alt: 'Banner publicitario',
-          imageHint: 'advertisement'
+          const docRef = await addDoc(collection(db, 'adBanners'), {
+            imageUrl: data.downloadURL,
+            storagePath: data.storagePath,
+            alt: 'Banner publicitario',
+            imageHint: 'advertisement',
+            createdAt: serverTimestamp(),
+          });
+          
+          const newBanner = {
+              id: docRef.id,
+              imageUrl: data.downloadURL,
+              storagePath: data.storagePath,
+              alt: 'Banner publicitario',
+              imageHint: 'advertisement'
+          }
+
+          setBanners(prev => [newBanner, ...prev.filter(b => !b.storagePath.startsWith('static/'))]);
+          toast({ title: '¡Éxito!', description: 'El nuevo banner ha sido añadido.' });
+          
+          setNewBannerFile(null);
+          if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+          }
+        } catch(e) {
+            console.error('Error inside function call:', e);
+            toast({ title: 'Error de Subida', description: 'No se pudo procesar el archivo. Revisa los logs de la función.', variant: 'destructive' });
+        } finally {
+            setIsUploading(false);
+        }
       }
-
-      // 3. Update state locally for instant feedback
-      setBanners(prev => [newBanner, ...prev.filter(b => !b.storagePath.startsWith('static/'))]);
-
-      toast({ title: '¡Éxito!', description: 'El nuevo banner ha sido añadido.' });
-      
-      // 4. Reset file input
-      setNewBannerFile(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+      reader.onerror = () => {
+        console.error("Error reading file");
+        toast({ title: 'Error', description: 'No se pudo leer el archivo seleccionado.', variant: 'destructive' });
+        setIsUploading(false);
       }
 
     } catch (error) {
       console.error('Error adding banner:', error);
       toast({ title: 'Error', description: 'No se pudo añadir el banner. Asegúrate de tener permisos de administrador.', variant: 'destructive' });
-    } finally {
       setIsUploading(false);
     }
   };
@@ -179,6 +196,7 @@ export default function AdManagement() {
     setBanners(prevBanners => prevBanners.filter(b => b.id !== bannerToDelete.id));
 
     try {
+      const { db, storage } = await getFirebaseServices();
       // Delete from Firestore
       await deleteDoc(doc(db, 'adBanners', bannerToDelete.id));
 
