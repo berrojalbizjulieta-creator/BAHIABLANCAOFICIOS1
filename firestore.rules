@@ -1,62 +1,69 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-  
-    // --- Helper Functions ---
-    // Función para verificar si el usuario es el administrador
-    function isAdmin() {
-      return request.auth != null && request.auth.token.email == 'berrojalbizjulieta@gmail.com';
+
+    // ADMIN: El admin puede leer y escribir en toda la base de datos
+    function esAdmin() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // --- Collection Rules ---
+    match /{document=**} {
+      allow read, write: if esAdmin();
+    }
 
-    // Colección 'users'
-    // Lectura: Cualquier usuario autenticado.
-    // Escritura: Solo el dueño del documento o un administrador.
+    // USERS:
+    // Lectura: Cualquiera puede leer perfiles de usuario (para ver nombres, fotos, etc.)
+    // Escritura: Solo el propio usuario o un admin puede modificar su perfil.
     match /users/{userId} {
       allow read: if request.auth != null;
-      allow write: if request.auth.uid == userId || isAdmin();
+      allow write: if request.auth.uid == userId || esAdmin();
     }
 
-    // Colección 'professionalsDetails'
-    // Lectura: Cualquiera puede leer.
-    // Creación/Eliminación: Solo el dueño del perfil o un administrador.
-    // Actualización: El dueño, un admin, o CUALQUIER usuario autenticado. 
-    // Esta última condición es para que la Cloud Function (que se ejecuta en nombre de un cliente) pueda actualizar avgRating.
+    // PROFESSIONALS DETAILS:
+    // Lectura: Cualquiera puede leer los detalles de un profesional (perfil público).
+    // Creación: Solo el propio profesional puede crear su perfil de detalles.
+    // Actualización: Solo el propio profesional o un admin puede actualizarlo.
     match /professionalsDetails/{profId} {
       allow read: if true;
-      allow create: if request.auth.uid == profId || isAdmin();
-      allow update: if request.auth.uid == profId || isAdmin() || request.auth != null;
-      allow delete: if request.auth.uid == profId || isAdmin();
+      allow create: if request.auth.uid == profId;
+      allow update: if request.auth.uid == profId || esAdmin();
     }
 
-    // Colección 'reviews' (Colección principal)
-    // Lectura: Cualquiera puede leer.
-    // Creación: Cualquier usuario autenticado puede crear una reseña.
-    // Actualización/Eliminación: Nadie, para mantener la integridad de las reseñas.
+    // REVIEWS:
+    // Lectura: Cualquiera puede leer las reseñas.
+    // Creación: Solo usuarios autenticados que no sean el mismo profesional y que no hayan dejado una reseña previa para este profesional.
+    // No se permite la actualización ni eliminación por parte de los usuarios para mantener la integridad.
     match /reviews/{reviewId} {
       allow read: if true;
-      allow create: if request.auth != null;
-      allow update, delete: if false; // Por seguridad, no se pueden editar ni borrar.
+      allow create: if request.auth != null && 
+                     request.resource.data.professionalId != request.auth.uid &&
+                     !exists(/databases/$(database)/documents/reviews/$(request.auth.uid + '_' + request.resource.data.professionalId));
+      allow update, delete: if false;
+    }
+    
+    // JOB REQUESTS (Anuncios de "Busco un Profesional"):
+    // Lectura: Todos los usuarios autenticados pueden ver los anuncios.
+    // Creación: Cualquier usuario autenticado puede crear un anuncio para sí mismo.
+    // Actualización: Solo el dueño del anuncio puede actualizarlo (ej. para cerrarlo).
+    match /jobRequests/{requestId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth.uid == request.resource.data.clientId;
+      allow update: if request.auth.uid == resource.data.clientId;
+      allow delete: if false; // Por seguridad, no permitir eliminación directa.
     }
 
-    // Colección 'adBanners'
-    // Lectura: Cualquiera.
-    // Escritura: Solo administradores.
+    // AD BANNERS (Carrusel de publicidad):
+    // Lectura: Todos pueden leer los banners.
+    // Escritura: Solo los administradores pueden añadir o quitar banners.
     match /adBanners/{bannerId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if esAdmin();
     }
 
-    // Colección 'jobRequests'
-    // Lectura: Cualquiera.
-    // Creación: Solo el cliente autenticado que crea el trabajo.
-    // Actualización/Eliminación: Solo el cliente propietario del trabajo o un admin.
-    match /jobRequests/{jobId} {
-      allow read: if true;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.clientId;
-      allow update, delete: if (request.auth != null && request.auth.uid == resource.data.clientId) || isAdmin();
+    // SEARCH ANALYTICS:
+    // Lectura y escritura solo para administradores.
+    match /searchAnalytics/{searchId} {
+      allow read, write: if esAdmin();
     }
   }
 }

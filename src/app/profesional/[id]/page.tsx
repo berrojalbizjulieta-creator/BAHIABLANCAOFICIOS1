@@ -53,7 +53,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 // IMPORTACIONES DE FIRESTORE
-import { doc, getDoc, collection, addDoc, serverTimestamp, DocumentData } from 'firebase/firestore';
+import { doc, getDoc, collection, addDoc, serverTimestamp, DocumentData, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { getReviewsForProfessional } from '@/lib/firestore-queries';
 
@@ -237,6 +237,7 @@ export default function PublicProfilePage() {
   const [error, setError] = useState<string | null>(null);
   const [activePhoto, setActivePhoto] = useState<WorkPhoto | null>(null);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [userHasReviewed, setUserHasReviewed] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -258,6 +259,12 @@ export default function PublicProfilePage() {
         ]);
         
         setReviews(reviewsData);
+
+        if (user) {
+          const hasReviewed = reviewsData.some(review => review.userId === user.uid);
+          setUserHasReviewed(hasReviewed);
+        }
+
 
         if (profDocSnap.exists()) {
           const data = profDocSnap.data() as DocumentData;
@@ -297,11 +304,15 @@ export default function PublicProfilePage() {
     };
 
     fetchProfessionalData();
-  }, [professionalId]);
+  }, [professionalId, user]);
   
   const handleNewReview = async (rating: number, comment: string) => {
     if (!user || !professional) {
       toast({ title: 'Error', description: 'Debes iniciar sesión para dejar una reseña.', variant: 'destructive' });
+      return;
+    }
+    if (userHasReviewed) {
+      toast({ title: 'Error', description: 'Ya has dejado una reseña para este profesional.', variant: 'destructive' });
       return;
     }
 
@@ -317,17 +328,22 @@ export default function PublicProfilePage() {
             clientPhotoUrl: user.photoURL || '',
             createdAt: serverTimestamp() 
         };
-
-        const docRef = await addDoc(collection(db, 'reviews'), newReviewData);
+        
+        // El ID del documento será `userId_professionalId`
+        const reviewDocId = `${user.uid}_${professional.id}`;
+        const reviewDocRef = doc(db, 'reviews', reviewDocId);
+        
+        await setDoc(reviewDocRef, newReviewData);
         
         const localNewReview = {
             ...newReviewData,
-            id: docRef.id,
+            id: reviewDocRef.id,
             createdAt: new Date(),
         }
         
         // Optimistically update the UI
         setReviews(prev => [localNewReview, ...prev]);
+        setUserHasReviewed(true);
 
         toast({
             title: '¡Reseña Enviada!',
@@ -338,7 +354,7 @@ export default function PublicProfilePage() {
         console.error('Error al enviar la reseña:', error);
         toast({
             title: 'Error',
-            description: 'No se pudo guardar tu reseña. Inténtalo de nuevo.',
+            description: 'No se pudo guardar tu reseña. Es posible que ya hayas dejado una.',
             variant: 'destructive',
         });
     } finally {
@@ -537,12 +553,20 @@ export default function PublicProfilePage() {
                   </CardContent>
                 </Card>
              
-              {!userLoading && user && !isProfessional && (
+              {!userLoading && user && !isProfessional && !userHasReviewed && (
                 <ReviewForm 
                     onReviewSubmit={handleNewReview} 
                     isSubmitting={isSubmittingReview}
                 />
               )}
+               {userHasReviewed && (
+                 <Card className="shadow-lg mt-8 bg-green-50 border-green-200">
+                    <CardHeader className='text-center'>
+                      <CardTitle className='text-green-800'>¡Gracias por tu reseña!</CardTitle>
+                      <CardDescription className='text-green-700'>Tu opinión ayuda a otros a tomar mejores decisiones.</CardDescription>
+                    </CardHeader>
+                  </Card>
+               )}
             </div>
 
             <div className="space-y-8">
