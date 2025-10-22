@@ -580,10 +580,10 @@ export const BANNERS: Banner[] = [
     id: 4,
     title: 'Servicios de Pintura',
     description: 'Dale un nuevo color a tu vida con pintores expertos.',
-    imageUrl: 'https://picsum.photos/seed/paintwork/600/400',
+    imageUrl: 'https://i.pinimg.com/736x/f5/52/e8/f552e816d5de9860df0af2deb2027b78.jpg',
     imageHint: 'painter working',
     buttonText: 'Ver Pintores',
-    buttonLink: '/servicios/pintura',
+    buttonLink: '/servicios/pintores',
   },
 ];
 
