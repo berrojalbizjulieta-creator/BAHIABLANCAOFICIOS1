@@ -4,7 +4,9 @@ import { getAuth, Auth } from "firebase/auth";
 import { getFirestore, Firestore } from "firebase/firestore";
 import { getStorage, FirebaseStorage } from "firebase/storage";
 
-// Solución: Se "hardcodean" las variables para asegurar que estén disponibles durante la compilación.
+// --- INICIO: Claves Hardcodeadas ---
+// Se ha insertado la configuración directamente en el código para solucionar
+// problemas de compilación con las variables de entorno.
 const firebaseConfig = {
   apiKey: "AIzaSyAkwEuIqBsIIY_cKmrAkSQhVVUhdrn1xhc",
   authDomain: "studio-4820039016-5ae38.firebaseapp.com",
@@ -13,8 +15,10 @@ const firebaseConfig = {
   messagingSenderId: "821979814317",
   appId: "1:821979814317:web:abd23395565fe4e58f6924"
 };
+// --- FIN: Claves Hardcodeadas ---
 
-// Inicialización segura de la app de Firebase
+
+// Inicialización segura y directa de la app de Firebase
 let app: FirebaseApp;
 if (getApps().length === 0) {
   app = initializeApp(firebaseConfig);
@@ -26,10 +30,11 @@ const auth: Auth = getAuth(app);
 const db: Firestore = getFirestore(app);
 const storage: FirebaseStorage = getStorage(app);
 
-// Exportamos las instancias para compatibilidad
+// Exportamos las instancias para que la aplicación las use directamente.
 export { app, auth, db, storage };
 
-// Exportamos getters que son la forma recomendada de acceder
-export const getFirebaseAuth = () => getAuth(app);
-export const getFirestoreDb = () => getFirestore(app);
-export const getFirebaseStorage = () => getStorage(app);
+// Mantenemos los getters por si algún componente los utiliza,
+// aunque la exportación directa es ahora la forma principal.
+export const getFirebaseAuth = () => auth;
+export const getFirestoreDb = () => db;
+export const getFirebaseStorage = () => storage;
