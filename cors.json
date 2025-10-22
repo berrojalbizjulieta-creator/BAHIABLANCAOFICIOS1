@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["https://9000-firebase-bahia-blancaoficios7-1761010612813.cluster-udxxdyopu5c7cwhhtg6mmadhvs.cloudworkstations.dev"],
+    "method": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    "responseHeader": ["Content-Type", "Authorization"],
+    "maxAgeSeconds": 3600
+  }
+]
