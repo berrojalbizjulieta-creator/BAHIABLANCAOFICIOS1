@@ -15,55 +15,6 @@ admin.initializeApp();
 const db = admin.firestore();
 const storage = admin.storage();
 
-
-export const uploadFile = onCall({ cors: true }, async (request) => {
-  if (!request.auth) {
-    throw new functions.https.HttpsError(
-      "unauthenticated",
-      "La función debe ser llamada por un usuario autenticado.",
-    );
-  }
-
-  const file = request.data.file;
-  const path = request.data.path;
-  const contentType = request.data.contentType;
-
-  if (!file || !path || !contentType) {
-    throw new functions.https.HttpsError(
-      "invalid-argument",
-      "La función requiere los argumentos 'file', 'path' y 'contentType'.",
-    );
-  }
-
-  const fileBuffer = Buffer.from(file, "base64");
-  const bucket = storage.bucket("studio-4820039016-5ae38.appspot.com");
-  const fileUpload = bucket.file(path);
-
-  try {
-    await fileUpload.save(fileBuffer, {
-      metadata: {
-        contentType: contentType,
-        // Hacemos el archivo públicamente legible
-        cacheControl: 'public, max-age=31536000',
-      },
-      public: true,
-    });
-    
-    // Devolvemos la URL pública en el formato correcto
-    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${path}`;
-
-    return { downloadURL: publicUrl, storagePath: path };
-
-  } catch (error) {
-    console.error("ERROR AL SUBIR ARCHIVO:", error);
-    throw new functions.https.HttpsError(
-      "internal",
-      "Error al subir el archivo.",
-    );
-  }
-});
-
-
 /**
  * Esta es nuestra "herramienta automática". Se dispara (se activa) cada vez que:
  * 1. Se crea una nueva reseña en la colección 'reviews'.

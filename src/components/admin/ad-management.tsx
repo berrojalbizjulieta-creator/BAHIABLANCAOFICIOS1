@@ -15,8 +15,10 @@ import {
 import {
   ref,
   deleteObject,
+  uploadBytes,
+  getDownloadURL
 } from 'firebase/storage';
-import { db, storage, functions } from '@/lib/firebase';
+import { db, storage } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import {
   Card,
@@ -40,8 +42,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { AD_BANNERS } from '@/lib/data';
-import { httpsCallable } from 'firebase/functions';
 
 const MAX_BANNER_SIZE_MB = 5;
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -52,6 +52,7 @@ interface AdBanner {
   alt: string;
   imageHint: string;
   storagePath?: string;
+  createdAt?: any;
 }
 
 export default function AdManagement() {
@@ -71,17 +72,11 @@ export default function AdManagement() {
         const bannersData = querySnapshot.docs.map(
           (doc) => ({ id: doc.id, ...doc.data() } as AdBanner)
         );
-        
-        if (bannersData.length > 0) {
-          setBanners(bannersData);
-        } else {
-          setBanners(AD_BANNERS);
-        }
+        setBanners(bannersData);
 
       } catch (error) {
           console.error("Error fetching banners:", error);
-          toast({ title: 'Error', description: 'No se pudieron cargar los banners. Mostrando datos de ejemplo.', variant: 'destructive' });
-          setBanners(AD_BANNERS);
+          toast({ title: 'Error', description: 'No se pudieron cargar los banners.', variant: 'destructive' });
       } finally {
         setLoading(false);
       }
@@ -119,72 +114,63 @@ export default function AdManagement() {
     setIsUploading(true);
     
     try {
-      const uploadFile = httpsCallable(functions, 'uploadFile');
-      const reader = new FileReader();
-      reader.readAsDataURL(newBannerFile);
-      reader.onloadend = async () => {
-        const base64 = (reader.result as string).split(',')[1];
-        
-        const result = await uploadFile({
-          file: base64,
-          path: `adBanners/${Date.now()}_${newBannerFile.name}`,
-          contentType: newBannerFile.type,
-        });
-        
-        const { downloadURL, storagePath } = (result.data as any);
+      const storagePath = `adBanners/${Date.now()}_${newBannerFile.name}`;
+      const storageRef = ref(storage, storagePath);
+      
+      // Subir archivo usando el SDK del cliente
+      await uploadBytes(storageRef, newBannerFile);
+      
+      // Obtener URL de descarga
+      const downloadURL = await getDownloadURL(storageRef);
 
-        const docRef = await addDoc(collection(db, 'adBanners'), {
+      // Guardar la información en Firestore
+      const docRef = await addDoc(collection(db, 'adBanners'), {
+        imageUrl: downloadURL,
+        storagePath: storagePath,
+        alt: 'Banner publicitario',
+        imageHint: 'advertisement',
+        createdAt: serverTimestamp(),
+      });
+
+      const newBanner = {
+          id: docRef.id,
           imageUrl: downloadURL,
           storagePath: storagePath,
           alt: 'Banner publicitario',
-          imageHint: 'advertisement',
-          createdAt: serverTimestamp(),
-        });
-
-        const newBanner = {
-            id: docRef.id,
-            imageUrl: downloadURL,
-            storagePath: storagePath,
-            alt: 'Banner publicitario',
-            imageHint: 'advertisement'
-        }
-
-        setBanners(prev => [newBanner, ...prev.filter(b => !AD_BANNERS.some(ab => ab.id === b.id))]);
-        toast({ title: '¡Éxito!', description: 'El nuevo banner ha sido añadido.' });
-        
-        setNewBannerFile(null);
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-        setIsUploading(false);
+          imageHint: 'advertisement'
       }
 
+      setBanners(prev => [newBanner, ...prev]);
+      toast({ title: '¡Éxito!', description: 'El nuevo banner ha sido añadido.' });
+      
+      setNewBannerFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     } catch (error) {
       console.error('Error al subir el banner:', error);
-      toast({ title: 'Error de Subida', description: 'No se pudo subir el archivo. Revisa la Cloud Function y sus permisos.', variant: 'destructive' });
+      toast({ title: 'Error de Subida', description: 'No se pudo subir el archivo. Revisa la consola y las reglas de CORS/Storage.', variant: 'destructive' });
+    } finally {
       setIsUploading(false);
     }
   };
 
   const handleDeleteBanner = async (bannerToDelete: AdBanner) => {
-    if (!bannerToDelete.storagePath) {
-        setBanners(prevBanners => prevBanners.filter(b => b.id !== bannerToDelete.id));
-        toast({ title: 'Banner de Ejemplo Eliminado', description: 'El banner de ejemplo ha sido eliminado de la vista.' });
-        return;
-    }
-
     setBanners(prevBanners => prevBanners.filter(b => b.id !== bannerToDelete.id));
 
     try {
       await deleteDoc(doc(db, 'adBanners', bannerToDelete.id));
-      const storageRef = ref(storage, bannerToDelete.storagePath);
-      await deleteObject(storageRef);
+      
+      if (bannerToDelete.storagePath) {
+        const storageRef = ref(storage, bannerToDelete.storagePath);
+        await deleteObject(storageRef);
+      }
 
       toast({ title: 'Banner Eliminado', description: 'El banner ha sido eliminado correctamente.' });
     } catch (error) {
       console.error('Error deleting banner:', error);
       toast({ title: 'Error', description: 'No se pudo eliminar el banner. Se restaurará la lista.', variant: 'destructive' });
-      setBanners(prevBanners => [...prevBanners, bannerToDelete].sort((a,b) => b.id.toString().localeCompare(a.id.toString())));
+      setBanners(prevBanners => [...prevBanners, bannerToDelete].sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)));
     }
   };
 
