@@ -9,6 +9,7 @@ import { ArrowRight } from 'lucide-react';
 
 const lawnServices = [
   {
+    subtitle: 'Mantenimiento integral',
     title: 'Cuidado completo del césped',
     link: '/servicios/jardineria',
     image: placeholderImages.find(p => p.id === 'garden-full-service'),
@@ -16,6 +17,7 @@ const lawnServices = [
     description: 'Ver profesionales de jardinería'
   },
   {
+    subtitle: 'Servicio rápido y prolijo',
     title: 'Corte y recorte de césped',
     link: '/servicios/jardineria',
     image: placeholderImages.find(p => p.id === 'garden-mowing'),
@@ -23,6 +25,7 @@ const lawnServices = [
     description: 'Ver profesionales de corte de césped'
   },
   {
+    subtitle: 'Todas las marcas',
     title: 'Reparación de cortadoras',
     link: '/servicios/reparaciones',
     image: placeholderImages.find(p => p.id === 'garden-mower-repair'),
@@ -30,6 +33,7 @@ const lawnServices = [
     description: 'Ver especialistas en reparación'
   },
   {
+    subtitle: 'Seguridad y experiencia',
     title: 'Poda de árboles',
     link: '/servicios/jardineria',
     image: placeholderImages.find(p => p.id === 'garden-tree-trimming'),
@@ -40,6 +44,7 @@ const lawnServices = [
 
 const gardenGoalsServices = [
     {
+        subtitle: 'Césped verde y parejo',
         title: 'Instalación de césped',
         link: '/servicios/jardineria',
         image: placeholderImages.find(p => p.id === 'garden-sod-installation'),
@@ -47,6 +52,7 @@ const gardenGoalsServices = [
         description: 'Ver instaladores de césped'
     },
     {
+        subtitle: 'Ahorrá agua y tiempo',
         title: 'Instalación de riego',
         link: '/servicios/plomeria',
         image: placeholderImages.find(p => p.id === 'garden-sprinkler'),
@@ -54,6 +60,7 @@ const gardenGoalsServices = [
         description: 'Ver especialistas en riego'
     },
      {
+        subtitle: 'Protegé tus plantas',
         title: 'Mulching y cobertura',
         link: '/servicios/jardineria',
         image: placeholderImages.find(p => p.id === 'garden-mulching'),
@@ -61,6 +68,7 @@ const gardenGoalsServices = [
         description: 'Ver profesionales de jardinería'
     },
     {
+        subtitle: 'Más seguridad y privacidad',
         title: 'Instalación de cercos',
         link: '/servicios/herreria',
         image: placeholderImages.find(p => p.id === 'garden-fence'),
@@ -69,11 +77,11 @@ const gardenGoalsServices = [
     }
 ];
 
-const ServiceCard = ({ title, link, image, description }: { title: string, link: string, image: any, description: string }) => {
+const ServiceCard = ({ subtitle, title, link, image, description }: { subtitle?: string, title: string, link: string, image: any, description: string }) => {
     if (!image) return null;
     return (
         <Link href={link} className="group">
-          <Card className="overflow-hidden shadow-lg transition-all duration-300 group-hover:shadow-xl">
+          <Card className="relative overflow-hidden shadow-lg transition-all duration-300 group-hover:shadow-xl">
             <div className="relative aspect-[4/3] w-full">
               <Image
                 src={image.imageUrl}
@@ -82,11 +90,11 @@ const ServiceCard = ({ title, link, image, description }: { title: string, link:
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                 data-ai-hint={image.imageHint}
               />
-               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
             </div>
              <div className="absolute bottom-0 left-0 p-4 text-white">
+                {subtitle && <p className="text-sm font-medium opacity-90">{subtitle}</p>}
                 <h3 className="text-lg font-bold font-headline">{title}</h3>
-                <p className="text-sm mt-1 opacity-90">{description}</p>
             </div>
           </Card>
         </Link>
