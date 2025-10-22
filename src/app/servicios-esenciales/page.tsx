@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,6 +23,9 @@ const essentialCategoryNames = [
 const essentialCategories = CATEGORIES.map(c => {
     if (c.name === 'Plomería') {
         return { ...c, subtitle: 'Reparación de canillas' };
+    }
+    if (c.name === 'Electricista') {
+        return { ...c, subtitle: 'Instalación de enchufes y tareas de electricidad' };
     }
     return c;
 }).filter(c => essentialCategoryNames.includes(c.name));
