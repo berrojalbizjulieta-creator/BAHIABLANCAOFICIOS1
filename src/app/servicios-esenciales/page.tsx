@@ -1,62 +1,91 @@
-
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CATEGORIES } from '@/lib/data';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { placeholderImages } from '@/lib/placeholder-images';
 
-const maintenanceCategories = [
-  'Plomería',
-  'Electricista',
-  'Gasista Matriculado',
-  'Cerrajería',
-  'Aire Acondicionado',
-  'Vidriería',
-  'Reparaciones',
-  'Limpieza',
+// Datos de las tarjetas basados en la imagen
+const kitchenServices = [
+  {
+    title: 'Plomería de emergencia',
+    link: '/servicios/plomeria',
+    imageUrl: 'https://i.pinimg.com/1200x/32/b1/98/32b198f79fca1f095128e0a0b179365b.jpg',
+    imageHint: 'plumbing tools',
+    description: 'Ver fontaneros cerca de ti'
+  },
+  {
+    title: 'Reparación de trituradores de basura',
+    link: '/servicios/plomeria',
+    imageUrl: 'https://i.pinimg.com/736x/87/1a/35/871a3554e287534433e14e27c1f0b094.jpg',
+    imageHint: 'garbage disposal repair',
+    description: 'Vea profesionales de eliminación de basura'
+  },
+  {
+    title: 'Reparación de fregaderos o grifos',
+    link: '/servicios/plomeria',
+    imageUrl: 'https://i.pinimg.com/736x/a7/6d/46/a76d46d0a7a0b38c3e803a60a4f5f5f7.jpg',
+    imageHint: 'sink repair',
+    description: 'Ver fontaneros cerca de ti'
+  },
+  {
+    title: 'Reparación de refrigeradores',
+    link: '/servicios/reparaciones',
+    imageUrl: 'https://i.pinimg.com/736x/c5/45/b5/c545b53023e80b87556f8f117a151b54.jpg',
+    imageHint: 'refrigerator repair',
+    description: 'Vea especialistas en servicio de electrodomésticos'
+  }
 ];
 
-const improvementCategories = [
-  'Albañilería',
-  'Pintores',
-  'Carpintería',
-  'Herrería',
-  'Jardinería',
+const bathroomServices = [
+  {
+    title: 'Plomería de emergencia',
+    link: '/servicios/plomeria',
+    imageUrl: 'https://i.pinimg.com/736x/f9/3e/d5/f93ed5f313c8b154b89d2b456aad8160.jpg',
+    imageHint: 'plumber fixing pipe',
+    description: 'Ver fontaneros cerca de ti'
+  },
+  {
+    title: 'Reparación de inodoros',
+    link: '/servicios/plomeria',
+    imageUrl: 'https://images.unsplash.com/photo-1621232359467-9d6934ea2771?q=80&w=870',
+    imageHint: 'toilet repair',
+    description: 'Ver fontaneros cerca de ti'
+  },
+  {
+    title: 'Reparación de fregaderos o grifos',
+    link: '/servicios/plomeria',
+    imageUrl: 'https://images.unsplash.com/photo-1616047006789-b7af5afb8c20?q=80&w=880',
+    imageHint: 'bathroom sink',
+    description: 'Ver fontaneros cerca de ti'
+  },
+  {
+    title: 'Reparación de puertas de ducha',
+    link: '/servicios/vidrieria',
+    imageUrl: 'https://images.unsplash.com/photo-1600585152220-90363fe7e115?q=80&w=870',
+    imageHint: 'shower door',
+    description: 'Ver fontaneros cerca de ti'
+  }
 ];
 
-const getCategoryByName = (name: string) => CATEGORIES.find(c => c.name === name);
-const essentialServicesImage = placeholderImages.find(p => p.id === 'essential-services-house');
-
-const renderCategoryCard = (categoryName: string) => {
-  const category = getCategoryByName(categoryName);
-  if (!category) return null;
-
+const ServiceCard = ({ title, link, imageUrl, imageHint, description }: { title: string, link: string, imageUrl: string, imageHint: string, description: string }) => {
   return (
-    <Link
-      key={category.id}
-      href={`/servicios/${encodeURIComponent(
-        category.name.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-')
-      )}`}
-      className="group"
-    >
+    <Link href={link} className="group">
       <Card className="relative overflow-hidden shadow-lg transition-all duration-300 group-hover:shadow-xl">
         <div className="relative aspect-[4/3] w-full">
           <Image
-            src={category.imageUrl || 'https://picsum.photos/seed/placeholder/400/300'}
-            alt={category.description}
+            src={imageUrl}
+            alt={title}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
-            data-ai-hint={category.imageHint}
+            data-ai-hint={imageHint}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
         </div>
         <div className="absolute bottom-0 left-0 p-4 text-white">
-           <h3 className="text-lg font-bold font-headline">{category.name}</h3>
+          <h3 className="text-lg font-bold font-headline">{title}</h3>
           <p className="text-sm mt-1 opacity-90 group-hover:underline">
-            Ver profesionales
+            {description}
           </p>
         </div>
       </Card>
@@ -83,16 +112,16 @@ export default function EssentialServicesPage() {
 
       <div className="space-y-16">
         <section>
-          <h2 className="text-2xl font-bold font-headline mb-6">Mantenimiento y Reparaciones del Hogar</h2>
+          <h2 className="text-2xl font-bold font-headline mb-6">Preocupaciones de la cocina</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            {maintenanceCategories.map(renderCategoryCard)}
+            {kitchenServices.map(service => <ServiceCard key={service.title} {...service} />)}
           </div>
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold font-headline mb-6">Mejoras y Proyectos</h2>
+          <h2 className="text-2xl font-bold font-headline mb-6">Averías en el baño</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            {improvementCategories.map(renderCategoryCard)}
+            {bathroomServices.map(service => <ServiceCard key={service.title} {...service} />)}
           </div>
         </section>
       </div>
