@@ -722,7 +722,12 @@ export const essentialCategories = CATEGORIES.map(c => {
   if (c.name === 'Pintores') {
       return { ...c, subtitle: 'Paredes. techos, pisos' };
   }
+  if (c.name === 'Carpintería') {
+      return { ...c, subtitle: 'Armado a medida' };
+  }
   return c;
 }).filter(c => essentialCategoryNames.includes(c.name));
+
+    
 
     
