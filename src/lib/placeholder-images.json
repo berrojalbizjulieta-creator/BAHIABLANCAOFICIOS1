@@ -63,7 +63,7 @@
     {
       "id": "client-1",
       "description": "Happy client.",
-      "imageUrl": "https://images.unsplash.com/photo-1522529599102-193c0d76b5b6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxwZXJzb24lMjBzbWlsaW5nfGVufDB8fHx8MTc1ODU4MzY2Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1522529599102-193c0d76b5b6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxwZXJzb24lMjBzbWlsaW5nfGVufDB8fHx8MTc1ODU4MzY2Nnww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "person smiling"
     },
     {
@@ -272,7 +272,7 @@
     },
     {
       "id": "garden-full-service",
-      "imageUrl": "https://i.pinimg.com/736x/8b/4c/8c/8b4c8c4a16b9b3294025d259c4b75294.jpg",
+      "imageUrl": "https://i.pinimg.com/564x/01/f9/53/01f953046755497e7592b23a54b38743.jpg",
       "imageHint": "lush garden",
       "description": "A lush, green garden with flowers."
     },
