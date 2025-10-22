@@ -710,6 +710,12 @@ const essentialCategoryNames = [
   'Albañilería',
   'Pintores',
   'Carpintería',
+  'Aire Acondicionado',
+  'Vidriería',
+  'Limpieza',
+  'Herrería',
+  'Jardinería',
+  'Control de Plagas'
 ];
 
 export const essentialCategories = CATEGORIES.map(c => {
@@ -733,6 +739,24 @@ export const essentialCategories = CATEGORIES.map(c => {
   }
   if (c.name === 'Gasista Matriculado') {
     return { ...c, subtitle: 'Reparación del sistema de calefacción' };
+  }
+  if (c.name === 'Cerrajería') {
+      return { ...c, subtitle: 'Puertas, copias de llave, etc' };
+  }
+  if (c.name === 'Vidriería') {
+      return { ...c, subtitle: 'Cambio de un paño, Instalación, etc' };
+  }
+  if (c.name === 'Control de Plagas') {
+      return { ...c, subtitle: 'Hormigas, cucarachas, roedores, etc' };
+  }
+  if (c.name === 'Aire Acondicionado') {
+      return { ...c, subtitle: 'Instalación y Limpieza de Aire' };
+  }
+  if (c.name === 'Herrería') {
+      return { ...c, subtitle: 'Colocación de rejas' };
+  }
+  if (c.name === 'Jardinería') {
+      return { ...c, subtitle: 'Limpieza de patios' };
   }
   return c;
 }).filter(c => essentialCategoryNames.includes(c.name));
