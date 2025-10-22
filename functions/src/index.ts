@@ -34,7 +34,7 @@ export const uploadFile = onCall({ cors: true }, async (request) => {
   }
 
   const fileBuffer = Buffer.from(file, "base64");
-  const bucket = storage.bucket();
+  const bucket = storage.bucket("studio-4820039016-5ae38.appspot.com");
   const fileUpload = bucket.file(path);
 
   try {
