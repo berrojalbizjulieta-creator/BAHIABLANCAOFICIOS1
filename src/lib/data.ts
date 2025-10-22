@@ -725,8 +725,13 @@ export const essentialCategories = CATEGORIES.map(c => {
   if (c.name === 'Carpintería') {
       return { ...c, subtitle: 'Armado a medida' };
   }
+  if (c.name === 'Albañilería') {
+      return { ...c, subtitle: 'Obras y reparaciones en general' };
+  }
   return c;
 }).filter(c => essentialCategoryNames.includes(c.name));
+
+    
 
     
 
