@@ -15,10 +15,8 @@ import {
 import {
   ref,
   deleteObject,
-  uploadBytes,
-  getDownloadURL
 } from 'firebase/storage';
-import { db, storage } from '@/lib/firebase';
+import { db, storage, functions } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import {
   Card,
@@ -43,6 +41,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { AD_BANNERS } from '@/lib/data';
+import { httpsCallable } from 'firebase/functions';
 
 const MAX_BANNER_SIZE_MB = 5;
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -52,7 +51,7 @@ interface AdBanner {
   imageUrl: string;
   alt: string;
   imageHint: string;
-  storagePath?: string; // Es opcional ya que los datos estáticos no lo tendrán
+  storagePath?: string;
 }
 
 export default function AdManagement() {
@@ -76,7 +75,6 @@ export default function AdManagement() {
         if (bannersData.length > 0) {
           setBanners(bannersData);
         } else {
-          // Fallback a datos estáticos si firestore está vacío
           setBanners(AD_BANNERS);
         }
 
@@ -97,13 +95,13 @@ export default function AdManagement() {
       if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
         toast({ title: 'Formato no permitido', description: 'Por favor, sube una imagen en formato JPG, PNG o WebP.', variant: 'destructive' });
         setNewBannerFile(null);
-        e.target.value = ""; // Resetear input
+        e.target.value = "";
         return;
       }
       if (file.size > MAX_BANNER_SIZE_MB * 1024 * 1024) {
         toast({ title: 'Archivo muy grande', description: `La imagen no puede superar los ${MAX_BANNER_SIZE_MB}MB.`, variant: 'destructive' });
         setNewBannerFile(null);
-        e.target.value = ""; // Resetear input
+        e.target.value = "";
         return;
       }
       setNewBannerFile(file);
@@ -121,64 +119,64 @@ export default function AdManagement() {
     setIsUploading(true);
     
     try {
-      const storagePath = `adBanners/${Date.now()}_${newBannerFile.name}`;
-      const storageRef = ref(storage, storagePath);
-      
-      // Subir archivo
-      await uploadBytes(storageRef, newBannerFile);
+      const uploadFile = httpsCallable(functions, 'uploadFile');
+      const reader = new FileReader();
+      reader.readAsDataURL(newBannerFile);
+      reader.onloadend = async () => {
+        const base64 = (reader.result as string).split(',')[1];
+        
+        const result = await uploadFile({
+          file: base64,
+          path: `adBanners/${Date.now()}_${newBannerFile.name}`,
+          contentType: newBannerFile.type,
+        });
+        
+        const { downloadURL, storagePath } = (result.data as any);
 
-      // Obtener URL pública
-      const downloadURL = await getDownloadURL(storageRef);
-
-      // Guardar en Firestore
-      const docRef = await addDoc(collection(db, 'adBanners'), {
-        imageUrl: downloadURL,
-        storagePath: storagePath,
-        alt: 'Banner publicitario',
-        imageHint: 'advertisement',
-        createdAt: serverTimestamp(),
-      });
-      
-      const newBanner = {
-          id: docRef.id,
+        const docRef = await addDoc(collection(db, 'adBanners'), {
           imageUrl: downloadURL,
           storagePath: storagePath,
           alt: 'Banner publicitario',
-          imageHint: 'advertisement'
-      }
+          imageHint: 'advertisement',
+          createdAt: serverTimestamp(),
+        });
 
-      setBanners(prev => [newBanner, ...prev.filter(b => b.id.toString() in AD_BANNERS.map(ab => ab.id.toString()) === false)]);
-      toast({ title: '¡Éxito!', description: 'El nuevo banner ha sido añadido.' });
-      
-      setNewBannerFile(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+        const newBanner = {
+            id: docRef.id,
+            imageUrl: downloadURL,
+            storagePath: storagePath,
+            alt: 'Banner publicitario',
+            imageHint: 'advertisement'
+        }
+
+        setBanners(prev => [newBanner, ...prev.filter(b => !AD_BANNERS.some(ab => ab.id === b.id))]);
+        toast({ title: '¡Éxito!', description: 'El nuevo banner ha sido añadido.' });
+        
+        setNewBannerFile(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        setIsUploading(false);
       }
 
     } catch (error) {
       console.error('Error al subir el banner:', error);
-      toast({ title: 'Error de Subida', description: 'No se pudo subir el archivo. Revisa la configuración de CORS y los permisos de Storage.', variant: 'destructive' });
-    } finally {
+      toast({ title: 'Error de Subida', description: 'No se pudo subir el archivo. Revisa la Cloud Function y sus permisos.', variant: 'destructive' });
       setIsUploading(false);
     }
   };
 
   const handleDeleteBanner = async (bannerToDelete: AdBanner) => {
-    // Si es un banner estático, solo lo quitamos de la UI.
     if (!bannerToDelete.storagePath) {
         setBanners(prevBanners => prevBanners.filter(b => b.id !== bannerToDelete.id));
         toast({ title: 'Banner de Ejemplo Eliminado', description: 'El banner de ejemplo ha sido eliminado de la vista.' });
         return;
     }
 
-    // Actualización optimista de la UI
     setBanners(prevBanners => prevBanners.filter(b => b.id !== bannerToDelete.id));
 
     try {
-      // Borrar de Firestore
       await deleteDoc(doc(db, 'adBanners', bannerToDelete.id));
-
-      // Borrar de Storage
       const storageRef = ref(storage, bannerToDelete.storagePath);
       await deleteObject(storageRef);
 
@@ -186,8 +184,7 @@ export default function AdManagement() {
     } catch (error) {
       console.error('Error deleting banner:', error);
       toast({ title: 'Error', description: 'No se pudo eliminar el banner. Se restaurará la lista.', variant: 'destructive' });
-      // Rollback en caso de error
-      setBanners(prevBanners => [...prevBanners, bannerToDelete].sort((a,b) => b.id.localeCompare(a.id)));
+      setBanners(prevBanners => [...prevBanners, bannerToDelete].sort((a,b) => b.id.toString().localeCompare(a.id.toString())));
     }
   };
 
