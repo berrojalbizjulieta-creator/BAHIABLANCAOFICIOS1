@@ -46,7 +46,7 @@ const gardenGoalsServices = [
     {
         subtitle: 'Ahorrá agua y tiempo',
         title: 'Instalación de riego',
-        link: '/servicios/plomeria',
+        link: '/servicios/jardineria',
         image: placeholderImages.find(p => p.id === 'garden-sprinkler'),
         imageHint: 'sprinkler system',
         description: 'Ver especialistas en riego'
