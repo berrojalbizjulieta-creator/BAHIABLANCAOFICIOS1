@@ -40,9 +40,9 @@ const renderCategoryCard = (categoryName: string) => {
       href={`/servicios/${encodeURIComponent(
         category.name.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-')
       )}`}
-      className="group relative block"
+      className="group"
     >
-      <Card className="overflow-hidden shadow-lg transition-all duration-300 group-hover:shadow-xl">
+      <Card className="relative overflow-hidden shadow-lg transition-all duration-300 group-hover:shadow-xl">
         <div className="relative aspect-[4/3] w-full">
           <Image
             src={category.imageUrl || 'https://picsum.photos/seed/placeholder/400/300'}
