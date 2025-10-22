@@ -25,14 +25,6 @@ const lawnServices = [
     description: 'Ver profesionales de corte de césped'
   },
   {
-    subtitle: 'Todas las marcas',
-    title: 'Reparación de cortadoras',
-    link: '/servicios/reparaciones',
-    image: placeholderImages.find(p => p.id === 'garden-mower-repair'),
-    imageHint: 'lawn mower repair',
-    description: 'Ver especialistas en reparación'
-  },
-  {
     subtitle: 'Seguridad y experiencia',
     title: 'Poda de árboles',
     link: '/servicios/jardineria',
@@ -116,7 +108,7 @@ export default function OutdoorServicesPage() {
       <div className="space-y-16">
         <section>
           <h2 className="text-2xl font-bold font-headline mb-6">Del Césped a la Hoja</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {lawnServices.map((service) => <ServiceCard key={service.title} {...service} />)}
           </div>
         </section>
