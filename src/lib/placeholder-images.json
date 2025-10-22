@@ -51,7 +51,7 @@
     {
       "id": "prof-3",
       "description": "Portrait of a painter in work clothes.",
-      "imageUrl": "https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODUxMDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODUxMDl8MA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "person portrait"
     },
     {
@@ -272,7 +272,7 @@
     },
     {
       "id": "garden-full-service",
-      "imageUrl": "https://i.pinimg.com/564x/01/f9/53/01f953046755497e7592b23a54b38743.jpg",
+      "imageUrl": "https://i.pinimg.com/1200x/6c/4b/bc/6c4bbccc833a06fc9941057025196b85.jpg",
       "imageHint": "lush garden",
       "description": "A lush, green garden with flowers."
     },
