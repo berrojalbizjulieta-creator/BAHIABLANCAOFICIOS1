@@ -4,32 +4,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
 import Image from 'next/image';
-import { CATEGORIES } from '@/lib/data';
+import { CATEGORIES, essentialCategories } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
-
-// Categorías a mostrar en la página de inicio
-const essentialCategoryNames = [
-    'Plomería',
-    'Electricista',
-    'Gasista Matriculado',
-    'Cerrajería',
-    'Reparaciones',
-    'Albañilería',
-    'Pintores',
-    'Carpintería',
-];
-
-const essentialCategories = CATEGORIES.map(c => {
-    if (c.name === 'Plomería') {
-        return { ...c, subtitle: 'Reparación de canillas' };
-    }
-    if (c.name === 'Electricista') {
-        return { ...c, subtitle: 'Instalación de enchufes y tareas de electricidad' };
-    }
-    return c;
-}).filter(c => essentialCategoryNames.includes(c.name));
-
 
 const CategoryCard = ({ category }: { category: (typeof CATEGORIES)[0] & { subtitle?: string } }) => {
     return (
@@ -85,3 +62,5 @@ export default function EssentialServicesPage() {
     </div>
   );
 }
+
+    

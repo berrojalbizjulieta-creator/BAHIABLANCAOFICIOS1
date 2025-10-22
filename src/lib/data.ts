@@ -700,19 +700,29 @@ export const JOB_REQUESTS: JobRequest[] = Array.from({ length: 20 }, (_, i) => (
   ],
 }));
 
+// src/app/servicios-esenciales/page.tsx
+const essentialCategoryNames = [
+  'Plomería',
+  'Electricista',
+  'Gasista Matriculado',
+  'Cerrajería',
+  'Reparaciones',
+  'Albañilería',
+  'Pintores',
+  'Carpintería',
+];
 
+export const essentialCategories = CATEGORIES.map(c => {
+  if (c.name === 'Plomería') {
+      return { ...c, subtitle: 'Reparación de canillas' };
+  }
+  if (c.name === 'Electricista') {
+      return { ...c, subtitle: 'Instalación de enchufes y tareas de electricidad' };
+  }
+  if (c.name === 'Pintores') {
+      return { ...c, subtitle: 'Paredes. techos, pisos' };
+  }
+  return c;
+}).filter(c => essentialCategoryNames.includes(c.name));
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
