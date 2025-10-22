@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
@@ -6,31 +7,31 @@ import Image from 'next/image';
 import { placeholderImages } from '@/lib/placeholder-images';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import { CATEGORIES } from '@/lib/data';
+import type { Category } from '@/lib/types';
+
 
 const lawnServices = [
   {
     subtitle: 'Mantenimiento integral',
     title: 'Cuidado completo del césped',
-    link: '/servicios/jardineria',
+    categoryName: 'Jardinería',
     image: placeholderImages.find(p => p.id === 'garden-full-service'),
     imageHint: 'lush garden',
-    description: 'Ver profesionales de jardinería'
   },
   {
     subtitle: 'Servicio rápido y prolijo',
     title: 'Corte y recorte de césped',
-    link: '/servicios/jardineria',
+    categoryName: 'Jardinería',
     image: placeholderImages.find(p => p.id === 'garden-mowing'),
     imageHint: 'lawn mower',
-    description: 'Ver profesionales de corte de césped'
   },
   {
     subtitle: 'Seguridad y experiencia',
     title: 'Poda de árboles',
-    link: '/servicios/jardineria',
+    categoryName: 'Jardinería',
     image: placeholderImages.find(p => p.id === 'garden-tree-trimming'),
     imageHint: 'tree trimming',
-    description: 'Ver podadores de árboles'
   },
 ];
 
@@ -38,47 +39,52 @@ const gardenGoalsServices = [
     {
         subtitle: 'Césped verde y parejo',
         title: 'Cuidado del cesped',
-        link: '/servicios/jardineria',
+        categoryName: 'Jardinería',
         image: placeholderImages.find(p => p.id === 'garden-sod-installation'),
         imageHint: 'sod installation',
-        description: 'Ver instaladores de césped'
     },
     {
         subtitle: 'Ahorrá agua y tiempo',
         title: 'Instalación de riego',
-        link: '/servicios/jardineria',
+        categoryName: 'Jardinería',
         image: placeholderImages.find(p => p.id === 'garden-sprinkler'),
         imageHint: 'sprinkler system',
-        description: 'Ver especialistas en riego'
     },
      {
         subtitle: 'Protegé tus plantas',
         title: 'Mulching y cobertura',
-        link: '/servicios/jardineria',
+        categoryName: 'Jardinería',
         image: placeholderImages.find(p => p.id === 'garden-mulching'),
         imageHint: 'gardening mulch',
-        description: 'Ver profesionales de jardinería'
     },
     {
         subtitle: 'Más seguridad y privacidad',
         title: 'Instalación de cercos',
-        link: '/servicios/herreria',
+        categoryName: 'Herrería',
         image: placeholderImages.find(p => p.id === 'garden-fence'),
         imageHint: 'wood fence',
-        description: 'Ver instaladores de cercos'
     },
     {
         subtitle: 'Agua cristalina todo el año',
         title: 'Limpieza de piletas',
-        link: '/servicios/limpieza',
+        categoryName: 'Limpieza',
         image: placeholderImages.find(p => p.id === 'pool-cleaning'),
         imageHint: 'pool cleaning',
-        description: 'Ver limpiadores de piletas'
     }
 ];
 
-const ServiceCard = ({ subtitle, title, link, image, description }: { subtitle?: string, title: string, link: string, image: any, description: string }) => {
+const getCategoryByName = (name: string): Category | undefined => {
+    return CATEGORIES.find(c => c.name.toLowerCase() === name.toLowerCase());
+}
+
+const ServiceCard = ({ subtitle, title, categoryName, image }: { subtitle?: string, title: string, categoryName: string, image: any }) => {
     if (!image) return null;
+
+    const category = getCategoryByName(categoryName);
+    if (!category) return null;
+    
+    const link = `/servicios/${encodeURIComponent(category.name.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-'))}`;
+
     return (
         <Link href={link} className="group">
           <Card className="relative overflow-hidden shadow-lg transition-all duration-300 group-hover:shadow-xl">
