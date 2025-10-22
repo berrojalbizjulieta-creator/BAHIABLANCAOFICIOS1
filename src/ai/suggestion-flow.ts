@@ -2,7 +2,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { CATEGORY_SPECIALTIES } from '@/lib/data';
+import { CATEGORY_KEYWORDS } from '@/lib/data'; // <-- CAMBIO: Usar las keywords separadas
 
 const SuggestionInputSchema = z.object({
   query: z.string().describe('La búsqueda del usuario.'),
@@ -39,8 +39,8 @@ const normalize = (text: string) =>
   text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 
 // 🧱 Construimos un contexto claro para el modelo
-const specialtiesContext = Object.values(CATEGORY_SPECIALTIES)
-  .map(cat => `- ${cat.name}: ${cat.specialties.join(', ')}`)
+const keywordsContext = Object.values(CATEGORY_KEYWORDS)
+  .map(cat => `- ${cat.name}: ${cat.keywords.join(', ')}`)
   .join('\n');
 
 const suggestionPrompt = ai.definePrompt(
@@ -63,8 +63,8 @@ Oficios Disponibles:
 - {{this}}
 {{/each}}
 
-Lista de especialidades para ayudarte:
-${specialtiesContext}
+Lista de palabras clave para ayudarte a asociar:
+${keywordsContext}
 
 Ejemplos:
 - "canilla que gotea" → Plomería

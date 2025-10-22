@@ -104,108 +104,75 @@ export const CATEGORIES: Category[] = [
     { id: 68, name: 'Mecánicos Auto/Motos', icon: Car, description: 'Servicio y reparación de vehículos.', imageUrl: getImage('cat-mecanica').imageUrl, imageHint: getImage('cat-mecanica').imageHint },
 ];
 
+// Este objeto contiene las listas cortas de especialidades para que el profesional elija en su perfil.
 export const CATEGORY_SPECIALTIES: CategorySpecialties = {
-  11: { // Plomería
+  11: {
     name: 'Plomería',
-    specialties: PLOMERIA_KEYWORDS,
+    specialties: ['Instalación de grifería', 'Destapaciones', 'Filtraciones', 'Instalación de sanitarios', 'Reparación de cañerías'],
   },
-  14: { // Electricista
+  14: {
     name: 'Electricista',
-    specialties: ELECTRICISTA_KEYWORDS,
+    specialties: ['Instalaciones eléctricas', 'Reparación de cortocircuitos', 'Tableros eléctricos', 'Iluminación', 'Porteros eléctricos'],
   },
-  17: { // Pintores
+  17: {
     name: 'Pintores',
-    specialties: PINTORES_KEYWORDS,
+    specialties: ['Pintura de interiores', 'Pintura de exteriores', 'Impermeabilización', 'Revestimientos', 'Pintura de aberturas'],
   },
-  3: { // Limpieza
+  3: {
     name: 'Limpieza',
-    specialties: LIMPIEZA_KEYWORDS
+    specialties: ['Limpieza de obras', 'Limpieza de oficinas', 'Limpieza de consorcios', 'Limpieza de vidrios', 'Limpieza profunda'],
   },
-  2: { // Jardinería
+  2: {
     name: 'Jardinería',
-    specialties: JARDINERIA_KEYWORDS,
+    specialties: ['Corte de césped', 'Poda', 'Mantenimiento de jardines', 'Diseño de jardines', 'Sistemas de riego'],
   },
-  15: { // Carpintería
+  15: {
     name: 'Carpintería',
-    specialties: CARPINTERIA_KEYWORDS,
+    specialties: ['Muebles a medida', 'Restauración de muebles', 'Decks y pérgolas', 'Instalación de puertas', 'Reparaciones de madera'],
   },
-  4: { // Mudanzas
-    name: 'Mudanzas',
-    specialties: MUDANZAS_KEYWORDS
-  },
-  13: { // Albañilería
-    name: 'Albañilería',
-    specialties: ALBANILERIA_KEYWORDS
-  },
-  16: { // Herrería
-    name: 'Herrería',
-    specialties: HERRERIA_KEYWORDS
-  },
-  5: { // Reparaciones
-    name: 'Reparaciones',
-    specialties: [
-      'arreglo de persiana',
-      'cambio de persiana',
-      'colocacion de persiana',
-      'Colgar cuadros y estantes',
-      'Armado de muebles',
-      'Instalación de cortinas',
-      'Colocar soporte de TV',
-      'Reparación de mosquiteros',
-      'Ajuste de puertas/cajones',
-      'Cambiar un enchufe',
-      'Sellar juntas con silicona',
-      'Pequeñas "changas"'
-    ]
-  },
-  9: { // Fotografía
-    name: 'Fotografía',
-    specialties: FOTOGRAFIA_KEYWORDS,
-  },
-  6: { // Eventos
-    name: 'Eventos',
-    specialties: EVENTOS_KEYWORDS,
-  },
-  7: { // Clases
-    name: 'Clases',
-    specialties: CLASES_KEYWORDS,
-  },
-  58: { // Entrenadores
-    name: 'Entrenadores',
-    specialties: ENTRENADORES_KEYWORDS,
-  },
-  55: { // Mascotas
-    name: 'Mascotas',
-    specialties: MASCOTAS_KEYWORDS
-  },
-  38: { // Tecnología
-    name: 'Tecnología',
-    specialties: TECNOLOGIA_KEYWORDS,
-  },
-  12: { // Gasista Matriculado
-    name: 'Gasista Matriculado',
-    specialties: GASISTA_KEYWORDS,
-  },
-  64: { // Cerrajería
-    name: 'Cerrajería',
-    specialties: CERRAJERIA_KEYWORDS,
-  },
-  67: { // Aire Acondicionado
-    name: 'Aire Acondicionado',
-    specialties: AIRE_ACONDICIONADO_KEYWORDS
-  },
-  65: { // Vidriería
-    name: 'Vidriería',
-    specialties: VIDRIERIA_KEYWORDS,
-  },
-  66: { // Control de Plagas
-    name: 'Control de Plagas',
-    specialties: CONTROL_DE_PLAGAS_KEYWORDS,
-  },
-  68: { // Mecánicos Auto/Motos
-    name: 'Mecánicos Auto/Motos',
-    specialties: MECANICA_KEYWORDS,
-  }
+  4: { name: 'Mudanzas', specialties: ['Mudanzas locales', 'Fletes', 'Embalaje', 'Peones para descarga', 'Traslado de objetos pesados'] },
+  13: { name: 'Albañilería', specialties: ['Construcción en seco (Durlock)', 'Paredes y revoques', 'Colocación de cerámicos', 'Refacciones generales', 'Losas y contrapisos'] },
+  16: { name: 'Herrería', specialties: ['Rejas y cerramientos', 'Portones', 'Escaleras metálicas', 'Protección de balcones', 'Soldaduras en general'] },
+  5: { name: 'Reparaciones', specialties: ['Arreglo de persianas', 'Armado de muebles', 'Colocación de cortinas y cuadros', 'Pequeños arreglos del hogar', 'Mantenimiento general'] },
+  9: { name: 'Fotografía', specialties: ['Fotografía de eventos', 'Sesiones de fotos', 'Fotografía de producto', 'Retratos', 'Video'] },
+  6: { name: 'Eventos', specialties: ['DJ', 'Catering', 'Animación', 'Alquiler de livings', 'Organización de eventos'] },
+  7: { name: 'Clases', specialties: ['Apoyo escolar', 'Clases de música', 'Clases de idiomas', 'Profesor particular', 'Clases de baile'] },
+  58: { name: 'Entrenadores', specialties: ['Personal trainer', 'Funcional', 'Yoga', 'Pilates', 'Preparador físico'] },
+  55: { name: 'Mascotas', specialties: ['Paseador de perros', 'Cuidador de mascotas', 'Peluquería canina', 'Adiestramiento', 'Veterinario a domicilio'] },
+  38: { name: 'Tecnología', specialties: ['Reparación de PC', 'Reparación de celulares', 'Soporte técnico', 'Instalación de redes', 'Clases de computación'] },
+  12: { name: 'Gasista Matriculado', specialties: ['Instalación de artefactos', 'Pruebas de hermeticidad', 'Reparación de fugas', 'Instalación de calefactores', 'Revisión de instalaciones'] },
+  64: { name: 'Cerrajería', specialties: ['Apertura de puertas', 'Cambio de cerraduras', 'Urgencias 24hs', 'Copias de llaves', 'Cerrajería automotor'] },
+  67: { name: 'Aire Acondicionado', specialties: ['Instalación de equipos', 'Reparación', 'Carga de gas', 'Mantenimiento y limpieza', 'Desinstalación'] },
+  65: { name: 'Vidriería', specialties: ['Cambio de vidrios', 'Vidrios a medida', 'Espejos', 'Mamparas de baño', 'Frentes de locales'] },
+  66: { name: 'Control de Plagas', specialties: ['Fumigación', 'Desratización', 'Control de insectos', 'Ahuyentamiento de palomas', 'Desinfección'] },
+  68: { name: 'Mecánicos Auto/Motos', specialties: ['Mecánica general', 'Cambio de aceite y filtros', 'Frenos', 'Tren delantero', 'Electricidad automotor'] }
+};
+
+
+// Este objeto contiene las listas enormes de palabras clave para que la IA entienda el lenguaje natural.
+export const CATEGORY_KEYWORDS: { [key: number]: { name: string; keywords: string[] } } = {
+  11: { name: 'Plomería', keywords: PLOMERIA_KEYWORDS },
+  14: { name: 'Electricista', keywords: ELECTRICISTA_KEYWORDS },
+  17: { name: 'Pintores', keywords: PINTORES_KEYWORDS },
+  3: { name: 'Limpieza', keywords: LIMPIEZA_KEYWORDS },
+  2: { name: 'Jardinería', keywords: JARDINERIA_KEYWORDS },
+  15: { name: 'Carpintería', keywords: CARPINTERIA_KEYWORDS },
+  4: { name: 'Mudanzas', keywords: MUDANZAS_KEYWORDS },
+  13: { name: 'Albañilería', keywords: ALBANILERIA_KEYWORDS },
+  16: { name: 'Herrería', keywords: HERRERIA_KEYWORDS },
+  5: { name: 'Reparaciones', keywords: ['Arreglo de persiana', 'cambio de persiana', 'colocacion de persiana', 'Colgar cuadros y estantes', 'Armado de muebles', 'Instalación de cortinas', 'Colocar soporte de TV', 'Reparación de mosquiteros', 'Ajuste de puertas/cajones', 'Cambiar un enchufe', 'Sellar juntas con silicona', 'Pequeñas "changas"'] },
+  9: { name: 'Fotografía', keywords: FOTOGRAFIA_KEYWORDS },
+  6: { name: 'Eventos', keywords: EVENTOS_KEYWORDS },
+  7: { name: 'Clases', keywords: CLASES_KEYWORDS },
+  58: { name: 'Entrenadores', keywords: ENTRENADORES_KEYWORDS },
+  55: { name: 'Mascotas', keywords: MASCOTAS_KEYWORDS },
+  38: { name: 'Tecnología', keywords: TECNOLOGIA_KEYWORDS },
+  12: { name: 'Gasista Matriculado', keywords: GASISTA_KEYWORDS },
+  64: { name: 'Cerrajería', keywords: CERRAJERIA_KEYWORDS },
+  67: { name: 'Aire Acondicionado', keywords: AIRE_ACONDICIONADO_KEYWORDS },
+  65: { name: 'Vidriería', keywords: VIDRIERIA_KEYWORDS },
+  66: { name: 'Control de Plagas', keywords: CONTROL_DE_PLAGAS_KEYWORDS },
+  68: { name: 'Mecánicos Auto/Motos', keywords: MECANICA_KEYWORDS }
 };
 
 
