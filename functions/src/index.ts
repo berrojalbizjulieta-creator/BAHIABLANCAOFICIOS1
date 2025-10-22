@@ -7,7 +7,9 @@ import { onDocumentWritten, Change, DocumentSnapshot, FirestoreEvent } from "fir
 import { onCall } from "firebase-functions/v2/https";
 import * as functions from "firebase-functions";
 import { v4 as uuidv4 } from "uuid"; 
+import * as cors from "cors";
 
+const corsHandler = cors({ origin: true });
 
 admin.initializeApp();
 const db = admin.firestore();
