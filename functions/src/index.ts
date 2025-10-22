@@ -4,16 +4,10 @@
 
 import * as admin from "firebase-admin";
 import { onDocumentWritten, Change, DocumentSnapshot, FirestoreEvent } from "firebase-functions/v2/firestore";
-import { onCall } from "firebase-functions/v2/https";
 import * as functions from "firebase-functions";
-import { v4 as uuidv4 } from "uuid"; 
-import * as cors from "cors";
-
-const corsHandler = cors({ origin: true });
 
 admin.initializeApp();
 const db = admin.firestore();
-const storage = admin.storage();
 
 /**
  * Esta es nuestra "herramienta automática". Se dispara (se activa) cada vez que:

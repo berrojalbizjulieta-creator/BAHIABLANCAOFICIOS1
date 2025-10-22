@@ -149,7 +149,7 @@ export default function AdManagement() {
       }
     } catch (error) {
       console.error('Error al subir el banner:', error);
-      toast({ title: 'Error de Subida', description: 'No se pudo subir el archivo. Revisa la consola y las reglas de CORS/Storage.', variant: 'destructive' });
+      toast({ title: 'Error de Subida', description: 'No se pudo subir el archivo. Revisa las reglas de seguridad de Storage.', variant: 'destructive' });
     } finally {
       setIsUploading(false);
     }
