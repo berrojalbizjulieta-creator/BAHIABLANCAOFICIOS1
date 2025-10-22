@@ -3,6 +3,7 @@ import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
 import { getAuth, Auth } from "firebase/auth";
 import { getFirestore, Firestore } from "firebase/firestore";
 import { getStorage, FirebaseStorage } from "firebase/storage";
+import { getFunctions, Functions } from 'firebase/functions';
 
 // --- INICIO: Claves Hardcodeadas ---
 // Se ha insertado la configuración directamente en el código para solucionar
@@ -29,9 +30,10 @@ if (getApps().length === 0) {
 const auth: Auth = getAuth(app);
 const db: Firestore = getFirestore(app);
 const storage: FirebaseStorage = getStorage(app);
+const functions: Functions = getFunctions(app);
 
 // Exportamos las instancias para que la aplicación las use directamente.
-export { app, auth, db, storage };
+export { app, auth, db, storage, functions };
 
 // Mantenemos los getters por si algún componente los utiliza,
 // aunque la exportación directa es ahora la forma principal.

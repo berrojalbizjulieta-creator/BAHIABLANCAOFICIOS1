@@ -17,7 +17,7 @@ import {
   deleteObject,
 } from 'firebase/storage';
 import { getFunctions, httpsCallable } from 'firebase/functions';
-import { getFirebaseServices } from '@/lib/firebase';
+import { db, functions, storage } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import {
   Card,
@@ -66,7 +66,6 @@ export default function AdManagement() {
     const fetchBanners = async () => {
       setLoading(true);
       try {
-        const { db } = await getFirebaseServices();
         const q = query(collection(db, 'adBanners'), orderBy('createdAt', 'desc'));
         const querySnapshot = await getDocs(q);
         const bannersData = querySnapshot.docs.map(
@@ -122,7 +121,6 @@ export default function AdManagement() {
 
     setIsUploading(true);
     try {
-      const { functions, db } = await getFirebaseServices();
       const uploadFile = httpsCallable(functions, 'uploadFile');
 
       // We need to send the file content as a base64 string to the cloud function
@@ -196,7 +194,6 @@ export default function AdManagement() {
     setBanners(prevBanners => prevBanners.filter(b => b.id !== bannerToDelete.id));
 
     try {
-      const { db, storage } = await getFirebaseServices();
       // Delete from Firestore
       await deleteDoc(doc(db, 'adBanners', bannerToDelete.id));
 
