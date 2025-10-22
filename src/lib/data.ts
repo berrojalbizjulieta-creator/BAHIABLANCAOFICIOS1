@@ -585,6 +585,15 @@ export const BANNERS: Banner[] = [
     buttonText: 'Ver Pintores',
     buttonLink: '/servicios/pintores',
   },
+  {
+    id: 5,
+    title: 'Servicio de Mudanzas',
+    description: 'Trasladamos tus pertenencias con cuidado y eficiencia.',
+    imageUrl: 'https://images.unsplash.com/photo-1587584445348-a07efa71872b?q=80&w=870',
+    imageHint: 'moving boxes',
+    buttonText: 'Ver Servicios',
+    buttonLink: '/servicios/mudanzas',
+  },
 ];
 
 export const CLIENTS: Client[] = [
