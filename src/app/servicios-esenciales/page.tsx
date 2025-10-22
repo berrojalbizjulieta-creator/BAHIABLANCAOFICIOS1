@@ -19,9 +19,15 @@ const essentialCategoryNames = [
     'Carpintería',
 ];
 
-const essentialCategories = CATEGORIES.filter(c => essentialCategoryNames.includes(c.name));
+const essentialCategories = CATEGORIES.map(c => {
+    if (c.name === 'Plomería') {
+        return { ...c, subtitle: 'Reparación de canillas' };
+    }
+    return c;
+}).filter(c => essentialCategoryNames.includes(c.name));
 
-const CategoryCard = ({ category }: { category: (typeof CATEGORIES)[0] }) => {
+
+const CategoryCard = ({ category }: { category: (typeof CATEGORIES)[0] & { subtitle?: string } }) => {
     return (
         <Link href={`/servicios/${encodeURIComponent(category.name.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-'))}`} className="group">
             <Card className="relative overflow-hidden shadow-lg transition-all duration-300 group-hover:shadow-xl">
@@ -35,8 +41,9 @@ const CategoryCard = ({ category }: { category: (typeof CATEGORIES)[0] }) => {
                     />
                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                 </div>
-                <div className="absolute bottom-0 left-0 p-4">
-                     <h3 className="text-lg font-bold font-headline text-white">{category.name}</h3>
+                <div className="absolute bottom-0 left-0 p-4 text-white">
+                     {category.subtitle && <p className="text-sm font-medium opacity-90">{category.subtitle}</p>}
+                     <h3 className="text-lg font-bold font-headline">{category.name}</h3>
                 </div>
             </Card>
         </Link>
