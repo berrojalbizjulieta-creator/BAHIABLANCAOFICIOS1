@@ -108,7 +108,7 @@ export interface Category {
 }
 
 export interface Banner {
-  id: number;
+  id: number | string;
   title: string;
   description: string;
   imageUrl: string;
@@ -118,7 +118,7 @@ export interface Banner {
 }
 
 export interface JobRequest {
-  id: string | number;
+  id: string;
   title: string;
   description: string;
   budget: number;
