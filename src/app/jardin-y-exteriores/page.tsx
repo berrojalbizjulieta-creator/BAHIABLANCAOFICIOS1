@@ -37,7 +37,7 @@ const lawnServices = [
 const gardenGoalsServices = [
     {
         subtitle: 'Césped verde y parejo',
-        title: 'Instalación de césped',
+        title: 'Cuidado del cesped',
         link: '/servicios/jardineria',
         image: placeholderImages.find(p => p.id === 'garden-sod-installation'),
         imageHint: 'sod installation',
@@ -66,6 +66,14 @@ const gardenGoalsServices = [
         image: placeholderImages.find(p => p.id === 'garden-fence'),
         imageHint: 'wood fence',
         description: 'Ver instaladores de cercos'
+    },
+    {
+        subtitle: 'Agua cristalina todo el año',
+        title: 'Limpieza de piletas',
+        link: '/servicios/limpieza',
+        image: placeholderImages.find(p => p.id === 'pool-cleaning'),
+        imageHint: 'pool cleaning',
+        description: 'Ver limpiadores de piletas'
     }
 ];
 
@@ -115,7 +123,7 @@ export default function OutdoorServicesPage() {
 
         <section>
           <h2 className="text-2xl font-bold font-headline mb-6">Objetivos de Jardinería</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {gardenGoalsServices.map((service) => <ServiceCard key={service.title} {...service} />)}
           </div>
         </section>

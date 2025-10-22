@@ -51,19 +51,19 @@
     {
       "id": "prof-3",
       "description": "Portrait of a painter in work clothes.",
-      "imageUrl": "https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODUxMDl8MA&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODUxMDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "person portrait"
     },
     {
       "id": "prof-4",
       "description": "Portrait of a male carpenter.",
-      "imageUrl": "https://images.unsplash.com/photo-1607031542107-f6f46b5d54e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODI4MTZ8MA&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1607031542107-f6f46b5d54e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODI4MTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "man portrait"
     },
     {
       "id": "client-1",
       "description": "Happy client.",
-      "imageUrl": "https://images.unsplash.com/photo-1522529599102-193c0d76b5b6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxwZXJzb24lMjBzbWlsaW5nfGVufDB8fHx8MTc1ODU4MzY2Nnww&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1522529599102-193c0d76b5b6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxwZXJzb24lMjBzbWlsaW5nfGVufDB8fHx8MTc1ODU4MzY2Nnww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "person smiling"
     },
     {
@@ -283,12 +283,6 @@
       "description": "A person mowing a lawn."
     },
     {
-      "id": "garden-mower-repair",
-      "imageUrl": "https://i.pinimg.com/736x/a2/2d/9e/a22d9e60e65529944a9c8f28f6452285.jpg",
-      "imageHint": "lawn mower repair",
-      "description": "Repairing a lawn mower engine."
-    },
-    {
       "id": "garden-tree-trimming",
       "imageUrl": "https://i.pinimg.com/1200x/b3/ec/bb/b3ecbb998e530b08c06110882684b01a.jpg",
       "imageHint": "tree trimming",
@@ -296,27 +290,33 @@
     },
     {
       "id": "garden-sod-installation",
-      "imageUrl": "https://i.pinimg.com/736x/c5/45/b5/c545b53023e80b87556f8f117a151b54.jpg",
+      "imageUrl": "https://i.pinimg.com/736x/29/d8/6c/29d86c1284b01efb6a2c2e34a2097de7.jpg",
       "imageHint": "sod installation",
       "description": "Laying down new sod."
     },
     {
       "id": "garden-sprinkler",
-      "imageUrl": "https://i.pinimg.com/736x/a7/6d/46/a76d46d0a7a0b38c3e803a60a4f5f5f7.jpg",
+      "imageUrl": "https://i.pinimg.com/1200x/43/9c/6e/439c6e6efc6837d37de65447a4be1146.jpg",
       "imageHint": "sprinkler system",
       "description": "A sprinkler watering a lawn."
     },
     {
       "id": "garden-mulching",
-      "imageUrl": "https://i.pinimg.com/736x/3b/68/7c/3b687c4f14e8a4a5e2079a489115d481.jpg",
+      "imageUrl": "https://i.pinimg.com/736x/e2/ec/3d/e2ec3d690bbb42e4091ce348d80cf305.jpg",
       "imageHint": "gardening mulch",
       "description": "Spreading mulch in a garden bed."
     },
     {
       "id": "garden-fence",
-      "imageUrl": "https://i.pinimg.com/736x/67/26/51/672651000b26510f7a77e53066601.jpg",
+      "imageUrl": "https://i.pinimg.com/1200x/e5/34/f1/e534f1029a759446a8cb70e867fd98f8.jpg",
       "imageHint": "wood fence",
       "description": "A wooden fence in a garden."
+    },
+    {
+      "id": "pool-cleaning",
+      "imageUrl": "https://i.pinimg.com/1200x/f7/73/e3/f773e3eff5687f09028d9e4ef14f3cc8.jpg",
+      "imageHint": "pool cleaning",
+      "description": "A person cleaning a swimming pool."
     },
     {
       "id": "cat-mecanica",
