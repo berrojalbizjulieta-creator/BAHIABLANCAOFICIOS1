@@ -500,6 +500,21 @@ export default function PublicProfilePage() {
                         {professional.description || 'El profesional aún no ha añadido una descripción.'}
                       </p>
                     <Separator />
+                     <div>
+                         <h4 className="font-semibold mb-3">Especialidades</h4>
+                         {professional.specialties && professional.specialties.length > 0 ? (
+                             <div className="flex flex-wrap gap-2">
+                                {professional.specialties.map(spec => (
+                                    <Badge key={spec} variant="secondary">{spec}</Badge>
+                                ))}
+                             </div>
+                         ) : (
+                            <p className="text-sm text-muted-foreground">
+                                No se han especificado especialidades.
+                            </p>
+                         )}
+                    </div>
+                    <Separator />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <h4 className="font-semibold mb-3">
