@@ -207,7 +207,7 @@ export default function ProfilePage() {
                 data.lastPaymentDate = (data.lastPaymentDate as any).toDate();
             }
              if (data.registrationDate && (data.registrationDate as any).toDate) {
-                data.registrationDate = (data.registrationDate as any).toDate();
+                data.registrationDate = (data.registrationDate.toDate() as Date);
             }
             
             const fetchedProfessional: Professional = {
@@ -380,10 +380,11 @@ export default function ProfilePage() {
 }
   
   const handleSpecialtiesSave = (newSpecialties: string[]) => {
-    if (professional) {
+    setProfessional(prev => {
+        if (!prev) return null;
         const updatedSpecialties = Array.from(new Set(newSpecialties));
-        handleInputChange('specialties', updatedSpecialties);
-    }
+        return { ...prev, specialties: updatedSpecialties };
+    });
   };
 
   const handlePaymentSuccess = async (plan: 'standard' | 'premium') => {
@@ -1025,11 +1026,10 @@ export default function ProfilePage() {
                   </div>
                 ) : (
                   <div className="space-y-2 text-sm">
-                    {price.amount ? (
+                    {professional.priceInfo ? (
                         <>
                             <p className="font-semibold text-lg flex items-center">
-                                ${price.amount}
-                                <span className="text-sm font-normal text-muted-foreground ml-2">({price.type})</span>
+                                {professional.priceInfo}
                             </p>
                             <p className="text-muted-foreground">{price.details || 'Contactar para más detalles.'}</p>
                         </>

@@ -18,6 +18,7 @@ import {
   Phone,
   Sparkles as PremiumIcon,
   Loader2, // Importar Loader2 para el spinner de carga
+  Tag
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -503,9 +504,12 @@ export default function PublicProfilePage() {
                      <div>
                          <h4 className="font-semibold mb-3">Especialidades</h4>
                          {professional.specialties && professional.specialties.length > 0 ? (
-                             <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-2">
                                 {professional.specialties.map(spec => (
-                                    <Badge key={spec} variant="secondary">{spec}</Badge>
+                                    <Badge key={spec} variant="secondary" className="text-sm">
+                                        <Tag className="mr-2 h-3 w-3"/>
+                                        {spec}
+                                    </Badge>
                                 ))}
                              </div>
                          ) : (
