@@ -10,7 +10,7 @@ const SuggestionInputSchema = z.object({
 });
 
 const SuggestionOutputSchema = z.object({
-  suggestedTrades: z.array(z.string()).describe('Una lista de hasta 3 oficios relevantes de la lista proporcionada.'),
+  suggestedTrades: z.array(z.string()).describe('Una lista de 1 a 3 oficios relevantes de la lista proporcionada.'),
 });
 
 // Construimos un contexto claro para el modelo con las palabras clave
@@ -38,9 +38,9 @@ Oficios Disponibles:
 {{/each}}
 
 IMPORTANTE:
-1. Devuelve un máximo de 3 oficios.
-2. Usa solo los nombres EXACTOS de la lista de Oficios Disponibles.
-3. Si no hay coincidencias claras, devuelve una lista vacía.
+1. Devuelve entre 1 y 3 oficios. Si hay varias opciones relevantes, devuelve hasta 3.
+2. Si no estás seguro, devuelve el oficio que consideres más probable. Tu respuesta nunca debe estar vacía; siempre debe contener al menos una sugerencia.
+3. Usa solo los nombres EXACTOS de la lista de Oficios Disponibles.
 
 Tu respuesta debe ser una lista JSON válida con los nombres exactos de los oficios.
 `,
