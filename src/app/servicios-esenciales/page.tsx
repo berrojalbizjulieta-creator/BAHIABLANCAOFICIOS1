@@ -2,15 +2,40 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CATEGORIES, essentialCategories } from '@/lib/data';
 import Link from 'next/link';
 import Image from 'next/image';
-import { CATEGORIES, essentialCategories } from '@/lib/data';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+
+const maintenanceCategories = [
+  'Plomería',
+  'Electricista',
+  'Gasista Matriculado',
+  'Cerrajería',
+  'Reparaciones',
+  'Vidriería',
+  'Aire Acondicionado',
+  'Control de Plagas',
+];
+
+const improvementCategories = [
+  'Albañilería',
+  'Pintores',
+  'Carpintería',
+  'Herrería',
+  'Jardinería',
+];
+
+// Usamos el array `essentialCategories` que ya tiene los subtítulos
+const getCategoryData = (name: string) => essentialCategories.find(c => c.name === name) || CATEGORIES.find(c => c.name === name);
 
 const CategoryCard = ({ category }: { category: (typeof CATEGORIES)[0] & { subtitle?: string } }) => {
+    if (!category) return null;
     return (
-        <Link href={`/servicios/${encodeURIComponent(category.name.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-'))}`} className="group">
+        <Link 
+            href={`/servicios/${encodeURIComponent(category.name.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-'))}`} 
+            className="group"
+        >
             <Card className="relative overflow-hidden shadow-lg transition-all duration-300 group-hover:shadow-xl">
                 <div className="relative aspect-[4/3] w-full">
                     <Image
@@ -30,7 +55,6 @@ const CategoryCard = ({ category }: { category: (typeof CATEGORIES)[0] & { subti
         </Link>
     )
 };
-
 
 export default function EssentialServicesPage() {
   return (
@@ -53,14 +77,24 @@ export default function EssentialServicesPage() {
         <section>
           <h2 className="text-2xl font-bold font-headline mb-6">Mantenimiento y Reparaciones del Hogar</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            {essentialCategories.map((category) => (
-                <CategoryCard key={category.id} category={category} />
-            ))}
+            {maintenanceCategories.map((name) => {
+                const category = getCategoryData(name);
+                return category ? <CategoryCard key={category.id} category={category} /> : null;
+            })}
           </div>
         </section>
+        
+        <section>
+          <h2 className="text-2xl font-bold font-headline mb-6">Mejoras para tu casa</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            {improvementCategories.map((name) => {
+                const category = getCategoryData(name);
+                return category ? <CategoryCard key={category.id} category={category} /> : null;
+            })}
+          </div>
+        </section>
+
       </div>
     </div>
   );
 }
-
-    
