@@ -18,15 +18,43 @@ interface JobRequestCardProps {
     isUpdating: boolean;
 }
 
+const normalizeWhatsAppNumber = (phone: string): string => {
+    let cleaned = phone.replace(/\D/g, ''); // Remove all non-numeric characters
+    
+    // Case 1: Already correct format (e.g., 549291...)
+    if (cleaned.startsWith('549')) {
+        return cleaned;
+    }
+    
+    // Case 2: Starts with 9 (common for mobile) and is 10 digits (e.g., 9291...)
+    if (cleaned.startsWith('9') && cleaned.length === 11) { // 9 + 10 digits area code + number
+        return `54${cleaned}`;
+    }
+
+    // Case 3: Local number (e.g., 291...)
+    if (cleaned.length === 10 && cleaned.startsWith('291')) {
+        return `549${cleaned}`;
+    }
+
+    // Fallback for other cases, assuming it might be a complete number without the 54
+     if (cleaned.length > 9) {
+        return `54${cleaned}`;
+    }
+    
+    // Default fallback
+    return cleaned;
+}
+
+
 export default function JobRequestCard({ request, onUpdateRequest, isUpdating }: JobRequestCardProps) {
     const { user, isProfessional } = useAdminAuth();
     const [showContact, setShowContact] = useState(false);
 
     const getWhatsAppLink = (phone?: string) => {
         if (!phone) return '#';
-        const cleanedPhone = phone.replace(/[^0-9]/g, '');
+        const normalizedPhone = normalizeWhatsAppNumber(phone);
         const message = encodeURIComponent(`Hola ${request.clientName}, te escribo por tu anuncio "${request.title}" en BahiaBlancaOficios.`);
-        return `https://wa.me/${cleanedPhone}?text=${message}`;
+        return `https://wa.me/${normalizedPhone}?text=${message}`;
     }
 
     const hasComments = request.comments.length > 0;
