@@ -589,7 +589,7 @@ export const BANNERS: Banner[] = [
     id: 5,
     title: 'Servicio de Mudanzas',
     description: 'Trasladamos tus pertenencias con cuidado y eficiencia.',
-    imageUrl: 'https://images.unsplash.com/photo-1587584445348-a07efa71872b?q=80&w=870',
+    imageUrl: 'https://i.pinimg.com/736x/07/fc/75/07fc75b7c6cb7df0b5da234fc4c25810.jpg',
     imageHint: 'moving boxes',
     buttonText: 'Ver Servicios',
     buttonLink: '/servicios/mudanzas',
