@@ -731,6 +731,9 @@ export const essentialCategories = CATEGORIES.map(c => {
   if (c.name === 'Reparaciones') {
     return { ...c, subtitle: 'Arreglo de persianas y más' };
   }
+  if (c.name === 'Gasista Matriculado') {
+    return { ...c, subtitle: 'Reparación del sistema de calefacción' };
+  }
   return c;
 }).filter(c => essentialCategoryNames.includes(c.name));
 
