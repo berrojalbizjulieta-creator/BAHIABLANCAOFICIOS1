@@ -573,8 +573,8 @@ export const BANNERS: Banner[] = [
       'De casas, departamentos y limpieza post obra',
     imageUrl: 'https://i.pinimg.com/1200x/a9/62/f8/a962f83ae2df31290e8d59487cb213f8.jpg',
     imageHint: 'cleaning products',
-    buttonText: 'Contratar Jardineros',
-    buttonLink: '/servicios/jardineria-y-paisajismo',
+    buttonText: 'Contratar especialistas en limpieza',
+    buttonLink: '/servicios/limpieza',
   },
   {
     id: 4,
