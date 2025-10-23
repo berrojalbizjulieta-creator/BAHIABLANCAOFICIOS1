@@ -27,7 +27,7 @@ import {
   Bug,
   Car,
 } from 'lucide-react';
-import type { Category, Professional, Banner, Client, JobRequest, CategorySpecialties, Schedule } from '@/lib/types';
+import type { Category, Professional, Banner, JobRequest, CategorySpecialties, Schedule } from '@/lib/types';
 import { placeholderImages } from './placeholder-images';
 import { subMonths, subDays, subHours } from 'date-fns';
 import { PLOMERIA_KEYWORDS } from './keywords/plomeria';
@@ -334,33 +334,6 @@ export const BANNERS: Banner[] = [
     buttonLink: '/servicios/mudanzas',
   },
 ];
-
-export const CLIENTS: Client[] = [
-    {
-        id: 1,
-        name: 'Ana Gomez',
-        email: 'ana.gomez@cliente.com',
-        photoUrl: getImage('client-1').imageUrl,
-        registrationDate: subDays(new Date(), 5),
-        isActive: true,
-    },
-    {
-        id: 2,
-        name: 'Juan Pérez',
-        email: 'juan.perez@cliente.com',
-        photoUrl: getImage('client-3').imageUrl,
-        registrationDate: subMonths(new Date(), 3),
-        isActive: true,
-    },
-    {
-        id: 3,
-        name: 'María López',
-        email: 'maria.lopez@cliente.com',
-        photoUrl: getImage('client-2').imageUrl,
-        registrationDate: subDays(new Date(), 90),
-        isActive: false,
-    }
-]
 
 export const AD_BANNERS = [
   {

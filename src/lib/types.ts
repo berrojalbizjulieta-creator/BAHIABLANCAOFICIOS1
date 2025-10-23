@@ -58,7 +58,7 @@ export interface Professional {
   categoryIds: number[];
   workPhotos?: WorkPhoto[];
   isVerified: boolean;
-  isFeatured?: boolean; // <-- CAMBIO: Añadido campo para destacar
+  isFeatured?: boolean; 
   verificationStatus?: 'not_started' | 'pending' | 'verified';
   verificationDocs?: {
     dniFrenteUrl?: string;
@@ -75,6 +75,7 @@ export interface Professional {
   schedule?: Schedule[];
   totalReviews: number;
   dayAvailability: { [key: string]: boolean };
+  testimonials?: Testimonial[];
 }
 
 // Representa la estructura de un documento en la colección 'users'
