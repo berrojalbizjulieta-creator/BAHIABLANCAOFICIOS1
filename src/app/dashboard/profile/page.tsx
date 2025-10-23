@@ -71,7 +71,7 @@ import SpecialtiesDialog from '@/components/professionals/specialties-dialog';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { storage, db } from '@/lib/firebase';
 import { ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storage';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { getReviewsForProfessional } from '@/lib/firestore-queries';
 
 const MAX_AVATAR_SIZE_MB = 2;
@@ -191,22 +191,14 @@ export default function ProfilePage() {
   useEffect(() => {
     if (loading || !user) return;
 
-    const fetchProfile = async () => {
-        const docRef = doc(db, 'professionalsDetails', user.uid);
-        
-        const [docSnap, reviewsData] = await Promise.all([
-          getDoc(docRef),
-          getReviewsForProfessional(db, user.uid)
-        ]);
-        
-        setReviews(reviewsData);
-
+    // Escuchar cambios en tiempo real en el perfil del profesional
+    const unsub = onSnapshot(doc(db, "professionalsDetails", user.uid), (docSnap) => {
         if (docSnap.exists()) {
             const data = docSnap.data() as Professional;
-             if (data.lastPaymentDate && (data.lastPaymentDate as any).toDate) {
+            if (data.lastPaymentDate && (data.lastPaymentDate as any).toDate) {
                 data.lastPaymentDate = (data.lastPaymentDate as any).toDate();
             }
-             if (data.registrationDate && (data.registrationDate as any).toDate) {
+            if (data.registrationDate && (data.registrationDate as any).toDate) {
                 data.registrationDate = (data.registrationDate.toDate() as Date);
             }
             
@@ -214,7 +206,7 @@ export default function ProfilePage() {
                 ...initialProfessionalData,
                 ...data,
                 id: docSnap.id,
-                totalReviews: data.totalReviews ?? reviewsData.length,
+                totalReviews: data.totalReviews ?? reviews.length, // reviews vendrá del otro fetch
                 avgRating: data.avgRating ?? 0,
             };
 
@@ -226,7 +218,6 @@ export default function ProfilePage() {
                 const amount = amountPart ? amountPart.split(' ')[0] : '';
                 setPrice({ type: type || 'Por Hora', amount: amount || '', details: '' });
             }
-            setIsEditing(false); 
         } else {
             const newProfessional: Professional = {
                 ...initialProfessionalData,
@@ -241,11 +232,19 @@ export default function ProfilePage() {
             };
             setProfessional(newProfessional);
             setSchedule(newProfessional.schedule || defaultSchedule);
-            setIsEditing(true);
+            setIsEditing(true); // Forzar edición si el perfil no existe
         }
+    });
+
+    const fetchReviews = async () => {
+      const reviewsData = await getReviewsForProfessional(db, user.uid);
+      setReviews(reviewsData);
     };
 
-    fetchProfile();
+    fetchReviews();
+    
+    // Cleanup de la suscripción de onSnapshot
+    return () => unsub();
   }, [user, loading]);
 
 
@@ -355,7 +354,7 @@ export default function ProfilePage() {
             photoUrl: finalAvatarUrl,
         });
 
-        setProfessional(prev => prev ? { ...prev, ...finalProfessionalData } : null);
+        // No es necesario llamar a setProfessional aquí porque onSnapshot lo hará automáticamente.
         setIsEditing(false);
         
         toast({
@@ -402,7 +401,7 @@ export default function ProfilePage() {
         const professionalDocRef = doc(db, 'professionalsDetails', user.uid);
         await setDoc(professionalDocRef, updatedData, { merge: true });
 
-        setProfessional(prev => prev ? { ...prev, ...updatedData } : null);
+        // No es necesario llamar a setProfessional, onSnapshot se encargará
         setIsPaymentDialogOpen(false);
 
         toast({
