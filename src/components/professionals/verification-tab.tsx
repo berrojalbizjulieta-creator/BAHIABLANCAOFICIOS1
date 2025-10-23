@@ -26,9 +26,8 @@ import {
 } from '@/components/ui/dialog';
 import { ScrollArea } from '../ui/scroll-area';
 import { doc, updateDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import { ref, uploadBytes, getDownloadURL, type FirebaseStorage } from 'firebase/storage';
-import { getAuthenticatedStorageInstance } from '@/lib/firebase-auth-helpers';
+import { db, storage } from '@/lib/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 
 interface VerificationTabProps {
@@ -79,7 +78,7 @@ export default function VerificationTab({ isVerified, verificationStatus, profes
   }, [verificationStatus]);
 
 
-  const uploadFile = async (storage: FirebaseStorage, file: File, path: string): Promise<string> => {
+  const uploadFile = async (file: File, path: string): Promise<string> => {
     const storageRef = ref(storage, path);
     const snapshot = await uploadBytes(storageRef, file);
     return getDownloadURL(snapshot.ref);
@@ -98,16 +97,11 @@ export default function VerificationTab({ isVerified, verificationStatus, profes
     setIsSubmitting(true);
 
     try {
-        // Paso 1: Obtener la instancia de Storage autenticada
-        const storage = await getAuthenticatedStorageInstance();
-        
-        // Paso 2: Proceder con la subida de archivos
         const basePath = `verification-docs/${professionalId}`;
-        const dniFrenteUrl = await uploadFile(storage, dniFrenteFile, `${basePath}/dni_frente`);
-        const dniDorsoUrl = await uploadFile(storage, dniDorsoFile, `${basePath}/dni_dorso`);
-        const selfieDniUrl = await uploadFile(storage, selfieFile, `${basePath}/selfie_dni`);
+        const dniFrenteUrl = await uploadFile(dniFrenteFile, `${basePath}/dni_frente`);
+        const dniDorsoUrl = await uploadFile(dniDorsoFile, `${basePath}/dni_dorso`);
+        const selfieDniUrl = await uploadFile(selfieFile, `${basePath}/selfie_dni`);
 
-        // Paso 3: Actualizar Firestore
         const profDocRef = doc(db, 'professionalsDetails', professionalId);
         await updateDoc(profDocRef, {
             verificationStatus: 'pending',
