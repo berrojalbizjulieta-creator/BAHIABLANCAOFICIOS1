@@ -155,6 +155,9 @@ const initialProfessionalData: Professional = {
     isActive: true,
     schedule: defaultSchedule,
     totalReviews: 0,
+    employees: 0,
+    yearsInBusiness: 0,
+    paymentMethods: '',
     dayAvailability: {
         "Dom": false,
         "Lun": false,
@@ -212,6 +215,7 @@ export default function ProfilePage() {
 
             setProfessional(fetchedProfessional);
             setSchedule(data.schedule || defaultSchedule);
+            setPaymentMethods(data.paymentMethods || '');
             if (data.priceInfo) {
                 const [typePart, amountPart] = data.priceInfo.split(': $');
                 const type = typePart?.trim();
@@ -340,6 +344,7 @@ export default function ProfilePage() {
             photoUrl: finalAvatarUrl || '',
             workPhotos: uploadedWorkPhotos,
             priceInfo: `${price.type}: $${price.amount}`, 
+            paymentMethods: paymentMethods,
             schedule,
             isActive: true,
             dayAvailability: newDayAvailability,
@@ -772,10 +777,10 @@ export default function ProfilePage() {
                                 <span>{professional.isVerified ? "Antecedentes verificados" : "Antecedentes no verificados"}</span>
                            </li>
                            <li className="flex items-center gap-3"><Users className="w-4 h-4 text-primary" /> 
-                            {isEditing ? <div className="flex items-center gap-2"><Input type="number" placeholder="0" className="w-16 h-8"/> <span>empleados</span></div> : <span>0 empleados</span>}
+                            {isEditing ? <div className="flex items-center gap-2"><Input type="number" value={professional.employees || 0} onChange={e => handleInputChange('employees', Number(e.target.value))} placeholder="0" className="w-16 h-8"/> <span>empleados</span></div> : <span>{professional.employees || 0} empleados</span>}
                            </li>
                            <li className="flex items-center gap-3"><Clock className="w-4 h-4 text-primary" /> 
-                            {isEditing ? <div className="flex items-center gap-2"><Input type="number" placeholder="0" className="w-16 h-8"/> <span>años en el negocio</span></div> : <span>0 años en el negocio</span>}
+                            {isEditing ? <div className="flex items-center gap-2"><Input type="number" value={professional.yearsInBusiness || 0} onChange={e => handleInputChange('yearsInBusiness', Number(e.target.value))} placeholder="0" className="w-16 h-8"/> <span>años en el negocio</span></div> : <span>{professional.yearsInBusiness || 0} años en el negocio</span>}
                            </li>
                            {isEditing && (
                             <li className="flex items-center gap-3">

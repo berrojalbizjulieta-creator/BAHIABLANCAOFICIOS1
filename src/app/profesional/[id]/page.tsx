@@ -18,7 +18,8 @@ import {
   Phone,
   Sparkles as PremiumIcon,
   Loader2, // Importar Loader2 para el spinner de carga
-  Tag
+  Tag,
+  CreditCard
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -530,8 +531,8 @@ export default function PublicProfilePage() {
                                 <CheckCircle className="w-4 h-4 text-primary" /> 
                                 <span>{professional.isVerified ? "Antecedentes verificados" : "Antecedentes no verificados"}</span>
                            </li>
-                           <li className="flex items-center gap-3"><Users className="w-4 h-4 text-primary" /> <span>{(professional as any).employees || 0} empleados</span></li> 
-                           <li className="flex items-center gap-3"><Clock className="w-4 h-4 text-primary" /> <span>{(professional as any).yearsInBusiness || 0} años en el negocio</span></li>
+                           <li className="flex items-center gap-3"><Users className="w-4 h-4 text-primary" /> <span>{professional.employees || 0} empleados</span></li> 
+                           <li className="flex items-center gap-3"><Clock className="w-4 h-4 text-primary" /> <span>{professional.yearsInBusiness || 0} años en el negocio</span></li>
                         </ul>
                       </div>
                       <div>
@@ -654,6 +655,19 @@ export default function PublicProfilePage() {
                         )}
                     </div>
                 </CardContent>
+                </Card>
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <CreditCard className="w-5 h-5 text-primary" />
+                            Métodos de Pago
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-sm text-muted-foreground">
+                            {professional.paymentMethods || 'No especificados. Contactar para más detalles.'}
+                        </p>
+                    </CardContent>
                 </Card>
             </div>
           </div>

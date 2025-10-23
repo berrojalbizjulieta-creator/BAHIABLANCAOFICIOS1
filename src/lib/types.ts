@@ -66,6 +66,9 @@ export interface Professional {
     selfieDniUrl?: string;
   };
   priceInfo?: string;
+  paymentMethods?: string;
+  employees?: number;
+  yearsInBusiness?: number;
   subscription?: ProfessionalSubscription;
   subscriptionTier?: 'standard' | 'premium';
   isSubscriptionActive?: boolean;
