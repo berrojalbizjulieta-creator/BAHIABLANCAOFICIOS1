@@ -2,32 +2,48 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Reglas para los banners publicitarios
-    match /adBanners/{allPaths=**} {
-      // Permite que cualquiera lea los banners (para que se muestren en la web)
-      allow read: if true;
-      // Solo permite que usuarios autenticados escriban (suban) nuevos banners
-      allow write: if request.auth != null;
-    }
-    // Reglas para los avatares de los profesionales
+
+    // Reglas para activos públicos (avatares, fotos de trabajos, etc.)
+    // Cualquiera puede leer, solo el dueño puede escribir.
     match /professional-avatars/{userId}/{allPaths=**} {
       allow read: if true;
       allow write: if request.auth != null && request.auth.uid == userId;
     }
-    // Reglas para las fotos de trabajos de los profesionales
+
     match /professional-work-photos/{userId}/{allPaths=**} {
       allow read: if true;
       allow write: if request.auth != null && request.auth.uid == userId;
     }
-     // Reglas para los documentos de verificación
-    match /verification-docs/{userId}/{allPaths=**} {
-      allow read: if request.auth != null && request.auth.uid == userId; // Solo el usuario y admins (con reglas de bucket) pueden leer
+    
+    match /user-avatars/{userId}/{allPaths=**} {
+      allow read: if true;
       allow write: if request.auth != null && request.auth.uid == userId;
     }
-     // Reglas para las fotos de los anuncios de trabajo
+
     match /job-requests/{userId}/{allPaths=**} {
       allow read: if true;
       allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Banners publicitarios: cualquiera puede leer, solo un admin debería escribir.
+    // Por ahora, lo dejamos para cualquier usuario autenticado para no bloquearte.
+    match /adBanners/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // *** REGLA CLAVE PARA LA SOLUCIÓN ***
+    // Documentos de verificación: cualquier usuario autenticado puede escribir,
+    // pero absolutamente nadie puede leerlos desde el cliente.
+    match /verification-docs/{userId}/{allPaths=**} {
+      allow read: if false;
+      allow write: if request.auth != null;
+    }
+    
+    // Como regla de seguridad final, si ninguna de las anteriores coincide,
+    // se deniega el acceso para evitar subidas a carpetas no deseadas.
+    match /{allPaths=**} {
+      allow read, write: if false;
     }
   }
 }
