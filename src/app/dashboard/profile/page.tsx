@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, {useRef, useState, useEffect} from 'react';
@@ -268,16 +269,6 @@ export default function ProfilePage() {
     return () => unsub();
   }, [user, loading, reviews.length]);
 
-
-  if (loading || !professional) {
-    return (
-        <div className='flex items-center justify-center h-screen'>
-            <Loader2 className='w-12 h-12 animate-spin text-primary' />
-            <p className='ml-4 text-lg'>Cargando tu perfil...</p>
-        </div>
-    );
-  }
-  
   const handleCategoryChange = (index: number, newCategoryId: string) => {
     const categoryIdNum = Number(newCategoryId);
     setProfessional(prev => {
@@ -585,12 +576,12 @@ export default function ProfilePage() {
       };
 
     const whatsappNumber = '2915276388';
-    const whatsappMessage = encodeURIComponent(`¡Hola! Soy ${professional.name} y me gustaría destacar mi perfil en BahiaBlancaOficios.`);
+    const whatsappMessage = encodeURIComponent(`¡Hola! Soy ${professional?.name} y me gustaría destacar mi perfil en BahiaBlancaOficios.`);
     const recommendationWAppLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
     // --- Image Panning Logic ---
     const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
-        if (!isEditing) return;
+        if (!isEditing || !professional) return;
         e.preventDefault();
         setIsDragging(true);
         const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
@@ -628,19 +619,30 @@ export default function ProfilePage() {
     useEffect(() => {
         const container = avatarContainerRef.current;
         if (isDragging && container) {
-            window.addEventListener('mousemove', handleDragMove as any);
+            const moveHandler = (e: MouseEvent | TouchEvent) => handleDragMove(e as any);
+            window.addEventListener('mousemove', moveHandler);
             window.addEventListener('mouseup', handleDragEnd);
-            window.addEventListener('touchmove', handleDragMove as any);
+            window.addEventListener('touchmove', moveHandler);
             window.addEventListener('touchend', handleDragEnd);
+        
+            return () => {
+                window.removeEventListener('mousemove', moveHandler);
+                window.removeEventListener('mouseup', handleDragEnd);
+                window.removeEventListener('touchmove', moveHandler);
+                window.removeEventListener('touchend', handleDragEnd);
+            };
         }
-        return () => {
-            window.removeEventListener('mousemove', handleDragMove as any);
-            window.removeEventListener('mouseup', handleDragEnd);
-            window.removeEventListener('touchmove', handleDragMove as any);
-            window.removeEventListener('touchend', handleDragEnd);
-        };
     }, [isDragging, handleDragMove, handleDragEnd]);
     // --- End Image Panning Logic ---
+
+    if (loading || !professional) {
+      return (
+          <div className='flex items-center justify-center h-screen'>
+              <Loader2 className='w-12 h-12 animate-spin text-primary' />
+              <p className='ml-4 text-lg'>Cargando tu perfil...</p>
+          </div>
+      );
+    }
 
 
   return (
