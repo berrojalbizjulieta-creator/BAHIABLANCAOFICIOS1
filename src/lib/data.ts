@@ -156,7 +156,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
       'Arreglos varios ("Handyman")',
     ],
   },
-  9: { name: 'Fotografía', specialties: ['Fotografía de eventos sociales', 'Sesiones de fotos (Books)', 'Fotografía de producto', 'Cobertura de bodas y 15 años', 'Video profesional', 'Fotografía de recién nacidos', 'Sesiones familiares', 'Fotografía de arquitectura', 'Retratos corporativos', 'Edición y retoque digital'] },
+  9: { name: 'Fotografía', specialties: ['Eventos sociales', 'Sesiones de fotos (Books)', 'Fotografía de producto', 'Bodas y 15 años', 'Fotografía de recién nacidos', 'Sesiones familiares', 'Edición y retoque digital', 'Impresión de fotos', 'Fotos estilo Polaroid', 'Álbumes y fotolibros'] },
   6: { name: 'Eventos', specialties: ['DJ y musicalización', 'Catering y servicio de lunch', 'Animación de fiestas infantiles', 'Alquiler de livings y mobiliario', 'Organización integral de eventos', 'Barra de tragos', 'Fotografía y video para eventos', 'Decoración y ambientación', 'Shows y espectáculos', 'Alquiler de inflables'],
   },
   7: { name: 'Clases', specialties: ['Apoyo escolar (Primaria/Secundaria)', 'Clases de música (Guitarra, Piano, etc.)', 'Clases de idiomas (Inglés, Portugués)', 'Preparación para ingreso universitario', 'Clases de baile (Tango, Salsa)', 'Profesor particular de matemática/física', 'Taller de arte y dibujo', 'Clases de computación', 'Clases de cocina', 'Oratoria y técnicas de estudio'],
