@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Input } from '../ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Plus } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 
 interface SpecialtiesDialogProps {
   isOpen: boolean;
