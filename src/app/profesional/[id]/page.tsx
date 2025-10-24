@@ -448,282 +448,282 @@ export default function PublicProfilePage() {
 
 
   return (
-    <Dialog>
-      <div className="bg-muted/30">
-        <div className="container mx-auto px-4 py-12 md:px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-8">
-              <Card className="overflow-hidden shadow-lg">
-                <CardContent className="p-6">
-                  <div className="flex flex-col sm:flex-row items-start gap-6">
+    <div className="bg-muted/30">
+      <div className="container mx-auto px-4 py-12 md:px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-8">
+            <Card className="overflow-hidden shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex flex-col sm:flex-row items-start gap-6">
+                  <Dialog>
                     <DialogTrigger asChild>
-                       <Avatar className="w-24 h-24 sm:w-36 sm:h-36 border-4 border-background shadow-md cursor-pointer">
-                          <AvatarImage 
-                            src={professional.photoUrl} 
-                            alt={professional.name} 
-                            className="object-cover"
-                            style={{ objectPosition: `${professional.photoPositionX || 50}% ${professional.photoPositionY || 50}%` }}
-                          />
-                          <AvatarFallback>{professional.name.charAt(0)}</AvatarFallback>
-                       </Avatar>
+                      <Avatar className="w-24 h-24 sm:w-36 sm:h-36 border-4 border-background shadow-md cursor-pointer">
+                        <AvatarImage 
+                          src={professional.photoUrl} 
+                          alt={professional.name} 
+                          className="object-cover"
+                          style={{ objectPosition: `${professional.photoPositionX || 50}% ${professional.photoPositionY || 50}%` }}
+                        />
+                        <AvatarFallback>{professional.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
                     </DialogTrigger>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <h1 className="text-2xl sm:text-3xl font-bold font-headline">
-                          {professional.name}
-                        </h1>
-                        {professional.isVerified ? (
-                          <ShieldCheck className="w-6 h-6 sm:w-7 sm:h-7 text-blue-500" />
-                        ) : (
-                          <Shield className="w-6 h-6 sm:w-7 sm:h-7 text-muted-foreground" />
-                        )}
-                      </div>
-                      <div className="flex flex-wrap items-center gap-2 text-muted-foreground mt-2 text-sm">
-                          <Briefcase className="w-4 h-4" />
-                          {professional.categoryIds.map((catId, index) => {
-                              const category = CATEGORIES.find(c => c.id === catId);
-                              return category ? <span key={catId}>{category.name}{index < professional.categoryIds.length - 1 ? ' • ' : ''}</span> : null;
-                          })}
-                      </div>
-                      <div className="mt-2">
-                        {professional.totalReviews > 0 ? (
-                          <StarRatingDisplay
-                            rating={professional.avgRating}
-                            totalReviews={professional.totalReviews}
-                          />
-                        ) : (
-                          <p className="text-sm text-muted-foreground">
-                            Aún no hay reseñas.
-                          </p>
-                        )}
-                      </div>
-                      {professional.avgRating > 4.5 && (
-                        <Badge className="mt-2 bg-blue-100 text-blue-800 hover:bg-blue-200">
-                          <Trophy className="w-4 h-4 mr-1" /> Top Pro
-                        </Badge>
+                    <DialogContent className="max-w-md p-2">
+                        <DialogTitle className="sr-only">Foto de Perfil de {professional.name}</DialogTitle>
+                        <div className="relative aspect-square">
+                        <Image
+                            src={professional.photoUrl}
+                            alt={professional.name}
+                            fill
+                            className="object-contain rounded-md"
+                        />
+                        </div>
+                    </DialogContent>
+                  </Dialog>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h1 className="text-2xl sm:text-3xl font-bold font-headline">
+                        {professional.name}
+                      </h1>
+                      {professional.isVerified ? (
+                        <ShieldCheck className="w-6 h-6 sm:w-7 sm:h-7 text-blue-500" />
+                      ) : (
+                        <Shield className="w-6 h-6 sm:w-7 sm:h-7 text-muted-foreground" />
                       )}
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                      <Button asChild className="w-full sm:w-auto">
-                         <a href={getWhatsAppLink(professional.phone, CATEGORIES.find(c => c.id === professional.categoryIds[0])?.name)} target="_blank" rel="noopener noreferrer">
-                            <Phone className="mr-2" /> Whatsapp
-                        </a>
-                      </Button>
-                      <Button variant="outline" className="w-full sm:w-auto" onClick={handleShare}>
-                        <Share2 className="mr-2 h-4 w-4" />
-                        Compartir
-                      </Button>
+                    <div className="flex flex-wrap items-center gap-2 text-muted-foreground mt-2 text-sm">
+                        <Briefcase className="w-4 h-4" />
+                        {professional.categoryIds.map((catId, index) => {
+                            const category = CATEGORIES.find(c => c.id === catId);
+                            return category ? <span key={catId}>{category.name}{index < professional.categoryIds.length - 1 ? ' • ' : ''}</span> : null;
+                        })}
+                    </div>
+                    <div className="mt-2">
+                      {professional.totalReviews > 0 ? (
+                        <StarRatingDisplay
+                          rating={professional.avgRating}
+                          totalReviews={professional.totalReviews}
+                        />
+                      ) : (
+                        <p className="text-sm text-muted-foreground">
+                          Aún no hay reseñas.
+                        </p>
+                      )}
+                    </div>
+                    {professional.avgRating > 4.5 && (
+                      <Badge className="mt-2 bg-blue-100 text-blue-800 hover:bg-blue-200">
+                        <Trophy className="w-4 h-4 mr-1" /> Top Pro
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                    <Button asChild className="w-full sm:w-auto">
+                        <a href={getWhatsAppLink(professional.phone, CATEGORIES.find(c => c.id === professional.categoryIds[0])?.name)} target="_blank" rel="noopener noreferrer">
+                          <Phone className="mr-2" /> Whatsapp
+                      </a>
+                    </Button>
+                    <Button variant="outline" className="w-full sm:w-auto" onClick={handleShare}>
+                      <Share2 className="mr-2 h-4 w-4" />
+                      Compartir
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+             <Card className="shadow-lg">
+                <CardHeader>
+                  <CardTitle>Sobre Mí</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <p className="text-muted-foreground">
+                      {professional.description || 'El profesional aún no ha añadido una descripción.'}
+                    </p>
+                  <Separator />
+                    <div>
+                        <h4 className="font-semibold mb-3">Especialidades</h4>
+                        {professional.specialties && professional.specialties.length > 0 ? (
+                          <div className="flex flex-wrap gap-2">
+                              {professional.specialties.map(spec => (
+                                  <Badge key={spec} variant="secondary" className="text-sm">
+                                      <Tag className="mr-2 h-3 w-3"/>
+                                      {spec}
+                                  </Badge>
+                              ))}
+                            </div>
+                        ) : (
+                          <p className="text-sm text-muted-foreground">
+                              No se han especificado especialidades.
+                          </p>
+                        )}
+                  </div>
+                  <Separator />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="font-semibold mb-3">
+                        Información General
+                      </h4>
+                      <ul className="space-y-3 text-sm">
+                          <li className="flex items-center gap-3"><MapPin className="w-4 h-4 text-primary" /> <span>Sirve a Bahía Blanca</span></li>
+                          <li className="flex items-center gap-3">
+                              <CheckCircle className="w-4 h-4 text-primary" /> 
+                              <span>{professional.isVerified ? "Antecedentes verificados" : "Antecedentes no verificados"}</span>
+                          </li>
+                          <li className="flex items-center gap-3"><Users className="w-4 h-4 text-primary" /> <span>{professional.employees || 0} empleados</span></li> 
+                          <li className="flex items-center gap-3"><Clock className="w-4 h-4 text-primary" /> <span>{professional.yearsInBusiness || 0} años en el negocio</span></li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-3">Horarios</h4>
+                        <ul className="space-y-2 text-sm text-muted-foreground">
+                          {professional.schedule && professional.schedule.length > 0 ? (
+                              professional.schedule.map((s, index) => (
+                                  <li key={index} className="flex justify-between">
+                                      <span>{s.day}:</span>
+                                      <span>{s.enabled ? `${s.open} - ${s.close}` : 'Cerrado'}</span>
+                                  </li>
+                              ))
+                          ) : (
+                              <li className="text-sm text-muted-foreground">Horarios no disponibles.</li>
+                          )}
+                      </ul>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
                <Card className="shadow-lg">
-                  <CardHeader>
-                    <CardTitle>Sobre Mí</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                      <p className="text-muted-foreground">
-                        {professional.description || 'El profesional aún no ha añadido una descripción.'}
-                      </p>
-                    <Separator />
-                     <div>
-                         <h4 className="font-semibold mb-3">Especialidades</h4>
-                         {professional.specialties && professional.specialties.length > 0 ? (
-                            <div className="flex flex-wrap gap-2">
-                                {professional.specialties.map(spec => (
-                                    <Badge key={spec} variant="secondary" className="text-sm">
-                                        <Tag className="mr-2 h-3 w-3"/>
-                                        {spec}
-                                    </Badge>
-                                ))}
-                             </div>
-                         ) : (
-                            <p className="text-sm text-muted-foreground">
-                                No se han especificado especialidades.
-                            </p>
-                         )}
-                    </div>
-                    <Separator />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <h4 className="font-semibold mb-3">
-                          Información General
-                        </h4>
-                        <ul className="space-y-3 text-sm">
-                           <li className="flex items-center gap-3"><MapPin className="w-4 h-4 text-primary" /> <span>Sirve a Bahía Blanca</span></li>
-                           <li className="flex items-center gap-3">
-                                <CheckCircle className="w-4 h-4 text-primary" /> 
-                                <span>{professional.isVerified ? "Antecedentes verificados" : "Antecedentes no verificados"}</span>
-                           </li>
-                           <li className="flex items-center gap-3"><Users className="w-4 h-4 text-primary" /> <span>{professional.employees || 0} empleados</span></li> 
-                           <li className="flex items-center gap-3"><Clock className="w-4 h-4 text-primary" /> <span>{professional.yearsInBusiness || 0} años en el negocio</span></li>
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold mb-3">Horarios</h4>
-                         <ul className="space-y-2 text-sm text-muted-foreground">
-                           {professional.schedule && professional.schedule.length > 0 ? (
-                                professional.schedule.map((s, index) => (
-                                    <li key={index} className="flex justify-between">
-                                        <span>{s.day}:</span>
-                                        <span>{s.enabled ? `${s.open} - ${s.close}` : 'Cerrado'}</span>
-                                    </li>
-                                ))
-                           ) : (
-                               <li className="text-sm text-muted-foreground">Horarios no disponibles.</li>
-                           )}
-                        </ul>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                 <Card className="shadow-lg">
-                  <CardHeader>
-                    <CardTitle>
-                      Reseñas de Clientes ({reviews.length})
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                     {reviews.length > 0 ? (
-                        reviews.map((review, index) => (
-                           <React.Fragment key={review.id}>
-                             <ReviewCard review={review} />
-                             {index < reviews.length - 1 && <Separator />}
-                          </React.Fragment>
-                        ))
-                    ) : (
-                      <p className="text-muted-foreground">Aún no hay reseñas. ¡Sé el primero en dejar una!</p>
-                    )}
-                  </CardContent>
-                </Card>
-             
-              {!userLoading && user && !isProfessional && !userHasReviewed && (
-                <ReviewForm 
-                    onReviewSubmit={handleNewReview} 
-                    isSubmitting={isSubmittingReview}
-                />
-              )}
-               {userHasReviewed && (
-                 <Card className="shadow-lg mt-8 bg-green-50 border-green-200">
-                    <CardHeader className='text-center'>
-                      <CardTitle className='text-green-800'>¡Gracias por tu reseña!</CardTitle>
-                      <CardDescription className='text-green-700'>Tu opinión ayuda a otros a tomar mejores decisiones.</CardDescription>
-                    </CardHeader>
-                  </Card>
-               )}
-            </div>
-
-            <div className="space-y-8">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Galería de Trabajos</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                     {professional.workPhotos && professional.workPhotos.length > 0 ? (
-                      <Dialog>
-                        <Carousel opts={{ align: 'start' }} className="w-full">
-                            <CarouselContent>
-                            {professional.workPhotos.map((photo) => (
-                                <CarouselItem key={photo.id} className="basis-full sm:basis-1/2">
-                                <DialogTrigger asChild onClick={() => setActivePhoto(photo)}>
-                                    <div className="p-1 cursor-pointer">
-                                        <div className="relative aspect-video overflow-hidden rounded-lg">
-                                            <Image
-                                            src={photo.imageUrl}
-                                            alt={photo.description}
-                                            fill
-                                            className="object-cover"
-                                            data-ai-hint={photo.imageHint}
-                                            />
-                                        </div>
-                                    </div>
-                                </DialogTrigger>
-                                </CarouselItem>
-                            ))}
-                            </CarouselContent>
-                            <CarouselPrevious className="-ml-2 hidden sm:flex"/>
-                            <CarouselNext className="-mr-2 hidden sm:flex"/>
-                        </Carousel>
-                        <DialogContent className="max-w-3xl p-0 bg-transparent border-none shadow-none">
-                            {activePhoto && (
-                                <div className="relative aspect-video">
-                                    <Image
-                                        src={activePhoto.imageUrl}
-                                        alt={activePhoto.description}
-                                        fill
-                                        className="object-contain rounded-md"
-                                    />
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => handleWorkPhotoNavigation('prev')}
-                                        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white"
-                                    >
-                                        <ChevronLeft className="h-6 w-6" />
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => handleWorkPhotoNavigation('next')}
-                                        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white"
-                                    >
-                                        <ChevronRight className="h-6 w-6" />
-                                    </Button>
-                                </div>
-                            )}
-                        </DialogContent>
-                      </Dialog>
-                    ) : (
-                      <p className="text-sm text-muted-foreground">
-                          El profesional no ha subido fotos de sus trabajos.
-                      </p>
-                    )}
-                  </CardContent>
-                </Card>
-                <Card>
                 <CardHeader>
-                    <CardTitle>Precios</CardTitle>
+                  <CardTitle>
+                    Reseñas de Clientes ({reviews.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    {reviews.length > 0 ? (
+                      reviews.map((review, index) => (
+                          <React.Fragment key={review.id}>
+                            <ReviewCard review={review} />
+                            {index < reviews.length - 1 && <Separator />}
+                        </React.Fragment>
+                      ))
+                  ) : (
+                    <p className="text-muted-foreground">Aún no hay reseñas. ¡Sé el primero en dejar una!</p>
+                  )}
+                </CardContent>
+              </Card>
+           
+            {!userLoading && user && !isProfessional && !userHasReviewed && (
+              <ReviewForm 
+                  onReviewSubmit={handleNewReview} 
+                  isSubmitting={isSubmittingReview}
+              />
+            )}
+              {userHasReviewed && (
+                <Card className="shadow-lg mt-8 bg-green-50 border-green-200">
+                  <CardHeader className='text-center'>
+                    <CardTitle className='text-green-800'>¡Gracias por tu reseña!</CardTitle>
+                    <CardDescription className='text-green-700'>Tu opinión ayuda a otros a tomar mejores decisiones.</CardDescription>
+                  </CardHeader>
+                </Card>
+              )}
+          </div>
+
+          <div className="space-y-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Galería de Trabajos</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="space-y-2 text-sm">
-                        {professional.priceInfo ? (
-                            <p className="text-muted-foreground">{professional.priceInfo}</p>
-                        ) : (
-                            <p className="text-muted-foreground">Contactar para más detalles de precios.</p>
-                        )}
-                    </div>
+                    {professional.workPhotos && professional.workPhotos.length > 0 ? (
+                    <Dialog>
+                      <Carousel opts={{ align: 'start' }} className="w-full">
+                          <CarouselContent>
+                          {professional.workPhotos.map((photo) => (
+                              <CarouselItem key={photo.id} className="basis-full sm:basis-1/2">
+                              <DialogTrigger asChild onClick={() => setActivePhoto(photo)}>
+                                  <div className="p-1 cursor-pointer">
+                                      <div className="relative aspect-video overflow-hidden rounded-lg">
+                                          <Image
+                                          src={photo.imageUrl}
+                                          alt={photo.description}
+                                          fill
+                                          className="object-cover"
+                                          data-ai-hint={photo.imageHint}
+                                          />
+                                      </div>
+                                  </div>
+                              </DialogTrigger>
+                              </CarouselItem>
+                          ))}
+                          </CarouselContent>
+                          <CarouselPrevious className="-ml-2 hidden sm:flex"/>
+                          <CarouselNext className="-mr-2 hidden sm:flex"/>
+                      </Carousel>
+                      <DialogContent className="max-w-3xl p-0 bg-transparent border-none shadow-none">
+                          {activePhoto && (
+                              <div className="relative aspect-video">
+                                  <Image
+                                      src={activePhoto.imageUrl}
+                                      alt={activePhoto.description}
+                                      fill
+                                      className="object-contain rounded-md"
+                                  />
+                                  <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => handleWorkPhotoNavigation('prev')}
+                                      className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white"
+                                  >
+                                      <ChevronLeft className="h-6 w-6" />
+                                  </Button>
+                                  <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => handleWorkPhotoNavigation('next')}
+                                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white"
+                                  >
+                                      <ChevronRight className="h-6 w-6" />
+                                  </Button>
+                              </div>
+                          )}
+                      </DialogContent>
+                    </Dialog>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                        El profesional no ha subido fotos de sus trabajos.
+                    </p>
+                  )}
                 </CardContent>
-                </Card>
-                 <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <CreditCard className="w-5 h-5 text-primary" />
-                            Métodos de Pago
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-sm text-muted-foreground">
-                            {professional.paymentMethods || 'No especificados. Contactar para más detalles.'}
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
+              </Card>
+              <Card>
+              <CardHeader>
+                  <CardTitle>Precios</CardTitle>
+              </CardHeader>
+              <CardContent>
+                  <div className="space-y-2 text-sm">
+                      {professional.priceInfo ? (
+                          <p className="text-muted-foreground">{professional.priceInfo}</p>
+                      ) : (
+                          <p className="text-muted-foreground">Contactar para más detalles de precios.</p>
+                      )}
+                  </div>
+              </CardContent>
+              </Card>
+                <Card>
+                  <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                          <CreditCard className="w-5 h-5 text-primary" />
+                          Métodos de Pago
+                      </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                      <p className="text-sm text-muted-foreground">
+                          {professional.paymentMethods || 'No especificados. Contactar para más detalles.'}
+                      </p>
+                  </CardContent>
+              </Card>
           </div>
         </div>
       </div>
-       <DialogContent className="max-w-md p-2">
-            <DialogTitle className="sr-only">Foto de Perfil de {professional.name}</DialogTitle>
-            <div className="relative aspect-square">
-            <Image
-                src={professional.photoUrl}
-                alt={professional.name}
-                fill
-                className="object-contain rounded-md"
-            />
-            </div>
-        </DialogContent>
-    </Dialog>
+    </div>
   );
 }

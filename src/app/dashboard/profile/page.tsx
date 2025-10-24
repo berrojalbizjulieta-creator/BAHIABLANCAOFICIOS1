@@ -679,51 +679,65 @@ export default function ProfilePage() {
             <Card className="overflow-hidden shadow-lg">
               <CardContent className="p-6">
                 <div className="flex flex-col sm:flex-row items-start gap-6">
-                  <div className="relative group" ref={avatarContainerRef}>
-                    <DialogTrigger asChild>
-                      <Avatar 
-                          className="w-36 h-36 border-4 border-background shadow-md cursor-pointer"
-                          onClick={handleAvatarClick}
-                      >
-                          <AvatarImage 
-                            src={professional.photoUrl} 
-                            alt={professional.name} 
-                            className="object-cover"
-                            style={{ objectPosition: `${professional.photoPositionX || 50}% ${professional.photoPositionY || 50}%` }}
-                            onMouseDown={handleDragStart}
-                            onTouchStart={handleDragStart}
-                          />
-                          <AvatarFallback className="text-4xl">
-                              {professional.name ? professional.name.charAt(0) : '?'}
-                          </AvatarFallback>
-                      </Avatar>
-                    </DialogTrigger>
-                     {isEditing && (
-                        <div 
-                          className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+                  <Dialog open={isAvatarDialogOpen} onOpenChange={setIsAvatarDialogOpen}>
+                    <div className="relative group" ref={avatarContainerRef}>
+                      <DialogTrigger asChild>
+                        <Avatar 
+                            className="w-36 h-36 border-4 border-background shadow-md cursor-pointer"
+                            onClick={handleAvatarClick}
                         >
-                           <div className='text-center text-white text-xs p-2 bg-black/50 rounded-md'>
+                            <AvatarImage 
+                              src={professional.photoUrl} 
+                              alt={professional.name} 
+                              className="object-cover"
+                              style={{ objectPosition: `${professional.photoPositionX || 50}% ${professional.photoPositionY || 50}%` }}
+                              onMouseDown={handleDragStart}
+                              onTouchStart={handleDragStart}
+                            />
+                            <AvatarFallback className="text-4xl">
+                                {professional.name ? professional.name.charAt(0) : '?'}
+                            </AvatarFallback>
+                        </Avatar>
+                      </DialogTrigger>
+                      {isEditing && (
+                          <div 
+                            className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+                          >
+                            <div className='text-center text-white text-xs p-2 bg-black/50 rounded-md'>
                                 {professional.photoUrl ? <><Move className="h-6 w-6 mx-auto mb-1"/><p>Arrastrá para reencuadrar</p></> : <><Upload className="h-8 w-8 mx-auto mb-1"/> <p>Subir foto</p></>}
-                           </div>
+                            </div>
+                          </div>
+                      )}
+                      <Button 
+                          variant="outline" size="icon" 
+                          className="absolute bottom-1 right-1 h-8 w-8 rounded-full bg-background/80" 
+                          onClick={handleAvatarClick}
+                          style={{ display: isEditing ? 'flex' : 'none' }}
+                          type='button'
+                        >
+                          <Upload className="h-4 w-4 text-foreground"/>
+                        </Button>
+                      <input 
+                          type="file" 
+                          ref={avatarFileInputRef} 
+                          onChange={handleAvatarFileChange}
+                          className="hidden" 
+                          accept={ALLOWED_IMAGE_TYPES.join(',')}
+                      />
+                    </div>
+                    <DialogContent className="max-w-md p-2">
+                        <DialogTitle className="sr-only">Foto de Perfil de {professional.name}</DialogTitle>
+                        <div className="relative aspect-square">
+                        <Image
+                            src={professional.photoUrl}
+                            alt={professional.name}
+                            fill
+                            className="object-contain rounded-md"
+                        />
                         </div>
-                    )}
-                     <Button 
-                        variant="outline" size="icon" 
-                        className="absolute bottom-1 right-1 h-8 w-8 rounded-full bg-background/80" 
-                        onClick={handleAvatarClick}
-                        style={{ display: isEditing ? 'flex' : 'none' }}
-                        type='button'
-                      >
-                        <Upload className="h-4 w-4 text-foreground"/>
-                      </Button>
-                    <input 
-                        type="file" 
-                        ref={avatarFileInputRef} 
-                        onChange={handleAvatarFileChange}
-                        className="hidden" 
-                        accept={ALLOWED_IMAGE_TYPES.join(',')}
-                    />
-                  </div>
+                    </DialogContent>
+                  </Dialog>
+
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                         {isEditing ? (
@@ -1195,20 +1209,6 @@ export default function ProfilePage() {
             onSave={handleSpecialtiesSave}
         />
      )}
-
-    <Dialog open={isAvatarDialogOpen} onOpenChange={setIsAvatarDialogOpen}>
-        <DialogContent className="max-w-md p-2">
-            <DialogTitle className="sr-only">Foto de Perfil de {professional.name}</DialogTitle>
-            <div className="relative aspect-square">
-            <Image
-                src={professional.photoUrl}
-                alt={professional.name}
-                fill
-                className="object-contain rounded-md"
-            />
-            </div>
-        </DialogContent>
-    </Dialog>
     </>
   );
 }
