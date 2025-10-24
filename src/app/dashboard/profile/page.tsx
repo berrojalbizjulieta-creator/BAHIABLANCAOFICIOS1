@@ -82,7 +82,6 @@ import { cn } from '@/lib/utils';
 
 
 const MAX_AVATAR_SIZE_MB = 5;
-const MAX_WORK_PHOTO_SIZE_MB = 5;
 const MAX_WORK_PHOTOS = 10;
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
@@ -313,7 +312,7 @@ export default function ProfilePage() {
   
   const handleScheduleChange = (day: string, field: 'open' | 'close' | 'enabled', value: string | boolean) => {
       setSchedule(prev => prev.map(s => s.day === day ? { ...s, [field]: value } : s));
-  }
+  };
 
   const uploadImage = async (fileDataUrl: string, path: string): Promise<string> => {
     if (fileDataUrl.startsWith('http')) return fileDataUrl; 
@@ -402,10 +401,15 @@ export default function ProfilePage() {
   const handleSpecialtiesSave = (newSpecialties: string[]) => {
     setProfessional(prev => {
         if (!prev) return null;
-        const updatedSpecialties = Array.from(new Set(newSpecialties));
-        return { ...prev, specialties: updatedSpecialties };
+        // No need to check for uniqueness here as the dialog and removal logic should handle it
+        return { ...prev, specialties: newSpecialties };
     });
   };
+  
+  const removeSpecialty = (specialtyToRemove: string) => {
+    handleSpecialtiesSave(professional?.specialties.filter(s => s !== specialtyToRemove) || []);
+  };
+
 
   const handlePaymentSuccess = async (plan: 'standard' | 'premium') => {
     if (!professional || !user) return;
@@ -880,15 +884,20 @@ export default function ProfilePage() {
                          {professional.specialties.length > 0 ? (
                              <div className="flex flex-wrap gap-2">
                                 {professional.specialties.map(spec => (
-                                    <Badge key={spec} variant="secondary" className="text-sm">
+                                    <Badge key={spec} variant="secondary" className="text-sm py-1 pl-3 pr-2">
                                         <Tag className="mr-2 h-3 w-3"/>
                                         {spec}
+                                        {isEditing && (
+                                            <button onClick={() => removeSpecialty(spec)} className="ml-2 rounded-full hover:bg-black/20 p-0.5">
+                                                <X className="h-3 w-3"/>
+                                            </button>
+                                        )}
                                     </Badge>
                                 ))}
                              </div>
                          ) : (
                             <p className="text-sm text-muted-foreground">
-                                {isEditing ? 'Selecciona tus oficios para añadir especialidades.' : 'Aún no se han especificado especialidades.'}
+                                {isEditing ? 'Haz clic en "Editar" para añadir o crear tus especialidades.' : 'Aún no se han especificado especialidades.'}
                             </p>
                          )}
                     </div>
