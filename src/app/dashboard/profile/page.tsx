@@ -30,6 +30,8 @@ import {
   Loader2,
   Trash2,
   Move,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {
@@ -76,6 +78,8 @@ import { storage, db } from '@/lib/firebase';
 import { ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storage';
 import { doc, getDoc, setDoc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { getReviewsForProfessional } from '@/lib/firestore-queries';
+import { cn } from '@/lib/utils';
+
 
 const MAX_AVATAR_SIZE_MB = 5;
 const MAX_WORK_PHOTO_SIZE_MB = 5;
@@ -206,7 +210,11 @@ export default function ProfilePage() {
 
 
   useEffect(() => {
-    if (loading || !user) return;
+    if (loading) return;
+    if (!user) {
+        // Handle case where user is not logged in if necessary, e.g., redirect.
+        return;
+    }
 
     const unsub = onSnapshot(doc(db, "professionalsDetails", user.uid), (docSnap) => {
         if (docSnap.exists()) {
@@ -238,7 +246,7 @@ export default function ProfilePage() {
                 const amount = amountPart ? amountPart.split(' ')[0] : '';
                 setPrice({ type: type || 'Por Hora', amount: amount || '', details: '' });
             }
-        } else {
+        } else if (user) {
             const newProfessional: Professional = {
                 ...initialProfessionalData,
                 id: user.uid,
@@ -260,15 +268,16 @@ export default function ProfilePage() {
     });
 
     const fetchReviews = async () => {
-      const reviewsData = await getReviewsForProfessional(db, user.uid);
-      setReviews(reviewsData);
+        if (!user) return;
+        const reviewsData = await getReviewsForProfessional(db, user.uid);
+        setReviews(reviewsData);
     };
 
     fetchReviews();
     
     return () => unsub();
   }, [user, loading, reviews.length]);
-
+  
   const handleCategoryChange = (index: number, newCategoryId: string) => {
     const categoryIdNum = Number(newCategoryId);
     setProfessional(prev => {
@@ -616,20 +625,36 @@ export default function ProfilePage() {
         setIsDragging(false);
     };
 
+    const handleWorkPhotoNavigation = (direction: 'next' | 'prev') => {
+        if (!activePhoto || !professional?.workPhotos) return;
+        const currentIndex = professional.workPhotos.findIndex(p => p.id === activePhoto.id);
+        if (currentIndex === -1) return;
+
+        let nextIndex;
+        if (direction === 'next') {
+            nextIndex = (currentIndex + 1) % professional.workPhotos.length;
+        } else {
+            nextIndex = (currentIndex - 1 + professional.workPhotos.length) % professional.workPhotos.length;
+        }
+        setActivePhoto(professional.workPhotos[nextIndex]);
+    };
+
     useEffect(() => {
         const container = avatarContainerRef.current;
+        const moveHandler = (e: MouseEvent | TouchEvent) => handleDragMove(e as any);
+        const endHandler = () => handleDragEnd();
+
         if (isDragging && container) {
-            const moveHandler = (e: MouseEvent | TouchEvent) => handleDragMove(e as any);
             window.addEventListener('mousemove', moveHandler);
-            window.addEventListener('mouseup', handleDragEnd);
+            window.addEventListener('mouseup', endHandler);
             window.addEventListener('touchmove', moveHandler);
-            window.addEventListener('touchend', handleDragEnd);
+            window.addEventListener('touchend', endHandler);
         
             return () => {
                 window.removeEventListener('mousemove', moveHandler);
-                window.removeEventListener('mouseup', handleDragEnd);
+                window.removeEventListener('mouseup', endHandler);
                 window.removeEventListener('touchmove', moveHandler);
-                window.removeEventListener('touchend', handleDragEnd);
+                window.removeEventListener('touchend', endHandler);
             };
         }
     }, [isDragging, handleDragMove, handleDragEnd]);
@@ -655,22 +680,24 @@ export default function ProfilePage() {
               <CardContent className="p-6">
                 <div className="flex flex-col sm:flex-row items-start gap-6">
                   <div className="relative group" ref={avatarContainerRef}>
-                    <Avatar 
-                        className="w-36 h-36 border-4 border-background shadow-md"
-                        onClick={!isEditing ? () => setIsAvatarDialogOpen(true) : undefined}
-                    >
-                        <AvatarImage 
-                          src={professional.photoUrl} 
-                          alt={professional.name} 
-                          className="object-cover"
-                          style={{ objectPosition: `${professional.photoPositionX || 50}% ${professional.photoPositionY || 50}%` }}
-                          onMouseDown={handleDragStart}
-                          onTouchStart={handleDragStart}
-                        />
-                        <AvatarFallback className="text-4xl">
-                            {professional.name ? professional.name.charAt(0) : '?'}
-                        </AvatarFallback>
-                    </Avatar>
+                    <DialogTrigger asChild>
+                      <Avatar 
+                          className="w-36 h-36 border-4 border-background shadow-md cursor-pointer"
+                          onClick={handleAvatarClick}
+                      >
+                          <AvatarImage 
+                            src={professional.photoUrl} 
+                            alt={professional.name} 
+                            className="object-cover"
+                            style={{ objectPosition: `${professional.photoPositionX || 50}% ${professional.photoPositionY || 50}%` }}
+                            onMouseDown={handleDragStart}
+                            onTouchStart={handleDragStart}
+                          />
+                          <AvatarFallback className="text-4xl">
+                              {professional.name ? professional.name.charAt(0) : '?'}
+                          </AvatarFallback>
+                      </Avatar>
+                    </DialogTrigger>
                      {isEditing && (
                         <div 
                           className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
@@ -997,18 +1024,33 @@ export default function ProfilePage() {
                           <CarouselPrevious className="ml-12" />
                           <CarouselNext className="mr-12" />
                         </Carousel>
-                        <DialogContent className="max-w-3xl p-2">
-                           <DialogTitle className="sr-only">Imagen de trabajo</DialogTitle>
-                           {activePhoto && (
-                            <div className="relative aspect-video">
-                                <Image
-                                src={activePhoto.imageUrl}
-                                alt={activePhoto.description}
-                                fill
-                                className="object-contain rounded-md"
-                                />
-                            </div>
-                           )}
+                          <DialogContent className="max-w-3xl p-0 bg-transparent border-none shadow-none">
+                            {activePhoto && (
+                                <div className="relative aspect-video">
+                                    <Image
+                                        src={activePhoto.imageUrl}
+                                        alt={activePhoto.description}
+                                        fill
+                                        className="object-contain rounded-md"
+                                    />
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => handleWorkPhotoNavigation('prev')}
+                                        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white"
+                                    >
+                                        <ChevronLeft className="h-6 w-6" />
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => handleWorkPhotoNavigation('next')}
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white"
+                                    >
+                                        <ChevronRight className="h-6 w-6" />
+                                    </Button>
+                                </div>
+                            )}
                         </DialogContent>
                       </Dialog>
                     ) : (

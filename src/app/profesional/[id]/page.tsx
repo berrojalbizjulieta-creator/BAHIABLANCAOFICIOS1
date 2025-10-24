@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -20,7 +21,9 @@ import {
   Sparkles as PremiumIcon,
   Loader2, // Importar Loader2 para el spinner de carga
   Tag,
-  CreditCard
+  CreditCard,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -400,6 +403,20 @@ export default function PublicProfilePage() {
       }
     }
   };
+    
+    const handleWorkPhotoNavigation = (direction: 'next' | 'prev') => {
+        if (!activePhoto || !professional?.workPhotos) return;
+        const currentIndex = professional.workPhotos.findIndex(p => p.id === activePhoto.id);
+        if (currentIndex === -1) return;
+
+        let nextIndex;
+        if (direction === 'next') {
+            nextIndex = (currentIndex + 1) % professional.workPhotos.length;
+        } else {
+            nextIndex = (currentIndex - 1 + professional.workPhotos.length) % professional.workPhotos.length;
+        }
+        setActivePhoto(professional.workPhotos[nextIndex]);
+    };
 
   if (loading || userLoading) {
     return (
@@ -431,7 +448,7 @@ export default function PublicProfilePage() {
 
 
   return (
-    <>
+    <Dialog>
       <div className="bg-muted/30">
         <div className="container mx-auto px-4 py-12 md:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -439,15 +456,17 @@ export default function PublicProfilePage() {
               <Card className="overflow-hidden shadow-lg">
                 <CardContent className="p-6">
                   <div className="flex flex-col sm:flex-row items-start gap-6">
-                     <Avatar className="w-24 h-24 sm:w-36 sm:h-36 border-4 border-background shadow-md">
-                        <AvatarImage 
-                          src={professional.photoUrl} 
-                          alt={professional.name} 
-                          className="object-cover"
-                          style={{ objectPosition: `${professional.photoPositionX || 50}% ${professional.photoPositionY || 50}%` }}
-                        />
-                        <AvatarFallback>{professional.name.charAt(0)}</AvatarFallback>
-                     </Avatar>
+                    <DialogTrigger asChild>
+                       <Avatar className="w-24 h-24 sm:w-36 sm:h-36 border-4 border-background shadow-md cursor-pointer">
+                          <AvatarImage 
+                            src={professional.photoUrl} 
+                            alt={professional.name} 
+                            className="object-cover"
+                            style={{ objectPosition: `${professional.photoPositionX || 50}% ${professional.photoPositionY || 50}%` }}
+                          />
+                          <AvatarFallback>{professional.name.charAt(0)}</AvatarFallback>
+                       </Avatar>
+                    </DialogTrigger>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <h1 className="text-2xl sm:text-3xl font-bold font-headline">
@@ -627,18 +646,33 @@ export default function PublicProfilePage() {
                             <CarouselPrevious className="-ml-2 hidden sm:flex"/>
                             <CarouselNext className="-mr-2 hidden sm:flex"/>
                         </Carousel>
-                        <DialogContent className="max-w-3xl p-2">
-                            <DialogTitle className="sr-only">Imagen de trabajo</DialogTitle>
-                           {activePhoto && (
-                            <div className="relative aspect-video">
-                                <Image
-                                src={activePhoto.imageUrl}
-                                alt={activePhoto.description}
-                                fill
-                                className="object-contain rounded-md"
-                                />
-                            </div>
-                           )}
+                        <DialogContent className="max-w-3xl p-0 bg-transparent border-none shadow-none">
+                            {activePhoto && (
+                                <div className="relative aspect-video">
+                                    <Image
+                                        src={activePhoto.imageUrl}
+                                        alt={activePhoto.description}
+                                        fill
+                                        className="object-contain rounded-md"
+                                    />
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => handleWorkPhotoNavigation('prev')}
+                                        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white"
+                                    >
+                                        <ChevronLeft className="h-6 w-6" />
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => handleWorkPhotoNavigation('next')}
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white"
+                                    >
+                                        <ChevronRight className="h-6 w-6" />
+                                    </Button>
+                                </div>
+                            )}
                         </DialogContent>
                       </Dialog>
                     ) : (
@@ -679,6 +713,17 @@ export default function PublicProfilePage() {
           </div>
         </div>
       </div>
-    </>
+       <DialogContent className="max-w-md p-2">
+            <DialogTitle className="sr-only">Foto de Perfil de {professional.name}</DialogTitle>
+            <div className="relative aspect-square">
+            <Image
+                src={professional.photoUrl}
+                alt={professional.name}
+                fill
+                className="object-contain rounded-md"
+            />
+            </div>
+        </DialogContent>
+    </Dialog>
   );
 }
