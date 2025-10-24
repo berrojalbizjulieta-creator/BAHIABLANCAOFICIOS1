@@ -1,3 +1,4 @@
+
 import type { LucideIcon } from 'lucide-react';
 import type { Timestamp } from 'firebase/firestore';
 
@@ -53,6 +54,8 @@ export interface Professional {
   email: string;
   photoUrl: string;
   photoHint: string;
+  photoPositionX?: number; // Nueva propiedad para la posición X del encuadre
+  photoPositionY?: number; // Nueva propiedad para la posición Y del encuadre
   specialties: string[];
   avgRating: number;
   categoryIds: number[];

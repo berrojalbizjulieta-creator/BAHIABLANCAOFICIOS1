@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, {useRef, useState, useEffect} from 'react';
@@ -27,6 +28,7 @@ import {
   Tag,
   Loader2,
   Trash2,
+  Move,
 } from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {
@@ -74,10 +76,12 @@ import { ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storag
 import { doc, getDoc, setDoc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { getReviewsForProfessional } from '@/lib/firestore-queries';
 
-const MAX_AVATAR_SIZE_MB = 2;
+const MAX_AVATAR_SIZE_MB = 5;
 const MAX_WORK_PHOTO_SIZE_MB = 5;
 const MAX_WORK_PHOTOS = 10;
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
 
 function StarRating({
@@ -144,6 +148,8 @@ const initialProfessionalData: Professional = {
     email: "profesional@email.com",
     photoUrl: "",
     photoHint: "",
+    photoPositionX: 50,
+    photoPositionY: 50,
     specialties: [],
     avgRating: 0,
     categoryIds: [],
@@ -186,6 +192,13 @@ export default function ProfilePage() {
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
   const [schedule, setSchedule] = useState<Schedule[]>([]);
 
+  // State for image panning
+  const [isDragging, setIsDragging] = useState(false);
+  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  const [startImgPos, setStartImgPos] = useState({ x: 50, y: 50 });
+  const avatarContainerRef = useRef<HTMLDivElement>(null);
+
+
   const { toast } = useToast();
   const avatarFileInputRef = useRef<HTMLInputElement>(null);
   const workPhotoInputRef = useRef<HTMLInputElement>(null);
@@ -194,14 +207,13 @@ export default function ProfilePage() {
   useEffect(() => {
     if (loading || !user) return;
 
-    // Escuchar cambios en tiempo real en el perfil del profesional
     const unsub = onSnapshot(doc(db, "professionalsDetails", user.uid), (docSnap) => {
         if (docSnap.exists()) {
             const data = docSnap.data() as Professional;
             if (data.lastPaymentDate && (data.lastPaymentDate as any).toDate) {
                 data.lastPaymentDate = (data.lastPaymentDate as any).toDate();
             }
-            if (data.registrationDate && (data.registrationDate as any).toDate) {
+            if (data.registrationDate && (data.registrationDate.toDate)) {
                 data.registrationDate = (data.registrationDate.toDate() as Date);
             }
             
@@ -209,11 +221,14 @@ export default function ProfilePage() {
                 ...initialProfessionalData,
                 ...data,
                 id: docSnap.id,
-                totalReviews: data.totalReviews ?? reviews.length, // reviews vendrá del otro fetch
+                totalReviews: data.totalReviews ?? reviews.length,
                 avgRating: data.avgRating ?? 0,
+                photoPositionX: data.photoPositionX || 50,
+                photoPositionY: data.photoPositionY || 50,
             };
 
             setProfessional(fetchedProfessional);
+            setStartImgPos({x: fetchedProfessional.photoPositionX, y: fetchedProfessional.photoPositionY});
             setSchedule(data.schedule || defaultSchedule);
             setPaymentMethods(data.paymentMethods || '');
             if (data.priceInfo) {
@@ -232,11 +247,14 @@ export default function ProfilePage() {
                 registrationDate: new Date(),
                 avgRating: 0,
                 totalReviews: 0,
+                photoPositionX: 50,
+                photoPositionY: 50,
                 dayAvailability: initialProfessionalData.dayAvailability,
             };
             setProfessional(newProfessional);
+            setStartImgPos({x: 50, y: 50});
             setSchedule(newProfessional.schedule || defaultSchedule);
-            setIsEditing(true); // Forzar edición si el perfil no existe
+            setIsEditing(true); 
         }
     });
 
@@ -247,9 +265,8 @@ export default function ProfilePage() {
 
     fetchReviews();
     
-    // Cleanup de la suscripción de onSnapshot
     return () => unsub();
-  }, [user, loading]);
+  }, [user, loading, reviews.length]);
 
 
   if (loading || !professional) {
@@ -290,7 +307,7 @@ export default function ProfilePage() {
     });
   };
 
-  const handleInputChange = (field: keyof Professional, value: string | number | boolean | string[] | Date | undefined | Professional['subscription']) => {
+  const handleInputChange = (field: keyof Professional, value: any) => {
     setProfessional(prev => (prev ? {...prev, [field]: value} : null));
   };
   
@@ -359,7 +376,6 @@ export default function ProfilePage() {
             photoUrl: finalAvatarUrl,
         });
 
-        // No es necesario llamar a setProfessional aquí porque onSnapshot lo hará automáticamente.
         setIsEditing(false);
         
         toast({
@@ -406,7 +422,6 @@ export default function ProfilePage() {
         const professionalDocRef = doc(db, 'professionalsDetails', user.uid);
         await setDoc(professionalDocRef, updatedData, { merge: true });
 
-        // No es necesario llamar a setProfessional, onSnapshot se encargará
         setIsPaymentDialogOpen(false);
 
         toast({
@@ -438,13 +453,14 @@ export default function ProfilePage() {
               return;
           }
           if (file.size > MAX_AVATAR_SIZE_MB * 1024 * 1024) {
-              toast({ title: "Archivo muy grande", description: `La imagen no puede superar los ${MAX_AVATAR_SIZE_MB}MB.`, variant: "destructive" });
+              toast({ title: "Archivo muy grande", description: `La imagen no puede superar los ${MAX_AVATAR_SIZE_MB}MB. Elegí una más liviana.`, variant: "destructive" });
               return;
           }
 
           const reader = new FileReader();
           reader.onloadend = () => {
-              setProfessional({...professional, photoUrl: reader.result as string});
+              setProfessional({...professional, photoUrl: reader.result as string, photoPositionX: 50, photoPositionY: 50});
+              setStartImgPos({x: 50, y: 50});
           }
           reader.readAsDataURL(file);
       }
@@ -459,8 +475,6 @@ export default function ProfilePage() {
   const handleDeleteWorkPhoto = (photoId: string) => {
     if (professional) {
       const updatedPhotos = professional.workPhotos?.filter(photo => photo.id !== photoId);
-      // We also need to handle deleting from storage, but that should happen on save.
-      // For now, just update the state. The save logic should compare the new and old lists.
       setProfessional({ ...professional, workPhotos: updatedPhotos });
       toast({
         title: "Foto eliminada",
@@ -551,10 +565,8 @@ export default function ProfilePage() {
             await navigator.share(shareData);
           } catch (error) {
             console.error('Error al compartir:', error);
-            // No mostrar error si el usuario cancela, es un comportamiento normal.
           }
         } else {
-          // Fallback para escritorio: copiar al portapapeles
           try {
             await navigator.clipboard.writeText(shareData.url);
             toast({
@@ -576,6 +588,60 @@ export default function ProfilePage() {
     const whatsappMessage = encodeURIComponent(`¡Hola! Soy ${professional.name} y me gustaría destacar mi perfil en BahiaBlancaOficios.`);
     const recommendationWAppLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
+    // --- Image Panning Logic ---
+    const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+        if (!isEditing) return;
+        e.preventDefault();
+        setIsDragging(true);
+        const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+        const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+        setStartPos({ x: clientX, y: clientY });
+        setStartImgPos({ x: professional.photoPositionX || 50, y: professional.photoPositionY || 50 });
+    };
+
+    const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
+        if (!isDragging || !avatarContainerRef.current || !professional) return;
+        e.preventDefault();
+        const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+        const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+
+        const deltaX = clientX - startPos.x;
+        const deltaY = clientY - startPos.y;
+
+        const containerWidth = avatarContainerRef.current.offsetWidth;
+        const containerHeight = avatarContainerRef.current.offsetHeight;
+
+        const percentDeltaX = (deltaX / containerWidth) * 100;
+        const percentDeltaY = (deltaY / containerHeight) * 100;
+
+        const newX = clamp(startImgPos.x + percentDeltaX, 0, 100);
+        const newY = clamp(startImgPos.y + percentDeltaY, 0, 100);
+        
+        handleInputChange('photoPositionX', newX);
+        handleInputChange('photoPositionY', newY);
+    };
+
+    const handleDragEnd = () => {
+        setIsDragging(false);
+    };
+
+    useEffect(() => {
+        const container = avatarContainerRef.current;
+        if (isDragging && container) {
+            window.addEventListener('mousemove', handleDragMove as any);
+            window.addEventListener('mouseup', handleDragEnd);
+            window.addEventListener('touchmove', handleDragMove as any);
+            window.addEventListener('touchend', handleDragEnd);
+        }
+        return () => {
+            window.removeEventListener('mousemove', handleDragMove as any);
+            window.removeEventListener('mouseup', handleDragEnd);
+            window.removeEventListener('touchmove', handleDragMove as any);
+            window.removeEventListener('touchend', handleDragEnd);
+        };
+    }, [isDragging, handleDragMove, handleDragEnd]);
+    // --- End Image Panning Logic ---
+
 
   return (
     <>
@@ -586,21 +652,41 @@ export default function ProfilePage() {
             <Card className="overflow-hidden shadow-lg">
               <CardContent className="p-6">
                 <div className="flex flex-col sm:flex-row items-start gap-6">
-                  <div className="relative group">
+                  <div className="relative group" ref={avatarContainerRef}>
                     <Avatar 
-                        className="w-36 h-36 border-4 border-background shadow-md cursor-pointer"
-                        onClick={handleAvatarClick}
+                        className="w-36 h-36 border-4 border-background shadow-md"
+                        onClick={!isEditing ? () => setIsAvatarDialogOpen(true) : undefined}
                     >
-                        <AvatarImage src={professional.photoUrl} alt={professional.name} />
+                        <AvatarImage 
+                          src={professional.photoUrl} 
+                          alt={professional.name} 
+                          className="object-cover"
+                          style={{ objectPosition: `${professional.photoPositionX || 50}% ${professional.photoPositionY || 50}%` }}
+                          onMouseDown={handleDragStart}
+                          onTouchStart={handleDragStart}
+                        />
                         <AvatarFallback className="text-4xl">
                             {professional.name ? professional.name.charAt(0) : '?'}
                         </AvatarFallback>
                     </Avatar>
                      {isEditing && (
-                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity" onClick={handleAvatarClick}>
-                            <Upload className="h-8 w-8 text-white"/>
+                        <div 
+                          className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+                        >
+                           <div className='text-center text-white text-xs p-2 bg-black/50 rounded-md'>
+                                {professional.photoUrl ? <><Move className="h-6 w-6 mx-auto mb-1"/><p>Arrastrá para reencuadrar</p></> : <><Upload className="h-8 w-8 mx-auto mb-1"/> <p>Subir foto</p></>}
+                           </div>
                         </div>
                     )}
+                     <Button 
+                        variant="outline" size="icon" 
+                        className="absolute bottom-1 right-1 h-8 w-8 rounded-full bg-background/80" 
+                        onClick={handleAvatarClick}
+                        style={{ display: isEditing ? 'flex' : 'none' }}
+                        type='button'
+                      >
+                        <Upload className="h-4 w-4 text-foreground"/>
+                      </Button>
                     <input 
                         type="file" 
                         ref={avatarFileInputRef} 

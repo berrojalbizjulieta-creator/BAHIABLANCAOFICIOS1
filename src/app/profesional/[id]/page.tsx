@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -439,7 +440,12 @@ export default function PublicProfilePage() {
                 <CardContent className="p-6">
                   <div className="flex flex-col sm:flex-row items-start gap-6">
                      <Avatar className="w-24 h-24 sm:w-36 sm:h-36 border-4 border-background shadow-md">
-                        <AvatarImage src={professional.photoUrl} alt={professional.name} />
+                        <AvatarImage 
+                          src={professional.photoUrl} 
+                          alt={professional.name} 
+                          className="object-cover"
+                          style={{ objectPosition: `${professional.photoPositionX || 50}% ${professional.photoPositionY || 50}%` }}
+                        />
                         <AvatarFallback>{professional.name.charAt(0)}</AvatarFallback>
                      </Avatar>
                     <div className="flex-1">
