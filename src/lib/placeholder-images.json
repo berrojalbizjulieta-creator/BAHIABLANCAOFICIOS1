@@ -51,7 +51,7 @@
     {
       "id": "prof-3",
       "description": "Portrait of a painter in work clothes.",
-      "imageUrl": "https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODUxMDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODUxMDl8MA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "person portrait"
     },
     {
@@ -323,6 +323,18 @@
       "description": "A car engine being worked on.",
       "imageUrl": "https://images.unsplash.com/photo-1599763884223-1c34a2e817e8?q=80&w=870",
       "imageHint": "car mechanic"
+    },
+    {
+      "id": "cat-belleza",
+      "description": "Various beauty products and tools.",
+      "imageUrl": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=870",
+      "imageHint": "beauty products"
+    },
+    {
+      "id": "cat-astrologia",
+      "description": "An astrology chart and crystals.",
+      "imageUrl": "https://images.unsplash.com/photo-1614061821034-0268593504cf?q=80&w=870",
+      "imageHint": "astrology chart"
     }
   ]
 }

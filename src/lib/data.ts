@@ -26,6 +26,7 @@ import {
   Fan,
   Bug,
   Car,
+  Moon,
 } from 'lucide-react';
 import type { Category, Professional, Banner, JobRequest, CategorySpecialties, Schedule } from '@/lib/types';
 import { placeholderImages } from './placeholder-images';
@@ -52,6 +53,8 @@ import { VIDRIERIA_KEYWORDS } from './keywords/vidrieria';
 import { CONTROL_DE_PLAGAS_KEYWORDS } from './keywords/control-de-plagas';
 import { MECANICA_KEYWORDS } from './keywords/mecanica';
 import { REPARACIONES_KEYWORDS } from './keywords/reparaciones';
+import { BELLEZA_KEYWORDS } from './keywords/belleza';
+import { ASTROLOGIA_KEYWORDS } from './keywords/astrologia';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -103,6 +106,8 @@ export const CATEGORIES: Category[] = [
     { id: 65, name: 'Vidriería', icon: GlassWater, description: 'Reemplazo de vidrios, espejos y ventanas.', imageUrl: getImage('cat-vidrieria-2').imageUrl, imageHint: getImage('cat-vidrieria-2').imageHint },
     { id: 66, name: 'Control de Plagas', icon: Bug, description: 'Fumigación y control de plagas.', imageUrl: getImage('cat-plagas').imageUrl, imageHint: getImage('cat-plagas').imageHint },
     { id: 68, name: 'Mecánicos Auto/Motos', icon: Car, description: 'Servicio y reparación de vehículos.', imageUrl: getImage('cat-mecanica').imageUrl, imageHint: getImage('cat-mecanica').imageHint },
+    { id: 69, name: 'Belleza', icon: Palette, description: 'Peluquería, uñas, maquillaje y más.', imageUrl: getImage('cat-belleza').imageUrl, imageHint: getImage('cat-belleza').imageHint },
+    { id: 70, name: 'Astrología y Tarot', icon: Moon, description: 'Lectura de carta natal, tarot y más.', imageUrl: getImage('cat-astrologia').imageUrl, imageHint: getImage('cat-astrologia').imageHint },
 ];
 
 // Este objeto contiene las listas cortas de especialidades para que el profesional elija en su perfil.
@@ -156,7 +161,9 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   67: { name: 'Aire Acondicionado', specialties: ['Instalación de equipos', 'Reparación', 'Carga de gas', 'Mantenimiento y limpieza', 'Desinstalación'] },
   65: { name: 'Vidriería', specialties: ['Cambio de vidrios', 'Vidrios a medida', 'Espejos', 'Mamparas de baño', 'Frentes de locales'] },
   66: { name: 'Control de Plagas', specialties: ['Fumigación', 'Desratización', 'Control de insectos', 'Ahuyentamiento de palomas', 'Desinfección'] },
-  68: { name: 'Mecánicos Auto/Motos', specialties: ['Mecánica general', 'Cambio de aceite y filtros', 'Frenos', 'Tren delantero', 'Electricidad automotor'] }
+  68: { name: 'Mecánicos Auto/Motos', specialties: ['Mecánica general', 'Cambio de aceite y filtros', 'Frenos', 'Tren delantero', 'Electricidad automotor'] },
+  69: { name: 'Belleza', specialties: ['Peluquería', 'Manicura y Pedicura', 'Maquillaje', 'Depilación', 'Estética Facial y Corporal'] },
+  70: { name: 'Astrología y Tarot', specialties: ['Lectura de Carta Natal', 'Tarot Evolutivo', 'Revolución Solar', 'Sinastría de Parejas', 'Tránsitos Planetarios'] }
 };
 
 
@@ -183,7 +190,9 @@ export const CATEGORY_KEYWORDS: { [key: number]: { name: string; keywords: strin
   67: { name: 'Aire Acondicionado', keywords: AIRE_ACONDICIONADO_KEYWORDS },
   65: { name: 'Vidriería', keywords: VIDRIERIA_KEYWORDS },
   66: { name: 'Control de Plagas', keywords: CONTROL_DE_PLAGAS_KEYWORDS },
-  68: { name: 'Mecánicos Auto/Motos', keywords: MECANICA_KEYWORDS }
+  68: { name: 'Mecánicos Auto/Motos', keywords: MECANICA_KEYWORDS },
+  69: { name: 'Belleza', keywords: BELLEZA_KEYWORDS },
+  70: { name: 'Astrología y Tarot', keywords: ASTROLOGIA_KEYWORDS }
 };
 
 // Diccionario simple para mapear sinónimos comunes a la categoría oficial
@@ -216,6 +225,13 @@ export const CATEGORY_SYNONYMS = {
     'mecanico': 'Mecánicos Auto/Motos',
     'persiana': 'Reparaciones',
     'persianista': 'Reparaciones',
+    'peluqueria': 'Belleza',
+    'uñas': 'Belleza',
+    'maquillaje': 'Belleza',
+    'estetica': 'Belleza',
+    'carta natal': 'Astrología y Tarot',
+    'tarot': 'Astrología y Tarot',
+    'astrologo': 'Astrología y Tarot',
 }
 
 export const PROFESSIONALS: Professional[] = [
