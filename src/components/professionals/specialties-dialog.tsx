@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import { Input } from '../ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, X } from 'lucide-react';
+import { ScrollArea } from '../ui/scroll-area';
 
 interface SpecialtiesDialogProps {
   isOpen: boolean;
@@ -101,62 +102,65 @@ export default function SpecialtiesDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="py-4 space-y-6">
-            <div>
-                <h4 className="text-sm font-semibold mb-3 text-muted-foreground">Sugerencias</h4>
-                <div className="flex flex-wrap gap-3">
-                    {availableSpecialties.map((specialty) => (
-                        <Badge
-                            key={specialty}
-                            onClick={() => toggleSpecialty(specialty)}
-                            variant={currentSelection.includes(specialty) ? 'default' : 'secondary'}
-                            className={cn(
-                                'cursor-pointer text-base py-1 px-3',
-                                currentSelection.includes(specialty) && 'bg-primary hover:bg-primary/90'
-                            )}
-                        >
-                            {specialty}
-                        </Badge>
-                    ))}
-                </div>
-            </div>
-             <div>
-                <h4 className="text-sm font-semibold mb-3 text-muted-foreground">Añadir especialidad personalizada</h4>
-                 <div className="flex w-full max-w-sm items-center space-x-2">
-                    <Input 
-                        type="text" 
-                        placeholder="Ej: Trabajos en altura"
-                        value={customSpecialty}
-                        onChange={(e) => setCustomSpecialty(e.target.value)}
-                        onKeyDown={handleCustomInputKeyDown}
-                    />
-                    <Button type="button" onClick={handleAddCustom}>
-                        <Plus className="mr-2"/> Añadir
-                    </Button>
-                </div>
-            </div>
-             <div>
-                <h4 className="text-sm font-semibold mb-3 text-muted-foreground">Tus Especialidades ({currentSelection.length}/10)</h4>
-                 {currentSelection.length > 0 ? (
+        <ScrollArea className="max-h-[60vh] pr-6">
+            <div className="space-y-6">
+                <div>
+                    <h4 className="text-sm font-semibold mb-3 text-muted-foreground">Sugerencias</h4>
                     <div className="flex flex-wrap gap-3">
-                        {currentSelection.map((specialty) => (
+                        {availableSpecialties.map((specialty) => (
                             <Badge
                                 key={specialty}
-                                variant="default"
-                                className="text-base py-1 pl-3 pr-2 bg-primary/20 text-primary-foreground border-primary/50"
+                                onClick={() => toggleSpecialty(specialty)}
+                                variant={currentSelection.includes(specialty) ? 'default' : 'secondary'}
+                                className={cn(
+                                    'cursor-pointer text-base py-1 px-3',
+                                    currentSelection.includes(specialty) && 'bg-primary hover:bg-primary/90'
+                                )}
                             >
                                 {specialty}
-                                <button onClick={() => toggleSpecialty(specialty)} className="ml-2 rounded-full hover:bg-black/20 p-0.5">
-                                    <X className="h-3 w-3" />
-                                </button>
                             </Badge>
                         ))}
                     </div>
-                ) : (
-                    <p className="text-sm text-muted-foreground italic">Aún no has seleccionado ninguna especialidad.</p>
-                )}
+                </div>
+                <div>
+                    <h4 className="text-sm font-semibold mb-3 text-muted-foreground">Añadir especialidad personalizada</h4>
+                    <div className="flex w-full max-w-sm items-center space-x-2">
+                        <Input 
+                            type="text" 
+                            placeholder="Ej: Trabajos en altura"
+                            value={customSpecialty}
+                            onChange={(e) => setCustomSpecialty(e.target.value)}
+                            onKeyDown={handleCustomInputKeyDown}
+                        />
+                        <Button type="button" onClick={handleAddCustom}>
+                            <Plus className="mr-2"/> Añadir
+                        </Button>
+                    </div>
+                </div>
+                <div>
+                    <h4 className="text-sm font-semibold mb-3 text-muted-foreground">Tus Especialidades ({currentSelection.length}/10)</h4>
+                    {currentSelection.length > 0 ? (
+                        <div className="flex flex-wrap gap-3">
+                            {currentSelection.map((specialty) => (
+                                <Badge
+                                    key={specialty}
+                                    variant="default"
+                                    className="text-base py-1 pl-3 pr-2 bg-primary/20 text-primary-foreground border-primary/50"
+                                >
+                                    {specialty}
+                                    <button onClick={() => toggleSpecialty(specialty)} className="ml-2 rounded-full hover:bg-black/20 p-0.5">
+                                        <X className="h-3 w-3" />
+                                    </button>
+                                </Badge>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-sm text-muted-foreground italic">Aún no has seleccionado ninguna especialidad.</p>
+                    )}
+                </div>
             </div>
-        </div>
+        </ScrollArea>
+        
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
