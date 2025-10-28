@@ -43,7 +43,7 @@ function SearchableCategories() {
           <Link
             key={category.id}
             href={`/servicios/${encodeURIComponent(
-              category.name.toLowerCase().replace(/ y /g, '-').replace(/ /g, '-')
+              category.name.toLowerCase().replace(/ /g, '-')
             )}`}
             className="cursor-pointer group"
           >

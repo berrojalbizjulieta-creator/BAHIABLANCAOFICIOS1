@@ -60,7 +60,8 @@ export default function CategoryPage() {
   const params = useParams();
   const categoryName = decodeURIComponent(params.categoryName as string)
     .replace(/-/g, ' ')
-    .replace(/\b\w/g, (l) => l.toUpperCase()); // Capitalize words
+    .replace(/\bY\b/g, 'y') // Convierte la 'Y' aislada a 'y'
+    .replace(/\b\w/g, (l) => l.toUpperCase());
 
   const [allProfessionals, setAllProfessionals] = useState<Professional[]>([]);
   const [loading, setLoading] = useState(true);
