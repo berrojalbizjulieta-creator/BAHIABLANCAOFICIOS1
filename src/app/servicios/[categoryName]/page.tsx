@@ -56,13 +56,23 @@ const isAvailableNow = (schedule?: Schedule[]): boolean => {
   return now >= openTime && now <= closeTime;
 };
 
+// Función para normalizar strings: minúsculas y sin acentos.
+const normalizeString = (str: string): string => {
+  return str
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+};
+
 export default function CategoryPage() {
   const params = useParams();
-  const categoryName = decodeURIComponent(params.categoryName as string)
-    .replace(/-/g, ' ')
-    .replace(/\bY\b/g, 'y') // Convierte la 'Y' aislada a 'y'
-    .replace(/\b\w/g, (l) => l.toUpperCase());
-
+  
+  // Decodificamos la URL y la normalizamos para la búsqueda
+  const categorySlug = useMemo(
+    () => normalizeString(decodeURIComponent(params.categoryName as string).replace(/-/g, ' ')),
+    [params.categoryName]
+  );
+  
   const [allProfessionals, setAllProfessionals] = useState<Professional[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -70,10 +80,13 @@ export default function CategoryPage() {
   const { toast } = useToast();
 
   const category = useMemo(
-    () => CATEGORIES.find((c) => c.name.toLowerCase() === categoryName.toLowerCase()),
-    [categoryName]
+    // Comparamos los nombres normalizados para evitar errores con acentos o mayúsculas.
+    () => CATEGORIES.find((c) => normalizeString(c.name) === categorySlug),
+    [categorySlug]
   );
   
+  const categoryName = category?.name || categorySlug.replace(/\b\w/g, l => l.toUpperCase());
+
   useEffect(() => {
     const fetchProfessionals = async () => {
       setLoading(true);
