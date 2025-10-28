@@ -107,7 +107,7 @@ export const CATEGORIES: Category[] = [
     { id: 66, name: 'Control de Plagas', icon: Bug, description: 'Fumigación y control de plagas.', imageUrl: getImage('cat-plagas').imageUrl, imageHint: getImage('cat-plagas').imageHint },
     { id: 68, name: 'Mecánicos Auto/Motos', icon: Car, description: 'Servicio y reparación de vehículos.', imageUrl: getImage('cat-mecanica').imageUrl, imageHint: getImage('cat-mecanica').imageHint },
     { id: 69, name: 'Belleza', icon: Palette, description: 'Peluquería, uñas, maquillaje y más.', imageUrl: getImage('cat-belleza').imageUrl, imageHint: getImage('cat-belleza').imageHint },
-    { id: 70, name: 'Astrología y Tarot', icon: Moon, description: 'Lectura de carta natal, tarot y más.', imageUrl: getImage('cat-astrologia').imageUrl, imageHint: getImage('cat-astrologia').imageHint },
+    { id: 70, name: 'Astrología', icon: Moon, description: 'Lectura de carta natal, tarot y más.', imageUrl: getImage('cat-astrologia').imageUrl, imageHint: getImage('cat-astrologia').imageHint },
 ];
 
 // Este objeto contiene las listas cortas de especialidades para que el profesional elija en su perfil.
@@ -180,7 +180,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   69: { name: 'Belleza', specialties: ['Peluquería (corte, color, peinado)', 'Manicura y pedicura', 'Maquillaje profesional', 'Depilación (cera y definitiva)', 'Estética facial (limpieza, tratamientos)', 'Masajes (relajantes, descontracturantes)', 'Perfilado y laminado de cejas', 'Extensiones y lifting de pestañas', 'Barbería y cuidado masculino', 'Uñas esculpidas (acrílicas/gel)'],
   },
-  70: { name: 'Astrología y Tarot', specialties: ['Lectura de Carta Natal', 'Tarot evolutivo y predictivo', 'Revolución Solar', 'Sinastría (compatibilidad de parejas)', 'Tránsitos planetarios y proyecciones', 'Astrología kármica', 'Numerología', 'Registros Akáshicos', 'Péndulo y radiestesia', 'Limpieza energética'],
+  70: { name: 'Astrología', specialties: ['Lectura de Carta Natal', 'Tarot evolutivo y predictivo', 'Revolución Solar', 'Sinastría (compatibilidad de parejas)', 'Tránsitos planetarios y proyecciones', 'Astrología kármica', 'Numerología', 'Registros Akáshicos', 'Péndulo y radiestesia', 'Limpieza energética'],
   }
 };
 
@@ -210,7 +210,7 @@ export const CATEGORY_KEYWORDS: { [key: number]: { name: string; keywords: strin
   66: { name: 'Control de Plagas', keywords: CONTROL_DE_PLAGAS_KEYWORDS },
   68: { name: 'Mecánicos Auto/Motos', keywords: MECANICA_KEYWORDS },
   69: { name: 'Belleza', keywords: BELLEZA_KEYWORDS },
-  70: { name: 'Astrología y Tarot', keywords: ASTROLOGIA_KEYWORDS }
+  70: { name: 'Astrología', keywords: ASTROLOGIA_KEYWORDS }
 };
 
 // Diccionario simple para mapear sinónimos comunes a la categoría oficial
@@ -247,9 +247,9 @@ export const CATEGORY_SYNONYMS = {
     'uñas': 'Belleza',
     'maquillaje': 'Belleza',
     'estetica': 'Belleza',
-    'carta natal': 'Astrología y Tarot',
-    'tarot': 'Astrología y Tarot',
-    'astrologo': 'Astrología y Tarot',
+    'carta natal': 'Astrología',
+    'tarot': 'Astrología',
+    'astrologo': 'Astrología',
 }
 
 export const PROFESSIONALS: Professional[] = [
@@ -435,3 +435,5 @@ export const essentialCategories = CATEGORIES.map(c => {
   }
   return c;
 }).filter(c => essentialCategoryNames.includes(c.name));
+
+    

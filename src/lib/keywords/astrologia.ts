@@ -49,5 +49,13 @@ export const ASTROLOGIA_KEYWORDS = [
 "astrólogo",
 "sesión de astrología",
 "energía del universo",
-"entendé tu carta"
+"entendé tu carta",
+"tarot",
+"lectura de tarot",
+"tarotista",
+"arcanos mayores",
+"arcanos menores",
+"tirada de tarot"
 ];
+
+    
