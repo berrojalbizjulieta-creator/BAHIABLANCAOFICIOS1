@@ -180,7 +180,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   69: { name: 'Belleza', specialties: ['Peluquería (corte, color, peinado)', 'Manicura y pedicura', 'Maquillaje profesional', 'Depilación (cera y definitiva)', 'Estética facial (limpieza, tratamientos)', 'Masajes (relajantes, descontracturantes)', 'Perfilado y laminado de cejas', 'Extensiones y lifting de pestañas', 'Barbería y cuidado masculino', 'Uñas esculpidas (acrílicas/gel)'],
   },
-  70: { name: 'Astrología', specialties: ['Lectura de Carta Natal', 'Tarot evolutivo y predictivo', 'Revolución Solar', 'Sinastría (compatibilidad de parejas)', 'Tránsitos planetarios y proyecciones', 'Astrología kármica', 'Numerología', 'Registros Akáshicos', 'Péndulo y radiestesia', 'Limpieza energética'],
+  70: { name: 'Astrología', specialties: ['Lectura de Carta Natal', 'Tarot', 'Revolución Solar', 'Sinastría (compatibilidad de parejas)', 'Tránsitos planetarios', 'Astrología kármica', 'Numerología', 'Registros Akáshicos', 'Péndulo y radiestesia', 'Limpieza energética'],
   }
 };
 
