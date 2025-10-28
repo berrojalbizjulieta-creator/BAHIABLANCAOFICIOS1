@@ -63,7 +63,6 @@ export default function SignupPage() {
   const [accountType, setAccountType] = useState('client');
   const [isLoading, setIsLoading] = useState(false);
   const [isTermsDialogOpen, setIsTermsDialogOpen] = useState(false);
-  const [termsRead, setTermsRead] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -78,17 +77,9 @@ export default function SignupPage() {
   });
 
   const activeForm = accountType === 'client' ? clientForm : professionalForm;
-  
-  const handleTermsDialogClose = (open: boolean) => {
-    setIsTermsDialogOpen(open);
-    if (!open) { // When dialog closes
-      setTermsRead(true);
-    }
-  }
 
   const handleAccountTypeChange = (newType: string) => {
     setAccountType(newType);
-    setTermsRead(false); // Reset terms read status on tab change
     clientForm.reset({ fullName: '', email: '', password: '', terms: false });
     professionalForm.reset({ fullName: '', email: '', password: '', category: '', terms: false });
   }
@@ -181,7 +172,6 @@ export default function SignupPage() {
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={!termsRead}
                   />
               </FormControl>
               <div className="space-y-1 leading-none">
@@ -197,11 +187,6 @@ export default function SignupPage() {
                       </Button>
                       .
                   </FormLabel>
-                   { !termsRead && (
-                      <p className="text-xs text-muted-foreground">
-                          Debes leer los términos para poder aceptar.
-                      </p>
-                  )}
                   <FormMessage />
               </div>
               </FormItem>
@@ -364,7 +349,7 @@ export default function SignupPage() {
 
     <TermsDialog 
         isOpen={isTermsDialogOpen}
-        onOpenChange={handleTermsDialogClose}
+        onOpenChange={setIsTermsDialogOpen}
     />
     </>
   );
