@@ -33,6 +33,7 @@ import JobRequestCard from './job-request-card';
 import { db, storage } from '@/lib/firebase';
 import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, updateDoc, where, limit } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { subDays } from 'date-fns';
 
 const jobRequestSchema = z.object({
   title: z.string().min(10, 'El título debe tener al menos 10 caracteres.'),
@@ -64,13 +65,16 @@ export default function JobRequestsPage() {
     const fetchJobRequests = async () => {
       setLoadingRequests(true);
       try {
-        // Consulta simplificada para evitar la necesidad de un índice complejo.
-        // Se ordena por fecha y luego se filtra por estado en el cliente.
+        const sevenDaysAgo = subDays(new Date(), 7);
+        // Consulta optimizada para traer solo los documentos relevantes
         const q = query(
           collection(db, 'jobRequests'),
+          where('status', '==', 'open'),
+          where('createdAt', '>=', sevenDaysAgo),
           orderBy('createdAt', 'desc'),
-          limit(100) // Cargar un poco más para tener suficientes trabajos "abiertos"
+          limit(100)
         );
+        
         const querySnapshot = await getDocs(q);
         const requestsData = querySnapshot.docs
           .map(doc => {
@@ -80,15 +84,14 @@ export default function JobRequestsPage() {
               ...data,
               createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
             } as JobRequest;
-          })
-          .filter(request => request.status === 'open'); // Filtrar por estado aquí
+          });
 
         setJobRequests(requestsData);
       } catch (error) {
         console.error("Error fetching job requests: ", error);
         toast({
           title: "Error",
-          description: "No se pudieron cargar los anuncios de trabajo. Intenta recargar la página.",
+          description: "No se pudieron cargar los anuncios de trabajo. Es posible que necesites crear un índice en Firestore. Intenta recargar la página.",
           variant: "destructive"
         });
       } finally {
@@ -227,7 +230,7 @@ export default function JobRequestsPage() {
           Buscando un Profesional
         </h1>
         <p className="mt-4 max-w-2xl mx-auto text-muted-foreground md:text-lg">
-          ¿Necesitas ayuda con una tarea? Publica lo que buscas y deja que los profesionales te contacten.
+          ¿Necesitas ayuda con una tarea? Publica lo que buscas y deja que los profesionales te contacten. Los anuncios expiran a los 7 días.
         </p>
       </div>
       
