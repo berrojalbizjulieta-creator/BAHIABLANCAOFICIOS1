@@ -10,29 +10,24 @@ export async function POST(request: Request) {
   
   try {
     const now = new Date();
-    const dayKey = `daily_${format(now, 'yyyy-MM-dd')}`;
-    const monthKey = `monthly_${format(now, 'yyyy-MM')}`;
+    // Using subcollections for daily and monthly counts for better scalability and to avoid dynamic field key issues.
+    const dayDocRef = doc(db, 'analytics/daily', format(now, 'yyyy-MM-dd'));
+    const monthDocRef = doc(db, 'analytics/monthly', format(now, 'yyyy-MM'));
 
-    const analyticsRef = doc(db, 'analytics', 'pageViews');
-
-    // We use setDoc with merge:true and increment to atomically update counters.
-    // This is highly efficient for Firestore as it avoids read-modify-write cycles
-    // and creates the document with the fields if it doesn't exist.
-    await setDoc(analyticsRef, {
-        [dayKey]: increment(1),
-        [monthKey]: increment(1),
-        totalViews: increment(1)
-    }, { merge: true });
+    // Atomically increment counts for the day and the month.
+    // This is highly efficient and creates the document if it doesn't exist.
+    await Promise.all([
+        setDoc(dayDocRef, { count: increment(1) }, { merge: true }),
+        setDoc(monthDocRef, { count: increment(1) }, { merge: true })
+    ]);
 
     // Respond quickly to the client.
     return NextResponse.json({ success: true }, { status: 202 });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error tracking page view:", error);
     // Even if it fails, we don't want to cause client-side issues.
     // We just log the error and respond.
-    return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ success: false, error: String(error) }, { status: 500 });
   }
 }
-
-    

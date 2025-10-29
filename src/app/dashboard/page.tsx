@@ -135,23 +135,31 @@ function AdminDashboard() {
 
         fetchStats();
         
-        // Listener for real-time analytics
-        const analyticsRef = doc(db, 'analytics', 'pageViews');
-        const unsubscribe = onSnapshot(analyticsRef, (docSnap) => {
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                const todayKey = `daily_${format(new Date(), 'yyyy-MM-dd')}`;
-                const monthKey = `monthly_${format(new Date(), 'yyyy-MM')}`;
-                
-                setStats(prev => ({
-                    ...prev,
-                    viewsToday: data[todayKey] || 0,
-                    viewsThisMonth: data[monthKey] || 0,
-                } as DashboardStats));
-            }
+        // Listeners for real-time analytics
+        const todayKey = format(new Date(), 'yyyy-MM-dd');
+        const monthKey = format(new Date(), 'yyyy-MM');
+
+        const dailyDocRef = doc(db, 'analytics/daily', todayKey);
+        const monthlyDocRef = doc(db, 'analytics/monthly', monthKey);
+
+        const unsubDaily = onSnapshot(dailyDocRef, (docSnap) => {
+            setStats(prev => ({
+                ...prev,
+                viewsToday: docSnap.data()?.count || 0
+            } as DashboardStats));
+        });
+        
+        const unsubMonthly = onSnapshot(monthlyDocRef, (docSnap) => {
+            setStats(prev => ({
+                ...prev,
+                viewsThisMonth: docSnap.data()?.count || 0
+            } as DashboardStats));
         });
 
-        return () => unsubscribe();
+        return () => {
+            unsubDaily();
+            unsubMonthly();
+        };
     }, []);
 
     const onTabChange = (value: string) => {
