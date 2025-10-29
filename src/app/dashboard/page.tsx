@@ -83,7 +83,15 @@ async function getProfessionalsForPeriod(startDate: Date, endDate: Date) {
 
 
 function AdminDashboard() {
-    const [stats, setStats] = useState<DashboardStats | null>(null);
+    const [stats, setStats] = useState<DashboardStats>({
+      totalRevenue: 0,
+      newClients: 0,
+      newProfessionals: 0,
+      activeSubscriptions: 0,
+      overviewData: [],
+      viewsToday: 0,
+      viewsThisMonth: 0
+    });
     const [loadingStats, setLoadingStats] = useState(true);
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -124,7 +132,7 @@ function AdminDashboard() {
                     newProfessionals: newProfessionalsCount,
                     activeSubscriptions,
                     overviewData,
-                } as DashboardStats));
+                }));
 
             } catch (error) {
                 console.error("Error fetching dashboard stats:", error);
@@ -136,24 +144,24 @@ function AdminDashboard() {
         fetchStats();
         
         // CORRECCIÓN: Listeners para leer desde la nueva estructura de analíticas
-        const todayKey = format(new Date(), 'yyyy-MM-dd');
-        const monthKey = format(new Date(), 'yyyy-MM');
+        const todayKey = `daily_${format(new Date(), 'yyyy_MM_dd')}`;
+        const monthKey = `monthly_${format(new Date(), 'yyyy_MM')}`;
 
-        const dailyDocRef = doc(db, 'analytics/daily', todayKey);
-        const monthlyDocRef = doc(db, 'analytics/monthly', monthKey);
+        const dailyDocRef = doc(db, 'analytics', todayKey);
+        const monthlyDocRef = doc(db, 'analytics', monthKey);
 
         const unsubDaily = onSnapshot(dailyDocRef, (docSnap) => {
             setStats(prev => ({
-                ...prev,
+                ...prev!,
                 viewsToday: docSnap.data()?.count || 0
-            } as DashboardStats));
+            }));
         });
         
         const unsubMonthly = onSnapshot(monthlyDocRef, (docSnap) => {
             setStats(prev => ({
-                ...prev,
+                ...prev!,
                 viewsThisMonth: docSnap.data()?.count || 0
-            } as DashboardStats));
+            }));
         });
 
         return () => {
@@ -185,7 +193,7 @@ function AdminDashboard() {
           </TabsList>
           
           <TabsContent value="overview" className="space-y-4">
-             {loadingStats || !stats ? (
+             {loadingStats ? (
               <div className="flex justify-center items-center h-64">
                 <Loader2 className="animate-spin h-8 w-8 text-primary" />
               </div>

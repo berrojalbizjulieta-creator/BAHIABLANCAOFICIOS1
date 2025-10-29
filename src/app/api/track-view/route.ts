@@ -7,16 +7,18 @@ import { format } from 'date-fns';
 export async function POST(request: Request) {
   try {
     const now = new Date();
-    // CORRECCIÓN: Se crea una referencia a un documento dentro de una colección.
-    // La ruta es par: coleccion/documento.
-    const dayDocRef = doc(db, 'analytics/daily', format(now, 'yyyy-MM-dd'));
-    const monthDocRef = doc(db, 'analytics/monthly', format(now, 'yyyy-MM'));
+    
+    // Nombres de documento correctos (2 segmentos: colección + documento)
+    const dayDocRef = doc(db, 'analytics', `daily_${format(now, 'yyyy_MM_dd')}`);
+    const monthDocRef = doc(db, 'analytics', `monthly_${format(now, 'yyyy_MM')}`);
+    const totalDocRef = doc(db, 'analytics', 'total');
 
     // Se usan operaciones atómicas para incrementar los contadores.
     // Esto es seguro y eficiente.
     await Promise.all([
         setDoc(dayDocRef, { count: increment(1) }, { merge: true }),
-        setDoc(monthDocRef, { count: increment(1) }, { merge: true })
+        setDoc(monthDocRef, { count: increment(1) }, { merge: true }),
+        setDoc(totalDocRef, { count: increment(1) }, { merge: true }),
     ]);
 
     // Respondemos rápidamente al cliente.
