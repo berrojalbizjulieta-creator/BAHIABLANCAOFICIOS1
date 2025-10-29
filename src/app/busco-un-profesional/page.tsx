@@ -69,7 +69,6 @@ export default function JobRequestsPage() {
         // Consulta optimizada para traer solo los documentos relevantes
         const q = query(
           collection(db, 'jobRequests'),
-          where('status', '==', 'open'),
           where('createdAt', '>=', sevenDaysAgo),
           orderBy('createdAt', 'desc'),
           limit(100)
@@ -84,7 +83,8 @@ export default function JobRequestsPage() {
               ...data,
               createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
             } as JobRequest;
-          });
+          })
+          .filter(req => req.status === 'open'); // Filtrar por estado 'open' en el cliente
 
         setJobRequests(requestsData);
       } catch (error) {
@@ -412,3 +412,5 @@ export default function JobRequestsPage() {
     </div>
   );
 }
+
+    
