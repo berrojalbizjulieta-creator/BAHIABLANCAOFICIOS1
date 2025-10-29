@@ -4,42 +4,60 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Función para verificar si el email del usuario es el del administrador.
+    // Función auxiliar para verificar si el usuario es administrador.
     function esAdmin() {
-      return request.auth.token.email == "berrojalbizjulieta@gmail.com";
+      return request.auth != null && request.auth.token.email == "berrojalbizjulieta@gmail.com";
     }
 
+    // Reglas para la colección 'users'
     match /users/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth.uid == userId || esAdmin();
+      // Cualquiera puede crear una cuenta de usuario.
+      allow create: if true;
+      // Solo el propio usuario o un admin puede leer/actualizar sus datos.
+      allow read, update: if request.auth.uid == userId || esAdmin();
+      // Nadie puede borrar documentos de usuario directamente.
+      allow delete: if false;
     }
 
+    // Reglas para la colección 'professionalsDetails'
     match /professionalsDetails/{profId} {
-      // Cualquiera puede leer un perfil de profesional (para la página pública).
-      // Solo el dueño del perfil o un admin puede escribir/actualizar.
+      // Cualquiera puede leer los perfiles de profesionales (perfil público).
       allow read: if true;
-      allow write: if request.auth != null && (request.auth.uid == profId || esAdmin());
+      // Solo el propio profesional o un admin puede crear o actualizar su perfil.
+      allow create, update: if request.auth.uid == profId || esAdmin();
+      // Nadie puede borrar perfiles directamente.
+      allow delete: if false;
     }
 
+    // Reglas para la colección de reseñas 'reviews'
     match /reviews/{reviewId} {
+      // Cualquiera puede leer las reseñas.
       allow read: if true;
-      // Un usuario puede crear/actualizar su propia reseña.
-      allow write: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      // Un usuario autenticado puede crear/actualizar una reseña si el ID del documento
+      // coincide con su UID y el ID del profesional.
+      allow create, update: if request.auth != null && reviewId == request.auth.uid + '_' + request.resource.data.professionalId;
+      // Nadie puede borrar reseñas directamente.
+      allow delete: if false;
+    }
+
+    // Reglas para la colección 'jobRequests'
+    match /jobRequests/{jobId} {
+      // Cualquiera puede leer las solicitudes de trabajo.
+      allow read: if true;
+      // Un usuario autenticado puede crear una solicitud.
+      allow create: if request.auth != null;
+      // Solo el creador de la solicitud o un admin pueden actualizarla.
+      allow update: if resource.data.clientId == request.auth.uid || esAdmin();
     }
     
-    match /jobRequests/{jobId} {
-        // Cualquiera puede leer las solicitudes de trabajo.
-        allow read: if true;
-        // Solo usuarios autenticados pueden crear. Solo el creador o un admin pueden actualizar/borrar.
-        allow create: if request.auth != null;
-        allow update, delete: if resource.data.clientId == request.auth.uid || esAdmin();
-    }
-
+    // Reglas para la colección de banners publicitarios 'adBanners'
     match /adBanners/{bannerId} {
+        // Cualquiera puede ver los banners.
         allow read: if true;
-        allow write, create, delete: if esAdmin();
+        // Solo el admin puede crear, actualizar o borrar banners.
+        allow create, update, delete: if esAdmin();
     }
-
+    
     // Reglas para la colección 'analytics'
     match /analytics/{docId} {
       // Cualquiera puede escribir (para el contador de visitas anónimo).
