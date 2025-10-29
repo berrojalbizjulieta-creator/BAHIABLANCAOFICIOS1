@@ -1,4 +1,3 @@
-
 'use client';
 
 import type { Metadata } from 'next';
@@ -28,17 +27,29 @@ function AnalyticsTracker() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Only run on client-side and do not track admin dashboard views
+    // Solo se ejecuta en el navegador y no rastrea las visitas al panel de administración.
     if (typeof window !== 'undefined' && !pathname.startsWith('/dashboard')) {
-      // Fire-and-forget request to the tracking API
-      fetch('/api/track-view', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ page: pathname }),
-        keepalive: true // Ensures the request is sent even if the user navigates away
-      }).catch(console.error);
+
+      // 🔹 Clave única para marcar que la visita ya fue contada esta sesión
+      const sessionKey = 'bbo_visit_counted';
+
+      // 🔹 Revisamos si ya se contó una visita en esta sesión
+      const hasBeenCounted = sessionStorage.getItem(sessionKey);
+
+      // 🔹 Si aún no fue contada, la registramos y marcamos la sesión
+      if (!hasBeenCounted) {
+        fetch('/api/track-view', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ page: pathname }),
+          keepalive: true, // Garantiza que se envíe aunque el usuario navegue rápido
+        }).catch(console.error);
+
+        // Marcamos que la sesión ya fue contada
+        sessionStorage.setItem(sessionKey, 'true');
+      }
     }
   }, [pathname]);
 
