@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState, Suspense } from 'react';
@@ -21,24 +22,24 @@ import {
 } from '@/components/ui/tabs';
 import { RecentSales } from '@/components/admin/recent-sales';
 import { Overview } from '@/components/admin/overview';
-import { DollarSign, Users, Briefcase, UserPlus, Loader2 } from 'lucide-react';
+import { DollarSign, Users, Briefcase, UserPlus, Loader2, Eye, TrendingUp } from 'lucide-react';
 import ProfessionalsTable from '@/components/admin/professionals-table';
 import ClientsTable from '@/components/admin/clients-table';
 import VerificationRequests from '@/components/admin/verification-requests';
 import AdManagement from '@/components/admin/ad-management';
-import { collection, getDocs, query, where, Timestamp, getCountFromServer, DocumentData } from 'firebase/firestore';
+import { collection, getDocs, query, where, Timestamp, getCountFromServer, DocumentData, doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Professional, User as AppUser } from '@/lib/types';
-import { subMonths, startOfMonth, endOfMonth, eachMonthOfInterval } from 'date-fns';
+import { subMonths, startOfMonth, endOfMonth, eachMonthOfInterval, format } from 'date-fns';
 
 interface DashboardStats {
   totalRevenue: number;
   newClients: number;
-  newClientsChange: number;
   newProfessionals: number;
-  newProfessionalsChange: number;
   activeSubscriptions: number;
   overviewData: { name: string; total: number }[];
+  viewsToday: number;
+  viewsThisMonth: number;
 }
 
 // Simplified function to fetch and filter in code
@@ -64,13 +65,20 @@ async function getCountForPeriod(collectionName: string, role: string | null, st
 
 
 async function getProfessionalsForPeriod(startDate: Date, endDate: Date) {
+    // This query is inefficient and might need a composite index.
+    // It's better to fetch all and filter in code for small datasets.
     const q = query(
-        collection(db, 'professionalsDetails'),
-        where('registrationDate', '>=', startDate),
-        where('registrationDate', '<', endDate)
+        collection(db, 'users'),
+        where('role', '==', 'professional')
     );
     const snapshot = await getDocs(q);
-    return snapshot.size;
+     const filteredDocs = snapshot.docs.filter(doc => {
+        const data = doc.data();
+        const regDate = data.registrationDate?.toDate ? data.registrationDate.toDate() : null;
+        if (!regDate) return false;
+        return regDate >= startDate && regDate < endDate;
+    });
+    return filteredDocs.length;
 }
 
 
@@ -88,16 +96,15 @@ function AdminDashboard() {
             try {
                 const now = new Date();
                 const oneMonthAgo = subMonths(now, 1);
-                const twoMonthsAgo = subMonths(now, 2);
-
+                
                 const [
                     newClientsCount,
-                    prevMonthNewClientsCount,
+                    newProfessionalsCount,
                     allProfessionalsSnapshot,
                     overviewData,
                 ] = await Promise.all([
                     getCountForPeriod('users', 'client', oneMonthAgo, now),
-                    getCountForPeriod('users', 'client', twoMonthsAgo, oneMonthAgo),
+                    getCountForPeriod('users', 'professional', oneMonthAgo, now),
                     getDocs(query(collection(db, 'professionalsDetails'), where('subscription.isSubscriptionActive', '==', true))),
                     Promise.all(eachMonthOfInterval({ start: subMonths(now, 11), end: now }).map(async (monthStart) => {
                         const monthEnd = endOfMonth(monthStart);
@@ -110,24 +117,14 @@ function AdminDashboard() {
                 const activeSubscriptions = allProfessionalsSnapshot.size;
                 const totalRevenue = activeSubscriptions * 15800; // Assuming fixed price
 
-                const calculatePercentageChange = (current: number, previous: number) => {
-                    if (previous === 0) return current > 0 ? 100 : 0;
-                    return ((current - previous) / previous) * 100;
-                };
-
-                const newProfessionalsCount = overviewData.find(d => d.name === now.toLocaleString('es-ES', { month: 'short' }).replace('.', '').replace(/^\w/, (c) => c.toUpperCase()))?.total || 0;
-                const prevMonthProfessionalsCount = overviewData.find(d => d.name === oneMonthAgo.toLocaleString('es-ES', { month: 'short' }).replace('.', '').replace(/^\w/, (c) => c.toUpperCase()))?.total || 0;
-
-
-                setStats({
+                setStats(prev => ({
+                    ...prev,
                     totalRevenue,
                     newClients: newClientsCount,
-                    newClientsChange: calculatePercentageChange(newClientsCount, prevMonthNewClientsCount),
                     newProfessionals: newProfessionalsCount,
-                    newProfessionalsChange: calculatePercentageChange(newProfessionalsCount, prevMonthProfessionalsCount),
                     activeSubscriptions,
                     overviewData,
-                });
+                } as DashboardStats));
 
             } catch (error) {
                 console.error("Error fetching dashboard stats:", error);
@@ -137,6 +134,24 @@ function AdminDashboard() {
         };
 
         fetchStats();
+        
+        // Listener for real-time analytics
+        const analyticsRef = doc(db, 'analytics', 'pageViews');
+        const unsubscribe = onSnapshot(analyticsRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const todayKey = `daily_${format(new Date(), 'yyyy-MM-dd')}`;
+                const monthKey = `monthly_${format(new Date(), 'yyyy-MM')}`;
+                
+                setStats(prev => ({
+                    ...prev,
+                    viewsToday: data[todayKey] || 0,
+                    viewsThisMonth: data[monthKey] || 0,
+                } as DashboardStats));
+            }
+        });
+
+        return () => unsubscribe();
     }, []);
 
     const onTabChange = (value: string) => {
@@ -168,7 +183,7 @@ function AdminDashboard() {
               </div>
             ) : (
             <>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
@@ -179,7 +194,19 @@ function AdminDashboard() {
                 <CardContent>
                   <div className="text-2xl font-bold">${stats.totalRevenue.toLocaleString('es-AR')}</div>
                   <p className="text-xs text-muted-foreground">
-                    Estimado mensual basado en suscripciones activas
+                    Basado en suscripciones activas
+                  </p>
+                </CardContent>
+              </Card>
+               <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Suscripciones Activas</CardTitle>
+                  <UserPlus className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.activeSubscriptions}</div>
+                  <p className="text-xs text-muted-foreground">
+                     Total de profesionales pagos
                   </p>
                 </CardContent>
               </Card>
@@ -193,7 +220,7 @@ function AdminDashboard() {
                 <CardContent>
                   <div className="text-2xl font-bold">+{stats.newClients}</div>
                   <p className="text-xs text-muted-foreground">
-                    {stats.newClientsChange.toFixed(1)}% desde el mes pasado
+                    en el último mes
                   </p>
                 </CardContent>
               </Card>
@@ -207,27 +234,37 @@ function AdminDashboard() {
                 <CardContent>
                   <div className="text-2xl font-bold">+{stats.newProfessionals}</div>
                   <p className="text-xs text-muted-foreground">
-                    {stats.newProfessionalsChange.toFixed(1)}% desde el mes pasado
+                    en el último mes
+                  </p>
+                </CardContent>
+              </Card>
+                <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Visitas este Mes</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.viewsThisMonth?.toLocaleString('es-AR') || 0}</div>
+                   <p className="text-xs text-muted-foreground">
+                    Total de visitas en los últimos 30 días
                   </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Suscripciones Activas
-                  </CardTitle>
-                  <UserPlus className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium">Visitas Hoy</CardTitle>
+                  <Eye className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.activeSubscriptions}</div>
-                  <p className="text-xs text-muted-foreground">
-                     Total de profesionales activos en la plataforma.
+                  <div className="text-2xl font-bold">{stats.viewsToday?.toLocaleString('es-AR') || 0}</div>
+                   <p className="text-xs text-muted-foreground">
+                    Visitas en las últimas 24 horas
                   </p>
                 </CardContent>
               </Card>
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-              <Card className="col-span-4">
+              <Card className="col-span-12 lg:col-span-3">
                 <CardHeader>
                   <CardTitle>Nuevos Profesionales por Mes</CardTitle>
                 </CardHeader>
@@ -235,7 +272,7 @@ function AdminDashboard() {
                   <Overview data={stats.overviewData}/>
                 </CardContent>
               </Card>
-              <Card className="col-span-3">
+              <Card className="col-span-12 lg:col-span-4">
                 <CardHeader>
                   <CardTitle>Registros Recientes</CardTitle>
                 </CardHeader>
