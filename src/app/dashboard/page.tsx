@@ -135,7 +135,7 @@ function AdminDashboard() {
 
         fetchStats();
         
-        // Listeners for real-time analytics
+        // CORRECCIÓN: Listeners para leer desde la nueva estructura de analíticas
         const todayKey = format(new Date(), 'yyyy-MM-dd');
         const monthKey = format(new Date(), 'yyyy-MM');
 
