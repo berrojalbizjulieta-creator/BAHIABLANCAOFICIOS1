@@ -98,10 +98,17 @@ export default function SignupPage() {
 
       // 3. Prepare user data for Firestore
       const isProfessional = accountType === 'professional';
-      const userData = {
+      const userData: {
+        name: string;
+        email: string;
+        role: 'client' | 'professional';
+        registrationDate: any;
+        isActive: boolean;
+        photoUrl: string;
+      } = {
         name: data.fullName,
         email: data.email,
-        role: isProfessional ? 'professional' : 'client',
+        role: isProfessional ? 'professional' : 'client', // This ensures 'client' role is set
         registrationDate: serverTimestamp(),
         isActive: true,
         photoUrl: '', // Default empty photo
