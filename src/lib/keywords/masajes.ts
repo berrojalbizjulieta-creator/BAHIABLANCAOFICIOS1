@@ -1,0 +1,35 @@
+// src/lib/keywords/masajes.ts
+export const MASAJES_KEYWORDS = [
+  "masajes a domicilio",
+  "masaje relajante",
+  "masajes terapéuticos",
+  "masaje descontracturante",
+  "masaje anti estrés",
+  "masaje para espalda",
+  "masaje para cuello y hombros",
+  "masajes en casa",
+  "masajes profesionales",
+  "masaje deportivo",
+  "masajes profundos",
+  "masajes relajantes a domicilio",
+  "masaje con aromaterapia",
+  "masajes para dolor muscular",
+  "masaje linfático",
+  "masaje corporal completo",
+  "masajes por hora",
+  "masaje anti dolor",
+  "masaje sueco",
+  "masaje de pies",
+  "masaje de manos",
+  "masajes para estrés y ansiedad",
+  "masaje tailandés",
+  "masaje descontracturante a domicilio",
+  "masajes para relajación total",
+  "masaje corporal relajante",
+  "masajista profesional",
+  "masaje de cabeza",
+  "masaje terapéutico en casa",
+  "masaje muscular profundo"
+];
+
+    

@@ -27,6 +27,7 @@ import {
   Bug,
   Car,
   Moon,
+  User,
 } from 'lucide-react';
 import type { Category, Professional, Banner, JobRequest, CategorySpecialties, Schedule } from '@/lib/types';
 import { placeholderImages } from './placeholder-images';
@@ -56,6 +57,8 @@ import { REPARACIONES_KEYWORDS } from './keywords/reparaciones';
 import { BELLEZA_KEYWORDS } from './keywords/belleza';
 import { ASTROLOGIA_KEYWORDS } from './keywords/astrologia';
 import { AGUA_ENVASADA_KEYWORDS } from './keywords/agua-envasada';
+import { CUIDADO_DE_PERSONAS_KEYWORDS } from './keywords/cuidado-de-personas';
+import { MASAJES_KEYWORDS } from './keywords/masajes';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -110,6 +113,8 @@ export const CATEGORIES: Category[] = [
     { id: 69, name: 'Belleza', icon: Palette, description: 'Peluquería, uñas, maquillaje y más.', imageUrl: getImage('cat-belleza').imageUrl, imageHint: getImage('cat-belleza').imageHint },
     { id: 70, name: 'Astrología', icon: Moon, description: 'Lectura de carta natal, tarot y más.', imageUrl: getImage('cat-astrologia').imageUrl, imageHint: getImage('cat-astrologia').imageHint },
     { id: 71, name: 'Agua Envasada', icon: GlassWater, description: 'Reparto de bidones de agua y soda.', imageUrl: getImage('cat-agua-envasada').imageUrl, imageHint: getImage('cat-agua-envasada').imageHint },
+    { id: 72, name: 'Cuidado de Personas', icon: HeartHandshake, description: 'Niñeras, cuidado de adultos mayores y enfermos.', imageUrl: getImage('cat-cuidado-personas').imageUrl, imageHint: getImage('cat-cuidado-personas').imageHint },
+    { id: 73, name: 'Masajes', icon: User, description: 'Masajes descontracturantes, relajantes y más.', imageUrl: getImage('cat-masajes').imageUrl, imageHint: getImage('cat-masajes').imageHint },
 ];
 
 // Este objeto contiene las listas cortas de especialidades para que el profesional elija en su perfil.
@@ -185,6 +190,8 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   70: { name: 'Astrología', specialties: ['Lectura de Carta Natal', 'Tarot', 'Revolución Solar', 'Sinastría (compatibilidad de parejas)', 'Tránsitos planetarios', 'Astrología kármica', 'Numerología', 'Registros Akáshicos', 'Péndulo y radiestesia', 'Limpieza energética'],
   },
   71: { name: 'Agua Envasada', specialties: ['Reparto de bidones', 'Agua y soda', 'Dispenser frío/calor', 'Agua para empresas', 'Entrega a domicilio'] },
+  72: { name: 'Cuidado de Personas', specialties: ['Cuidado de adultos mayores', 'Acompañamiento a domicilio', 'Cuidado de niños y bebés', 'Asistencia para enfermos', 'Enfermería a domicilio', 'Cuidado postoperatorio', 'Acompañante terapéutico', 'Cuidado de personas con discapacidad', 'Asistencia personal', 'Niñera por horas'] },
+  73: { name: 'Masajes', specialties: ['Masaje descontracturante', 'Masaje relajante', 'Masaje deportivo', 'Drenaje linfático', 'Masaje anti-estrés', 'Masaje para dolor de espalda', 'Masaje terapéutico', 'Masajes a domicilio', 'Reflexología', 'Masaje de tejido profundo'] },
 };
 
 
@@ -214,7 +221,9 @@ export const CATEGORY_KEYWORDS: { [key: number]: { name: string; keywords: strin
   68: { name: 'Mecánicos Auto/Motos', keywords: MECANICA_KEYWORDS },
   69: { name: 'Belleza', keywords: BELLEZA_KEYWORDS },
   70: { name: 'Astrología', keywords: ASTROLOGIA_KEYWORDS },
-  71: { name: 'Agua Envasada', keywords: AGUA_ENVASADA_KEYWORDS }
+  71: { name: 'Agua Envasada', keywords: AGUA_ENVASADA_KEYWORDS },
+  72: { name: 'Cuidado de Personas', keywords: CUIDADO_DE_PERSONAS_KEYWORDS },
+  73: { name: 'Masajes', keywords: MASAJES_KEYWORDS }
 };
 
 // Diccionario simple para mapear sinónimos comunes a la categoría oficial
@@ -256,6 +265,11 @@ export const CATEGORY_SYNONYMS = {
     'astrologo': 'Astrología',
     'bidon': 'Agua Envasada',
     'soda': 'Agua Envasada',
+    'cuidador': 'Cuidado de Personas',
+    'niñera': 'Cuidado de Personas',
+    'babysitter': 'Cuidado de Personas',
+    'enfermera': 'Cuidado de Personas',
+    'masajista': 'Masajes',
 }
 
 export const PROFESSIONALS: Professional[] = [
@@ -441,5 +455,7 @@ export const essentialCategories = CATEGORIES.map(c => {
   }
   return c;
 }).filter(c => essentialCategoryNames.includes(c.name));
+
+    
 
     
