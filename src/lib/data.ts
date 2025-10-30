@@ -112,9 +112,6 @@ export const CATEGORIES: Category[] = [
     { id: 68, name: 'Mecánicos Auto/Motos', icon: Car, description: 'Servicio y reparación de vehículos.', imageUrl: getImage('cat-mecanica').imageUrl, imageHint: getImage('cat-mecanica').imageHint },
     { id: 69, name: 'Belleza', icon: Palette, description: 'Peluquería, uñas, maquillaje y más.', imageUrl: getImage('cat-belleza').imageUrl, imageHint: getImage('cat-belleza').imageHint },
     { id: 70, name: 'Astrología', icon: Moon, description: 'Lectura de carta natal, tarot y más.', imageUrl: getImage('cat-astrologia').imageUrl, imageHint: getImage('cat-astrologia').imageHint },
-    { id: 71, name: 'Agua Envasada', icon: GlassWater, description: 'Reparto de bidones de agua y soda.', imageUrl: getImage('cat-agua-envasada').imageUrl, imageHint: getImage('cat-agua-envasada').imageHint },
-    { id: 72, name: 'Cuidado de Personas', icon: HeartHandshake, description: 'Niñeras, cuidado de adultos mayores y enfermos.', imageUrl: getImage('cat-cuidado-personas').imageUrl, imageHint: getImage('cat-cuidado-personas').imageHint },
-    { id: 73, name: 'Masajes', icon: User, description: 'Masajes descontracturantes, relajantes y más.', imageUrl: getImage('cat-masajes').imageUrl, imageHint: getImage('cat-masajes').imageHint },
 ];
 
 // Este objeto contiene las listas cortas de especialidades para que el profesional elija en su perfil.
@@ -455,6 +452,8 @@ export const essentialCategories = CATEGORIES.map(c => {
   }
   return c;
 }).filter(c => essentialCategoryNames.includes(c.name));
+
+    
 
     
 
