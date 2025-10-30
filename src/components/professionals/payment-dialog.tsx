@@ -75,13 +75,16 @@ export default function PaymentDialog({ isOpen, onOpenChange, professionalName, 
                     ))}
                 </ul>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex flex-col items-center gap-2">
                 <Button 
                     onClick={handleSelectPlan} 
                     className='w-full'
                 >
                     Activar Plan GRATIS por 3 meses
                 </Button>
+                <p className="text-xs text-muted-foreground text-center">
+                    Tranquilo, vas a poder editar tu perfil las veces que quieras.
+                </p>
             </CardFooter>
         </Card>
     )
@@ -90,7 +93,11 @@ export default function PaymentDialog({ isOpen, onOpenChange, professionalName, 
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent 
+        className="sm:max-w-md"
+        onInteractOutside={(e) => e.preventDefault()} // Evita que se cierre al hacer clic afuera
+        showCloseButton={false} // Prop para ocultar el botón 'X'
+      >
         <DialogHeader>
           <DialogTitle className='text-2xl'>
             ¡Último paso, {professionalName}!
