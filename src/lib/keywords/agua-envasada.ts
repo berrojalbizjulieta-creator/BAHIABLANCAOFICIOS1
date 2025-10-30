@@ -1,0 +1,20 @@
+// src/lib/keywords/agua-envasada.ts
+export const AGUA_ENVASADA_KEYWORDS = [
+  "agua envasada",
+  "bidon de agua",
+  "agua 10 litros",
+  "agua 20 litros",
+  "bidon 10 litros",
+  "bidon 20 litros",
+  "agua",
+  "soda",
+  "sifón de soda",
+  "entrega de agua",
+  "delivery de agua",
+  "reparto de agua",
+  "agua a domicilio",
+  "dispenser de agua",
+  "agua para dispenser",
+  "agua purificada",
+  "agua mineral",
+];
