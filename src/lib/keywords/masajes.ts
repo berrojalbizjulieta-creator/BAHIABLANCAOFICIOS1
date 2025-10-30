@@ -31,5 +31,3 @@ export const MASAJES_KEYWORDS = [
   "masaje terapéutico en casa",
   "masaje muscular profundo"
 ];
-
-    

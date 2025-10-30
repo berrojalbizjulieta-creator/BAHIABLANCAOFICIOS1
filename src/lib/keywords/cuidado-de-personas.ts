@@ -41,6 +41,7 @@ export const CUIDADO_DE_PERSONAS_KEYWORDS = [
   "niñera full time",
   "niñera part time",
   "cuidado de enfermos",
+  "enfermería a domicilio",
   "enfermero particular",
   "asistencia a enfermos",
   "acompañamiento de pacientes",
@@ -80,5 +81,3 @@ export const CUIDADO_DE_PERSONAS_KEYWORDS = [
   "acompañamiento y cuidado personal",
   "cuidado de niños y adultos dependientes"
 ];
-
-    
