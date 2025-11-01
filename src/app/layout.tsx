@@ -1,6 +1,6 @@
 'use client';
+// Force Rebuild: Sat Jul 27 2024 22:20:10 GMT+0000 (Coordinated Universal Time)
 
-import type { Metadata } from 'next';
 import { PT_Sans } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/layout/header';
@@ -15,13 +15,6 @@ const ptSans = PT_Sans({
   weight: ['400', '700'],
   variable: '--font-pt-sans',
 });
-
-// Metadata can't be dynamically generated in a client component,
-// but we can define a static one. For dynamic titles, other strategies are needed.
-// export const metadata: Metadata = {
-//   title: 'Bahia Blanca Oficios',
-//   description: 'Encuentra profesionales de confianza en Bahía Blanca.',
-// };
 
 function AnalyticsTracker() {
   const pathname = usePathname();
