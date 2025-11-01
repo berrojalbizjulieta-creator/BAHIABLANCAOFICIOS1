@@ -867,7 +867,7 @@ export default function ProfilePage() {
                         className="min-h-[100px]"
                       />
                     ) : (
-                      <p className="text-muted-foreground">
+                      <p className="text-muted-foreground whitespace-pre-wrap">
                         {professional.description || 'Aún no has añadido una descripción.'}
                       </p>
                     )}

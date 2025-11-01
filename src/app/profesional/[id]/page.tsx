@@ -535,7 +535,7 @@ export default function PublicProfilePage() {
                   <CardTitle>Sobre Mí</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    <p className="text-muted-foreground">
+                    <p className="text-muted-foreground whitespace-pre-wrap">
                       {professional.description || 'El profesional aún no ha añadido una descripción.'}
                     </p>
                   <Separator />
