@@ -1,4 +1,5 @@
 
+
 import {
   Wrench,
   Plug,
@@ -59,6 +60,7 @@ import { ASTROLOGIA_KEYWORDS } from './keywords/astrologia';
 import { AGUA_ENVASADA_KEYWORDS } from './keywords/agua-envasada';
 import { CUIDADO_DE_PERSONAS_KEYWORDS } from './keywords/cuidado-de-personas';
 import { MASAJES_KEYWORDS } from './keywords/masajes';
+import { DISENO_REMODELACIONES_KEYWORDS } from './keywords/diseno-remodelaciones';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -115,6 +117,7 @@ export const CATEGORIES: Category[] = [
     { id: 71, name: 'Agua Envasada', icon: GlassWater, description: 'Reparto de bidones de agua y soda a domicilio.', imageUrl: getImage('cat-agua-envasada').imageUrl, imageHint: getImage('cat-agua-envasada').imageHint },
     { id: 72, name: 'Cuidado de Personas', icon: HeartHandshake, description: 'Cuidado de niños, adultos mayores y enfermos.', imageUrl: getImage('cat-cuidado-personas').imageUrl, imageHint: getImage('cat-cuidado-personas').imageHint },
     { id: 73, name: 'Masajes', icon: User, description: 'Masajes descontracturantes, relajantes y más.', imageUrl: getImage('cat-masajes').imageUrl, imageHint: getImage('cat-masajes').imageHint },
+    { id: 74, name: 'Diseño y Remodelaciones', icon: Palette, description: 'Interiorismo, renovación de cocinas y baños, y mejoras del hogar.', imageUrl: getImage('cat-diseno-remodelaciones').imageUrl, imageHint: getImage('cat-diseno-remodelaciones').imageHint },
 ];
 
 // Este objeto contiene las listas cortas de especialidades para que el profesional elija en su perfil.
@@ -192,6 +195,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   71: { name: 'Agua Envasada', specialties: ['Reparto de bidones', 'Agua y soda', 'Dispenser frío/calor', 'Agua para empresas', 'Entrega a domicilio'] },
   72: { name: 'Cuidado de Personas', specialties: ['Cuidado de adultos mayores', 'Acompañamiento a domicilio', 'Cuidado de niños y bebés', 'Asistencia para enfermos', 'Enfermería a domicilio', 'Cuidado postoperatorio', 'Acompañante terapéutico', 'Cuidado de personas con discapacidad', 'Asistencia personal', 'Niñera por horas'] },
   73: { name: 'Masajes', specialties: ['Masaje descontracturante', 'Masaje relajante', 'Masaje deportivo', 'Drenaje linfático', 'Masaje anti-estrés', 'Masaje para dolor de espalda', 'Masaje terapéutico', 'Masajes a domicilio', 'Reflexología', 'Masaje de tejido profundo'] },
+  74: { name: 'Diseño y Remodelaciones', specialties: ['Diseño de interiores', 'Renovación de cocinas', 'Renovación de baños', 'Asesoramiento en decoración', 'Rediseño de espacios', 'Colocación de pisos', 'Proyectos de iluminación', 'Home staging', 'Visualización 3D (Renders)', 'Planificación de obras'] },
 };
 
 
@@ -223,7 +227,8 @@ export const CATEGORY_KEYWORDS: { [key: number]: { name: string; keywords: strin
   70: { name: 'Astrología', keywords: ASTROLOGIA_KEYWORDS },
   71: { name: 'Agua Envasada', keywords: AGUA_ENVASADA_KEYWORDS },
   72: { name: 'Cuidado de Personas', keywords: CUIDADO_DE_PERSONAS_KEYWORDS },
-  73: { name: 'Masajes', keywords: MASAJES_KEYWORDS }
+  73: { name: 'Masajes', keywords: MASAJES_KEYWORDS },
+  74: { name: 'Diseño y Remodelaciones', keywords: DISENO_REMODELACIONES_KEYWORDS }
 };
 
 // Diccionario simple para mapear sinónimos comunes a la categoría oficial
@@ -270,6 +275,10 @@ export const CATEGORY_SYNONYMS = {
     'babysitter': 'Cuidado de Personas',
     'enfermera': 'Cuidado de Personas',
     'masajista': 'Masajes',
+    'remodelacion': 'Diseño y Remodelaciones',
+    'diseño': 'Diseño y Remodelaciones',
+    'interiorismo': 'Diseño y Remodelaciones',
+    'decoracion': 'Diseño y Remodelaciones',
 }
 
 export const PROFESSIONALS: Professional[] = [
