@@ -7,7 +7,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import CategoriesGrid from '@/components/home/categories-grid';
 import HeroSection from '@/components/home/hero-section';
 import AdBanner from '@/components/home/ad-banner';
-import CtaSection from '@/components/home/cta-section';
 
 // --- Componentes que se cargarán dinámicamente (cuando el usuario se acerque a ellos) ---
 const PromoSlider = dynamic(() => import('@/components/home/promo-slider'), { 
@@ -30,7 +29,6 @@ export default function Home() {
     <>
       <HeroSection />
       <CategoriesGrid />
-      <CtaSection />
       <AdBanner />
       <PromoSlider />
       <AppPromoSection />
