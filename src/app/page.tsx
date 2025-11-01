@@ -27,13 +27,13 @@ const TestimonialSection = dynamic(() => import('@/components/home/testimonial-s
   ssr: false 
 });
 
-const MobileCtaSection = () => (
-    <section className="py-8 md:hidden">
+const CtaSection = () => (
+    <section className="py-8">
         <div className="container mx-auto px-4">
             <div className="bg-muted/30 p-6 rounded-lg text-center border">
                 <h3 className="font-bold text-lg text-foreground">¿Sos profesional o tenés un oficio?</h3>
                 <p className="text-muted-foreground text-sm mt-1 mb-4">Sumate a nuestra comunidad y conseguí más clientes.</p>
-                <Button asChild size="lg" className="w-full">
+                <Button asChild size="lg" className="w-full sm:w-auto">
                     <Link href="/signup">
                         REGISTRATE ACÁ
                     </Link>
@@ -49,7 +49,7 @@ export default function Home() {
     <>
       <HeroSection />
       <CategoriesGrid />
-      <MobileCtaSection />
+      <CtaSection />
       <AdBanner />
       <PromoSlider />
       <AppPromoSection />
