@@ -4,6 +4,8 @@
 
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 // --- Componentes que se cargan inmediatamente ---
 import CategoriesGrid from '@/components/home/categories-grid';
@@ -25,12 +27,29 @@ const TestimonialSection = dynamic(() => import('@/components/home/testimonial-s
   ssr: false 
 });
 
+const MobileCtaSection = () => (
+    <section className="py-8 md:hidden">
+        <div className="container mx-auto px-4">
+            <div className="bg-muted/30 p-6 rounded-lg text-center border">
+                <h3 className="font-bold text-lg text-foreground">¿Sos profesional o tenés un oficio?</h3>
+                <p className="text-muted-foreground text-sm mt-1 mb-4">Sumate a nuestra comunidad y conseguí más clientes.</p>
+                <Button asChild size="lg" className="w-full">
+                    <Link href="/signup">
+                        REGISTRATE ACÁ
+                    </Link>
+                </Button>
+            </div>
+        </div>
+    </section>
+);
+
 
 export default function Home() {
   return (
     <>
       <HeroSection />
       <CategoriesGrid />
+      <MobileCtaSection />
       <AdBanner />
       <PromoSlider />
       <AppPromoSection />
