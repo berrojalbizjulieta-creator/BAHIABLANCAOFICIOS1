@@ -471,6 +471,23 @@ export default function ProfilePage() {
       }
   }
 
+  const handleAddWorkPhotoClick = () => {
+    if (isEditing && workPhotoInputRef.current) {
+      workPhotoInputRef.current.click();
+    }
+  };
+
+  const handleDeleteWorkPhoto = (photoId: string) => {
+    if (professional) {
+      const updatedPhotos = professional.workPhotos?.filter(photo => photo.id !== photoId);
+      setProfessional({ ...professional, workPhotos: updatedPhotos });
+      toast({
+        title: "Foto eliminada",
+        description: "La foto se quitará de tu galería cuando guardes los cambios.",
+      });
+    }
+  };
+
   const handleWorkPhotoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && professional) {
