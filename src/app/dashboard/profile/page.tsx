@@ -83,6 +83,7 @@ import { cn } from '@/lib/utils';
 
 const MAX_AVATAR_SIZE_MB = 5;
 const MAX_WORK_PHOTOS = 10;
+const MAX_WORK_PHOTO_SIZE_MB = 5;
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
@@ -469,23 +470,6 @@ export default function ProfilePage() {
           reader.readAsDataURL(file);
       }
   }
-
-  const handleAddWorkPhotoClick = () => {
-    if (isEditing && workPhotoInputRef.current) {
-      workPhotoInputRef.current.click();
-    }
-  };
-
-  const handleDeleteWorkPhoto = (photoId: string) => {
-    if (professional) {
-      const updatedPhotos = professional.workPhotos?.filter(photo => photo.id !== photoId);
-      setProfessional({ ...professional, workPhotos: updatedPhotos });
-      toast({
-        title: "Foto eliminada",
-        description: "La foto se quitará de tu galería cuando guardes los cambios.",
-      });
-    }
-  };
 
   const handleWorkPhotoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
