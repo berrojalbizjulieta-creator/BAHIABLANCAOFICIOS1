@@ -845,6 +845,29 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
 
+            {isEditing && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Tu Teléfono de Contacto</CardTitle>
+                  <CardDescription>
+                    Este es el número que verán los clientes para contactarte por WhatsApp. Asegúrate de que sea correcto.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                   <div className="relative max-w-sm">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                      <Input
+                        type="tel"
+                        placeholder="Ej: 2914123456"
+                        className="pl-10 text-lg"
+                        value={professional.phone || ''}
+                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                      />
+                    </div>
+                </CardContent>
+              </Card>
+            )}
+
             <Tabs defaultValue="about" className="w-full">
               <TabsList>
                 <TabsTrigger value="about">Sobre Mí</TabsTrigger>
@@ -921,18 +944,6 @@ export default function ProfilePage() {
                            <li className="flex items-center gap-3"><Clock className="w-4 h-4 text-primary" /> 
                             {isEditing ? <div className="flex items-center gap-2"><Input type="number" value={professional.yearsInBusiness || 0} onChange={e => handleInputChange('yearsInBusiness', Number(e.target.value))} placeholder="0" className="w-16 h-8"/> <span>años en el negocio</span></div> : <span>{professional.yearsInBusiness || 0} años en el negocio</span>}
                            </li>
-                           {isEditing && (
-                            <li className="flex items-center gap-3">
-                               <Phone className="w-4 h-4 text-primary" /> 
-                                <Input 
-                                    type="tel" 
-                                    placeholder="2914..." 
-                                    className="w-48 h-8"
-                                    value={professional.phone || ''}
-                                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                                /> 
-                           </li>
-                           )}
                         </ul>
                       </div>
                       <div>
