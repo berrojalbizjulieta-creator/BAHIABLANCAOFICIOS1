@@ -29,6 +29,7 @@ import {
   Car,
   Moon,
   User,
+  Scissors,
 } from 'lucide-react';
 import type { Category, Professional, Banner, JobRequest, CategorySpecialties, Schedule } from '@/lib/types';
 import { placeholderImages } from './placeholder-images';
@@ -62,6 +63,7 @@ import { CUIDADO_DE_PERSONAS_KEYWORDS } from './keywords/cuidado-de-personas';
 import { MASAJES_KEYWORDS } from './keywords/masajes';
 import { DISENO_REMODELACIONES_KEYWORDS } from './keywords/diseno-remodelaciones';
 import { TERAPIAS_HOLISTICAS_KEYWORDS } from './keywords/terapias-holisticas';
+import { TEXTILES_KEYWORDS } from './keywords/textiles';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -120,6 +122,7 @@ export const CATEGORIES: Category[] = [
     { id: 73, name: 'Masajes', icon: User, description: 'Masajes descontracturantes, relajantes y más.', imageUrl: getImage('cat-masajes').imageUrl, imageHint: getImage('cat-masajes').imageHint },
     { id: 74, name: 'Diseño y Remodelaciones', icon: Palette, description: 'Interiorismo, renovación de cocinas y baños, y mejoras del hogar.', imageUrl: getImage('cat-diseno-remodelaciones').imageUrl, imageHint: getImage('cat-diseno-remodelaciones').imageHint },
     { id: 75, name: 'Terapias Holísticas', icon: Sparkles, description: 'Reiki, sanación energética, tarot y más.', imageUrl: getImage('cat-terapias-holisticas').imageUrl, imageHint: getImage('cat-terapias-holisticas').imageHint },
+    { id: 76, name: 'Textiles', icon: Scissors, description: 'Arreglos de ropa, confección a medida y costura.', imageUrl: getImage('cat-textiles').imageUrl, imageHint: getImage('cat-textiles').imageHint },
 ];
 
 // Este objeto contiene las listas cortas de especialidades para que el profesional elija en su perfil.
@@ -199,6 +202,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   73: { name: 'Masajes', specialties: ['Masaje descontracturante', 'Masaje relajante', 'Masaje deportivo', 'Drenaje linfático', 'Masaje anti-estrés', 'Masaje para dolor de espalda', 'Masaje terapéutico', 'Masajes a domicilio', 'Reflexología', 'Masaje de tejido profundo'] },
   74: { name: 'Diseño y Remodelaciones', specialties: ['Diseño de interiores', 'Renovación de cocinas', 'Renovación de baños', 'Asesoramiento en decoración', 'Rediseño de espacios', 'Colocación de pisos', 'Proyectos de iluminación', 'Home staging', 'Visualización 3D (Renders)', 'Planificación de obras'] },
   75: { name: 'Terapias Holísticas', specialties: ['Reiki', 'Sanación energética', 'Lectura de Tarot', 'Armonización de chakras', 'Limpieza energética', 'Terapia con péndulo', 'Registros Akáshicos', 'Cristaloterapia', 'Aromaterapia', 'Flores de Bach'] },
+  76: { name: 'Textiles', specialties: ['Arreglos y modificaciones', 'Dobladillos', 'Cambio de cierres y botones', 'Confección a medida', 'Arreglo de trajes y vestidos', 'Ajustes de prendas', 'Arreglo de ropa de cuero y jean', 'Bordados y personalización', 'Arreglo de cortinas y ropa de cama', 'Reparación de uniformes'] },
 };
 
 
@@ -232,7 +236,8 @@ export const CATEGORY_KEYWORDS: { [key: number]: { name: string; keywords: strin
   72: { name: 'Cuidado de Personas', keywords: CUIDADO_DE_PERSONAS_KEYWORDS },
   73: { name: 'Masajes', keywords: MASAJES_KEYWORDS },
   74: { name: 'Diseño y Remodelaciones', keywords: DISENO_REMODELACIONES_KEYWORDS },
-  75: { name: 'Terapias Holísticas', keywords: TERAPIAS_HOLISTICAS_KEYWORDS }
+  75: { name: 'Terapias Holísticas', keywords: TERAPIAS_HOLISTICAS_KEYWORDS },
+  76: { name: 'Textiles', keywords: TEXTILES_KEYWORDS }
 };
 
 // Diccionario simple para mapear sinónimos comunes a la categoría oficial
@@ -286,6 +291,10 @@ export const CATEGORY_SYNONYMS = {
     'sanacion': 'Terapias Holísticas',
     'holistico': 'Terapias Holísticas',
     'tarot': 'Terapias Holísticas',
+    'costura': 'Textiles',
+    'costurera': 'Textiles',
+    'modista': 'Textiles',
+    'ropa': 'Textiles',
 }
 
 export const PROFESSIONALS: Professional[] = [
@@ -477,3 +486,4 @@ export const essentialCategories = CATEGORIES.map(c => {
     
 
     
+
