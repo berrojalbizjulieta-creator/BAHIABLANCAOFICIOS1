@@ -61,6 +61,7 @@ import { AGUA_ENVASADA_KEYWORDS } from './keywords/agua-envasada';
 import { CUIDADO_DE_PERSONAS_KEYWORDS } from './keywords/cuidado-de-personas';
 import { MASAJES_KEYWORDS } from './keywords/masajes';
 import { DISENO_REMODELACIONES_KEYWORDS } from './keywords/diseno-remodelaciones';
+import { TERAPIAS_HOLISTICAS_KEYWORDS } from './keywords/terapias-holisticas';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -118,6 +119,7 @@ export const CATEGORIES: Category[] = [
     { id: 72, name: 'Cuidado de Personas', icon: HeartHandshake, description: 'Cuidado de niños, adultos mayores y enfermos.', imageUrl: getImage('cat-cuidado-personas').imageUrl, imageHint: getImage('cat-cuidado-personas').imageHint },
     { id: 73, name: 'Masajes', icon: User, description: 'Masajes descontracturantes, relajantes y más.', imageUrl: getImage('cat-masajes').imageUrl, imageHint: getImage('cat-masajes').imageHint },
     { id: 74, name: 'Diseño y Remodelaciones', icon: Palette, description: 'Interiorismo, renovación de cocinas y baños, y mejoras del hogar.', imageUrl: getImage('cat-diseno-remodelaciones').imageUrl, imageHint: getImage('cat-diseno-remodelaciones').imageHint },
+    { id: 75, name: 'Terapias Holísticas', icon: Sparkles, description: 'Reiki, sanación energética, tarot y más.', imageUrl: getImage('cat-terapias-holisticas').imageUrl, imageHint: getImage('cat-terapias-holisticas').imageHint },
 ];
 
 // Este objeto contiene las listas cortas de especialidades para que el profesional elija en su perfil.
@@ -196,6 +198,7 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   72: { name: 'Cuidado de Personas', specialties: ['Cuidado de adultos mayores', 'Acompañamiento a domicilio', 'Cuidado de niños y bebés', 'Asistencia para enfermos', 'Enfermería a domicilio', 'Cuidado postoperatorio', 'Acompañante terapéutico', 'Cuidado de personas con discapacidad', 'Asistencia personal', 'Niñera por horas'] },
   73: { name: 'Masajes', specialties: ['Masaje descontracturante', 'Masaje relajante', 'Masaje deportivo', 'Drenaje linfático', 'Masaje anti-estrés', 'Masaje para dolor de espalda', 'Masaje terapéutico', 'Masajes a domicilio', 'Reflexología', 'Masaje de tejido profundo'] },
   74: { name: 'Diseño y Remodelaciones', specialties: ['Diseño de interiores', 'Renovación de cocinas', 'Renovación de baños', 'Asesoramiento en decoración', 'Rediseño de espacios', 'Colocación de pisos', 'Proyectos de iluminación', 'Home staging', 'Visualización 3D (Renders)', 'Planificación de obras'] },
+  75: { name: 'Terapias Holísticas', specialties: ['Reiki', 'Sanación energética', 'Lectura de Tarot', 'Armonización de chakras', 'Limpieza energética', 'Terapia con péndulo', 'Registros Akáshicos', 'Cristaloterapia', 'Aromaterapia', 'Flores de Bach'] },
 };
 
 
@@ -228,7 +231,8 @@ export const CATEGORY_KEYWORDS: { [key: number]: { name: string; keywords: strin
   71: { name: 'Agua Envasada', keywords: AGUA_ENVASADA_KEYWORDS },
   72: { name: 'Cuidado de Personas', keywords: CUIDADO_DE_PERSONAS_KEYWORDS },
   73: { name: 'Masajes', keywords: MASAJES_KEYWORDS },
-  74: { name: 'Diseño y Remodelaciones', keywords: DISENO_REMODELACIONES_KEYWORDS }
+  74: { name: 'Diseño y Remodelaciones', keywords: DISENO_REMODELACIONES_KEYWORDS },
+  75: { name: 'Terapias Holísticas', keywords: TERAPIAS_HOLISTICAS_KEYWORDS }
 };
 
 // Diccionario simple para mapear sinónimos comunes a la categoría oficial
@@ -266,7 +270,6 @@ export const CATEGORY_SYNONYMS = {
     'maquillaje': 'Belleza',
     'estetica': 'Belleza',
     'carta natal': 'Astrología',
-    'tarot': 'Astrología',
     'astrologo': 'Astrología',
     'bidon': 'Agua Envasada',
     'soda': 'Agua Envasada',
@@ -276,9 +279,13 @@ export const CATEGORY_SYNONYMS = {
     'enfermera': 'Cuidado de Personas',
     'masajista': 'Masajes',
     'remodelacion': 'Diseño y Remodelaciones',
-    'diseño': 'Diseño y Remodelaciones',
     'interiorismo': 'Diseño y Remodelaciones',
     'decoracion': 'Diseño y Remodelaciones',
+    'reiki': 'Terapias Holísticas',
+    'chakras': 'Terapias Holísticas',
+    'sanacion': 'Terapias Holísticas',
+    'holistico': 'Terapias Holísticas',
+    'tarot': 'Terapias Holísticas',
 }
 
 export const PROFESSIONALS: Professional[] = [

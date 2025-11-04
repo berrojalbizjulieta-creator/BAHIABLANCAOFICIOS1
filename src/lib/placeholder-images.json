@@ -87,7 +87,7 @@
     {
       "id": "work-1",
       "description": "A newly renovated modern kitchen.",
-      "imageUrl": "https://images.unsplash.com/photo-1609280069678-ab9ef26a0b05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxyZW5vdmF0ZWQlMjBraXRjaGVufGVufDB8fHx8MTc1ODYwMTYyMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1609280069678-ab9ef26a0b05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxyZW5vdmF0ZWQlMjBraXRjaGVufGVufDB8fHx8MTc1ODYwMTYyMXww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "renovated kitchen"
     },
     {
@@ -359,6 +359,12 @@
       "description": "A modern and well-designed living room interior.",
       "imageUrl": "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1170",
       "imageHint": "modern interior"
+    },
+    {
+      "id": "cat-terapias-holisticas",
+      "description": "A serene scene with crystals, candles, and sage, representing holistic therapies.",
+      "imageUrl": "https://images.unsplash.com/photo-1600161456711-062135c7d81a?q=80&w=1170",
+      "imageHint": "holistic therapy"
     }
   ]
 }
