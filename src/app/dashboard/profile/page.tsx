@@ -32,6 +32,7 @@ import {
   Move,
   ChevronLeft,
   ChevronRight,
+  Info,
 } from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {
@@ -79,6 +80,7 @@ import { ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storag
 import { doc, getDoc, setDoc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { getReviewsForProfessional } from '@/lib/firestore-queries';
 import { cn } from '@/lib/utils';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 
 const MAX_AVATAR_SIZE_MB = 5;
@@ -673,6 +675,8 @@ export default function ProfilePage() {
           </div>
       );
     }
+    
+    const isPhoneMissing = isEditing && (!professional.phone || professional.phone.trim().length < 10);
 
 
   return (
@@ -824,7 +828,7 @@ export default function ProfilePage() {
                    <div className="flex gap-2">
                     {isEditing ? (
                         <>
-                            <Button onClick={handleSave} disabled={isSaving}>
+                            <Button onClick={handleSave} disabled={isSaving || isPhoneMissing}>
                               {isSaving ? <><Loader2 className="mr-2 animate-spin" /> Guardando...</> : <><Save className="mr-2" /> Guardar Cambios</>}
                             </Button>
                             {professional.subscription?.isSubscriptionActive && (
@@ -846,27 +850,42 @@ export default function ProfilePage() {
             </Card>
 
             {isEditing && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Tu Teléfono de Contacto</CardTitle>
-                  <CardDescription>
-                    Este es el número que verán los clientes para contactarte por WhatsApp. Asegúrate de que sea correcto.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                   <div className="relative max-w-sm">
-                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                      <Input
-                        type="tel"
-                        placeholder="Ej: 2914123456"
-                        className="pl-10 text-lg"
-                        value={professional.phone || ''}
-                        onChange={(e) => handleInputChange('phone', e.target.value)}
-                      />
-                    </div>
-                </CardContent>
-              </Card>
+              <>
+                 {!professional.subscription?.isSubscriptionActive && (
+                  <Alert variant="default" className='bg-blue-50 border-blue-200 text-blue-800'>
+                    <Info className="h-4 w-4 !text-blue-800" />
+                    <AlertTitle>¡Importante!</AlertTitle>
+                    <AlertDescription>
+                      No te olvides de guardar los cambios y activar tu plan gratuito para aparecer en las búsquedas.
+                    </AlertDescription>
+                  </Alert>
+                 )}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Tu Teléfono de Contacto</CardTitle>
+                    <CardDescription>
+                      Este es el número que verán los clientes para contactarte por WhatsApp. Asegúrate de que sea correcto.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="relative max-w-sm">
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <Input
+                          type="tel"
+                          placeholder="Ej: 2914123456"
+                          className={cn("pl-10 text-lg", isPhoneMissing && "border-destructive")}
+                          value={professional.phone || ''}
+                          onChange={(e) => handleInputChange('phone', e.target.value)}
+                        />
+                      </div>
+                      {isPhoneMissing && (
+                        <p className='text-sm text-destructive mt-2'>El teléfono es obligatorio para guardar.</p>
+                      )}
+                  </CardContent>
+                </Card>
+              </>
             )}
+
 
             <Tabs defaultValue="about" className="w-full">
               <TabsList>
