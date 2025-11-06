@@ -108,7 +108,7 @@ export default function SignupPage() {
       } = {
         name: data.fullName,
         email: data.email,
-        role: isProfessional ? 'professional' : 'client', // This ensures 'client' role is set
+        role: isProfessional ? 'professional' : 'client',
         registrationDate: serverTimestamp(),
         isActive: true,
         photoUrl: '', // Default empty photo
@@ -126,9 +126,9 @@ export default function SignupPage() {
           description: '',
           specialties: [],
           avgRating: 0,
+          totalReviews: 0,
           categoryIds: [Number(professionalData.category)],
           isVerified: false,
-          isSubscriptionActive: false, // For easier querying
           subscription: {
             tier: 'standard',
             isSubscriptionActive: false,
@@ -216,7 +216,7 @@ export default function SignupPage() {
             </CardHeader>
             <CardContent>
               <Tabs
-                defaultValue="professional"
+                value={accountType}
                 className="w-full"
                 onValueChange={handleAccountTypeChange}
               >

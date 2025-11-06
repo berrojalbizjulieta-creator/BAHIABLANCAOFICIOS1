@@ -1,5 +1,5 @@
-// Force Rebuild: Sat Jul 27 2024 22:20:10 GMT+0000 (Coordinated Universal Time)
 'use client';
+// Force Rebuild: Sat Jul 27 2024 22:20:10 GMT+0000 (Coordinated Universal Time)
 
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';

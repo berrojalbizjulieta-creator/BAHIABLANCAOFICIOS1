@@ -255,6 +255,7 @@ export default function ProfilePage() {
                 name: user.displayName || 'Nuevo Profesional',
                 email: user.email || '',
                 photoUrl: user.photoURL || '',
+                categoryIds: [],
                 registrationDate: new Date(),
                 avgRating: 0,
                 totalReviews: 0,
