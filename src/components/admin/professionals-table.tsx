@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   Table,
   TableBody,
@@ -36,6 +36,7 @@ import { db } from '@/lib/firebase';
 import { CATEGORIES } from '@/lib/data';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface CombinedProfessionalData extends Professional {
   userIsActive?: boolean;
@@ -44,6 +45,7 @@ interface CombinedProfessionalData extends Professional {
 export default function ProfessionalsTable() {
   const [professionals, setProfessionals] = useState<CombinedProfessionalData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('active'); // 'active', 'inactive', 'all'
   const { toast } = useToast();
 
   useEffect(() => {
@@ -75,7 +77,6 @@ export default function ProfessionalsTable() {
             }
         }).filter(Boolean) as CombinedProfessionalData[];
         
-        // Mostrar inicialmente solo los activos
         setProfessionals(combinedData);
       } catch (error) {
           console.error("Error fetching professionals:", error);
@@ -88,21 +89,20 @@ export default function ProfessionalsTable() {
 
 
   const handleToggleActive = async (id: string, isActive: boolean) => {
+    const originalProfessionals = [...professionals];
+    setProfessionals(prev =>
+      prev.map(p => (p.id === id ? { ...p, userIsActive: isActive } : p))
+    );
     try {
         const userDocRef = doc(db, 'users', id);
         await updateDoc(userDocRef, { isActive: isActive });
-
-        // Si la desactivación fue exitosa, filtramos la lista para quitar al profesional.
-        if (!isActive) {
-          setProfessionals(prev => prev.filter(p => p.id !== id));
-        }
-
         toast({
             title: 'Estado Actualizado',
             description: `El profesional ha sido ${isActive ? 'activado' : 'desactivado'}.`,
         });
     } catch (error) {
         console.error("Error toggling active state:", error);
+        setProfessionals(originalProfessionals);
         toast({ title: 'Error', description: 'No se pudo actualizar el estado.', variant: 'destructive'});
     }
   };
@@ -151,18 +151,31 @@ export default function ProfessionalsTable() {
     if (!lastPaymentDate) return false;
     return isAfter(lastPaymentDate, subMonths(new Date(), 1));
   }
-  
-  const activeProfessionals = professionals.filter(p => p.userIsActive);
+
+  const filteredProfessionals = useMemo(() => {
+    return professionals.filter(pro => {
+      if (filter === 'active') return pro.userIsActive;
+      if (filter === 'inactive') return !pro.userIsActive;
+      return true; // 'all'
+    });
+  }, [professionals, filter]);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Profesionales Activos ({activeProfessionals.length})</CardTitle>
+        <CardTitle>Profesionales Registrados</CardTitle>
         <CardDescription>
-          Gestiona los profesionales activos de la plataforma.
+          Gestiona los profesionales de la plataforma. Activa o desactiva sus perfiles y promociónalos.
         </CardDescription>
       </CardHeader>
       <CardContent>
+        <Tabs value={filter} onValueChange={setFilter} className="mb-4">
+            <TabsList>
+                <TabsTrigger value="active">Activos ({professionals.filter(p => p.userIsActive).length})</TabsTrigger>
+                <TabsTrigger value="inactive">Inactivos ({professionals.filter(p => !p.userIsActive).length})</TabsTrigger>
+                <TabsTrigger value="all">Todos ({professionals.length})</TabsTrigger>
+            </TabsList>
+        </Tabs>
         <TooltipProvider>
          {loading ? (
             <div className="flex justify-center items-center h-64">
@@ -185,8 +198,8 @@ export default function ProfessionalsTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {activeProfessionals.length > 0 ? (
-                activeProfessionals.map(pro => {
+            {filteredProfessionals.length > 0 ? (
+                filteredProfessionals.map(pro => {
                 const primaryCategory = CATEGORIES.find(c => c.id === pro.categoryIds[0]);
                 const paymentIsActive = pro.subscription?.isSubscriptionActive && isPaymentActive(pro.subscription?.lastPaymentDate);
 
@@ -251,7 +264,7 @@ export default function ProfessionalsTable() {
             ) : (
                 <TableRow>
                     <TableCell colSpan={7} className="h-24 text-center">
-                        No se encontraron profesionales activos.
+                        No se encontraron profesionales para este filtro.
                     </TableCell>
                 </TableRow>
             )}
