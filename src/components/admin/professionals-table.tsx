@@ -37,7 +37,7 @@ import { db } from '@/lib/firebase';
 import { CATEGORIES } from '@/lib/data';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 
 interface CombinedProfessionalData extends Professional {
@@ -64,15 +64,21 @@ export default function ProfessionalsTable() {
         const combinedData = profSnap.docs.map(profDoc => {
             const profData = profDoc.data() as Professional;
             const userData = usersData.get(profDoc.id);
+            // Solo incluimos profesionales, no otros roles como 'client' o 'admin'
+            if (userData?.role !== 'professional') {
+              return null;
+            }
             return {
                 ...profData,
                 id: profDoc.id,
+                name: userData.name || profData.name, // Tomar el nombre de 'users' como prioritario
+                email: userData.email, // Tomar el email de 'users'
                 userIsActive: userData?.isActive ?? false,
                 isFeatured: profData.isFeatured ?? false, // Ensure default value
-                registrationDate: profData.registrationDate?.toDate ? profData.registrationDate.toDate() : new Date(),
+                registrationDate: userData.registrationDate?.toDate ? userData.registrationDate.toDate() : new Date(),
                 lastPaymentDate: profData.subscription?.lastPaymentDate ? (profData.subscription.lastPaymentDate as any).toDate() : undefined,
             }
-        });
+        }).filter(Boolean) as CombinedProfessionalData[]; // Filtramos los nulos
         
         setProfessionals(combinedData);
       } catch (error) {
@@ -87,6 +93,7 @@ export default function ProfessionalsTable() {
 
   const handleToggleActive = async (id: string, isActive: boolean) => {
     const originalProfessionals = [...professionals];
+    // Optimistic UI update
     setProfessionals(prev =>
       prev.map(p => (p.id === id ? { ...p, userIsActive: isActive } : p))
     );
@@ -99,6 +106,7 @@ export default function ProfessionalsTable() {
         });
     } catch (error) {
         console.error("Error toggling active state:", error);
+        // Rollback UI on error
         setProfessionals(originalProfessionals);
         toast({ title: 'Error', description: 'No se pudo actualizar el estado.', variant: 'destructive'});
     }
@@ -125,6 +133,7 @@ export default function ProfessionalsTable() {
 
   const handleMarkAsPaid = async (id: string) => {
     const newLastPaymentDate = new Date();
+    // Optimistic update
     setProfessionals(prev =>
       prev.map(p => p.id === id ? {...p, subscription: {...p.subscription, lastPaymentDate: newLastPaymentDate, isSubscriptionActive: true}} : p)
     )
@@ -140,6 +149,7 @@ export default function ProfessionalsTable() {
         });
      } catch (error) {
          console.error("Error marking as paid:", error);
+         // Rollback not strictly needed for this one, but good practice
          toast({ title: 'Error', description: 'No se pudo registrar el pago.', variant: 'destructive'});
      }
   }
@@ -168,7 +178,7 @@ export default function ProfessionalsTable() {
       </CardHeader>
       <CardContent>
         <Tabs value={filter} onValueChange={setFilter} className="mb-4">
-            <TabsList>
+            <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="active">Activos ({professionals.filter(p => p.userIsActive).length})</TabsTrigger>
                 <TabsTrigger value="inactive">Inactivos ({professionals.filter(p => !p.userIsActive).length})</TabsTrigger>
                 <TabsTrigger value="all">Todos ({professionals.length})</TabsTrigger>
