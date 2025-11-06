@@ -218,7 +218,7 @@ export default function SignupPage() {
             </CardHeader>
             <CardContent>
               <Tabs
-                defaultValue={accountType}
+                defaultValue="professional"
                 className="w-full"
                 onValueChange={handleAccountTypeChange}
               >
