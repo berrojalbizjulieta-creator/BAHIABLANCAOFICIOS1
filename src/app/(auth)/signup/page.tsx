@@ -127,7 +127,7 @@ export default function SignupPage() {
           specialties: [],
           avgRating: 0,
           totalReviews: 0,
-          categoryIds: [Number(professionalData.category)],
+          categoryIds: professionalData.category ? [Number(professionalData.category)] : [],
           isVerified: false,
           subscription: {
             tier: 'standard',
