@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -32,13 +32,11 @@ import type { Professional, User as AppUser } from '@/lib/types';
 import { format, isAfter, subMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
-import { collection, getDocs, doc, updateDoc, writeBatch } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { CATEGORIES } from '@/lib/data';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 
 interface CombinedProfessionalData extends Professional {
   userIsActive?: boolean;
@@ -47,7 +45,6 @@ interface CombinedProfessionalData extends Professional {
 export default function ProfessionalsTable() {
   const [professionals, setProfessionals] = useState<CombinedProfessionalData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('active'); // 'active', 'inactive', 'all'
   const { toast } = useToast();
 
   useEffect(() => {
@@ -64,23 +61,23 @@ export default function ProfessionalsTable() {
         const combinedData = profSnap.docs.map(profDoc => {
             const profData = profDoc.data() as Professional;
             const userData = usersData.get(profDoc.id);
-            // Solo incluimos profesionales, no otros roles como 'client' o 'admin'
             if (userData?.role !== 'professional') {
               return null;
             }
             return {
                 ...profData,
                 id: profDoc.id,
-                name: userData.name || profData.name, // Tomar el nombre de 'users' como prioritario
-                email: userData.email, // Tomar el email de 'users'
+                name: userData.name || profData.name,
+                email: userData.email,
                 userIsActive: userData?.isActive ?? false,
-                isFeatured: profData.isFeatured ?? false, // Ensure default value
+                isFeatured: profData.isFeatured ?? false,
                 registrationDate: userData.registrationDate?.toDate ? userData.registrationDate.toDate() : new Date(),
                 lastPaymentDate: profData.subscription?.lastPaymentDate ? (profData.subscription.lastPaymentDate as any).toDate() : undefined,
             }
-        }).filter(Boolean) as CombinedProfessionalData[]; // Filtramos los nulos
+        }).filter(Boolean) as CombinedProfessionalData[];
         
-        setProfessionals(combinedData);
+        // Mostrar inicialmente solo los activos
+        setProfessionals(combinedData.filter(p => p.userIsActive));
       } catch (error) {
           console.error("Error fetching professionals:", error);
           toast({ title: 'Error', description: 'No se pudieron cargar los profesionales.', variant: 'destructive'});
@@ -92,22 +89,20 @@ export default function ProfessionalsTable() {
 
 
   const handleToggleActive = async (id: string, isActive: boolean) => {
-    const originalProfessionals = [...professionals];
-    // Optimistic UI update
-    setProfessionals(prev =>
-      prev.map(p => (p.id === id ? { ...p, userIsActive: isActive } : p))
-    );
     try {
         const userDocRef = doc(db, 'users', id);
         await updateDoc(userDocRef, { isActive: isActive });
+
+        if (!isActive) {
+          setProfessionals(prev => prev.filter(p => p.id !== id));
+        }
+
         toast({
             title: 'Estado Actualizado',
             description: `El profesional ha sido ${isActive ? 'activado' : 'desactivado'}.`,
         });
     } catch (error) {
         console.error("Error toggling active state:", error);
-        // Rollback UI on error
-        setProfessionals(originalProfessionals);
         toast({ title: 'Error', description: 'No se pudo actualizar el estado.', variant: 'destructive'});
     }
   };
@@ -133,7 +128,6 @@ export default function ProfessionalsTable() {
 
   const handleMarkAsPaid = async (id: string) => {
     const newLastPaymentDate = new Date();
-    // Optimistic update
     setProfessionals(prev =>
       prev.map(p => p.id === id ? {...p, subscription: {...p.subscription, lastPaymentDate: newLastPaymentDate, isSubscriptionActive: true}} : p)
     )
@@ -149,7 +143,6 @@ export default function ProfessionalsTable() {
         });
      } catch (error) {
          console.error("Error marking as paid:", error);
-         // Rollback not strictly needed for this one, but good practice
          toast({ title: 'Error', description: 'No se pudo registrar el pago.', variant: 'destructive'});
      }
   }
@@ -159,31 +152,15 @@ export default function ProfessionalsTable() {
     return isAfter(lastPaymentDate, subMonths(new Date(), 1));
   }
 
-  const filteredProfessionals = useMemo(() => {
-    return professionals.filter(pro => {
-      if (filter === 'active') return pro.userIsActive;
-      if (filter === 'inactive') return !pro.userIsActive;
-      return true; // 'all'
-    });
-  }, [professionals, filter]);
-
-
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Profesionales Registrados</CardTitle>
+        <CardTitle>Profesionales Registrados ({professionals.length})</CardTitle>
         <CardDescription>
-          Gestiona los profesionales de la plataforma. Activa o desactiva sus perfiles y promociónalos.
+          Gestiona los profesionales activos de la plataforma.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs value={filter} onValueChange={setFilter} className="mb-4">
-            <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="active">Activos ({professionals.filter(p => p.userIsActive).length})</TabsTrigger>
-                <TabsTrigger value="inactive">Inactivos ({professionals.filter(p => !p.userIsActive).length})</TabsTrigger>
-                <TabsTrigger value="all">Todos ({professionals.length})</TabsTrigger>
-            </TabsList>
-        </Tabs>
         <TooltipProvider>
          {loading ? (
             <div className="flex justify-center items-center h-64">
@@ -206,8 +183,8 @@ export default function ProfessionalsTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredProfessionals.length > 0 ? (
-                filteredProfessionals.map(pro => {
+            {professionals.length > 0 ? (
+                professionals.map(pro => {
                 const primaryCategory = CATEGORIES.find(c => c.id === pro.categoryIds[0]);
                 const paymentIsActive = pro.subscription?.isSubscriptionActive && isPaymentActive(pro.subscription?.lastPaymentDate);
 
@@ -272,7 +249,7 @@ export default function ProfessionalsTable() {
             ) : (
                 <TableRow>
                     <TableCell colSpan={7} className="h-24 text-center">
-                        No se encontraron profesionales para este filtro.
+                        No se encontraron profesionales activos.
                     </TableCell>
                 </TableRow>
             )}
