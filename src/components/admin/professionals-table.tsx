@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -70,7 +71,7 @@ export default function ProfessionalsTable() {
                 userIsActive: userData?.isActive ?? false,
                 isFeatured: profData.isFeatured ?? false, // Ensure default value
                 registrationDate: profData.registrationDate?.toDate ? profData.registrationDate.toDate() : new Date(),
-                lastPaymentDate: profData.lastPaymentDate?.toDate ? profData.lastPaymentDate.toDate() : undefined,
+                lastPaymentDate: profData.subscription?.lastPaymentDate ? (profData.subscription.lastPaymentDate as any).toDate() : undefined,
             }
         });
         
@@ -129,12 +130,12 @@ export default function ProfessionalsTable() {
     const newLastPaymentDate = new Date();
     // Optimistic UI update
     setProfessionals(prev =>
-      prev.map(p => p.id === id ? {...p, lastPaymentDate: newLastPaymentDate, subscription: {...p.subscription, isSubscriptionActive: true}} : p)
+      prev.map(p => p.id === id ? {...p, subscription: {...p.subscription, lastPaymentDate: newLastPaymentDate, isSubscriptionActive: true}} : p)
     )
      try {
         const profDocRef = doc(db, 'professionalsDetails', id);
         await updateDoc(profDocRef, { 
-            lastPaymentDate: newLastPaymentDate,
+            'subscription.lastPaymentDate': newLastPaymentDate,
             'subscription.isSubscriptionActive': true,
         });
         toast({
@@ -150,6 +151,7 @@ export default function ProfessionalsTable() {
 
   const isPaymentActive = (lastPaymentDate?: Date) => {
     if (!lastPaymentDate) return false;
+    // Check if payment is active within the last month
     return isAfter(lastPaymentDate, subMonths(new Date(), 1));
   }
 
@@ -171,9 +173,9 @@ export default function ProfessionalsTable() {
       <CardContent>
         <Tabs value={filter} onValueChange={setFilter} className="mb-4">
             <TabsList>
-                <TabsTrigger value="active">Activos</TabsTrigger>
-                <TabsTrigger value="inactive">Inactivos</TabsTrigger>
-                <TabsTrigger value="all">Todos</TabsTrigger>
+                <TabsTrigger value="active">Activos ({professionals.filter(p => p.userIsActive).length})</TabsTrigger>
+                <TabsTrigger value="inactive">Inactivos ({professionals.filter(p => !p.userIsActive).length})</TabsTrigger>
+                <TabsTrigger value="all">Todos ({professionals.length})</TabsTrigger>
             </TabsList>
         </Tabs>
         <TooltipProvider>
@@ -201,7 +203,7 @@ export default function ProfessionalsTable() {
             {filteredProfessionals.length > 0 ? (
                 filteredProfessionals.map(pro => {
                 const primaryCategory = CATEGORIES.find(c => c.id === pro.categoryIds[0]);
-                const paymentIsActive = isPaymentActive(pro.lastPaymentDate);
+                const paymentIsActive = pro.subscription?.isSubscriptionActive && isPaymentActive(pro.subscription?.lastPaymentDate);
 
                 return (
                 <TableRow key={pro.id}>
@@ -233,7 +235,7 @@ export default function ProfessionalsTable() {
                     </Tooltip>
                     </TableCell>
                     <TableCell>
-                    {format(pro.registrationDate, 'd MMM, yyyy', { locale: es })}
+                      {pro.registrationDate ? format(pro.registrationDate, 'd MMM, yyyy', { locale: es }) : 'N/A'}
                     </TableCell>
                     <TableCell>
                     <Switch
