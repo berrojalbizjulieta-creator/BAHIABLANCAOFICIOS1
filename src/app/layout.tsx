@@ -16,6 +16,11 @@ const ptSans = PT_Sans({
   variable: '--font-pt-sans',
 });
 
+// IDs hardcodeados - ¡REEMPLAZAR CON TUS VALORES REALES!
+const GA_MEASUREMENT_ID = "TU_ID_DE_GA_VA_AQUI"; 
+const META_PIXEL_ID = "TU_ID_DE_PIXEL_VA_AQUI";
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,14 +34,14 @@ export default function RootLayout({
           {/* Google Analytics */}
           <Script
             strategy="afterInteractive"
-            src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}`}
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
           />
           <Script id="google-analytics-init" strategy="afterInteractive">
             {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
-              gtag('config', '${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}');
+              gtag('config', '${GA_MEASUREMENT_ID}');
             `}
           </Script>
 
@@ -51,13 +56,13 @@ export default function RootLayout({
               t.src=v;s=b.getElementsByTagName(e)[0];
               s.parentNode.insertBefore(t,s)}(window, document,'script',
               'https://connect.facebook.net/en_US/fbevents.js');
-              fbq('init', '${process.env.NEXT_PUBLIC_META_PIXEL_ID}');
+              fbq('init', '${META_PIXEL_ID}');
               fbq('track', 'PageView');
               `}
           </Script>
           <noscript>
             <img height="1" width="1" style={{display:'none'}}
-              src={`https://www.facebook.com/tr?id=${process.env.NEXT_PUBLIC_META_PIXEL_ID}&ev=PageView&noscript=1`}
+              src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
             />
           </noscript>
         </>
@@ -67,7 +72,7 @@ export default function RootLayout({
       <body className={`${ptSans.variable} font-body antialiased`}>
         {/* Component to manage navigation events */}
         <Suspense fallback={null}>
-          <AnalyticsManager />
+          <AnalyticsManager gaId={GA_MEASUREMENT_ID} />
         </Suspense>
 
         <div className="flex min-h-screen flex-col">

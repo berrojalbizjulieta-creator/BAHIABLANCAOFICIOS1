@@ -3,31 +3,35 @@
 import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
-export default function AnalyticsManager() {
+interface AnalyticsManagerProps {
+  gaId: string;
+}
+
+export default function AnalyticsManager({ gaId }: AnalyticsManagerProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   useEffect(() => {
     // Only run analytics in production
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== 'production' || !gaId || gaId.startsWith('TU_ID')) {
       return;
     }
 
     const url = pathname + searchParams.toString();
 
     // Google Analytics Event
-    if (process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && typeof window.gtag === 'function') {
-      window.gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID, {
+    if (typeof window.gtag === 'function') {
+      window.gtag('config', gaId, {
         page_path: url,
       });
     }
 
     // Meta Pixel Event
-    if (process.env.NEXT_PUBLIC_META_PIXEL_ID && typeof window.fbq === 'function') {
+    if (typeof window.fbq === 'function') {
         window.fbq('track', 'PageView');
     }
 
-  }, [pathname, searchParams]);
+  }, [pathname, searchParams, gaId]);
 
   return null;
 }
