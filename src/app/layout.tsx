@@ -16,9 +16,9 @@ const ptSans = PT_Sans({
   variable: '--font-pt-sans',
 });
 
-// IDs hardcodeados - ¡REEMPLAZAR CON TUS VALORES REALES!
-const GA_MEASUREMENT_ID = "TU_ID_DE_GA_VA_AQUI"; 
-const META_PIXEL_ID = "TU_ID_DE_PIXEL_VA_AQUI";
+// IDs hardcodeados
+const GA_MEASUREMENT_ID = "G-C9Z3XLX3WS"; 
+const META_PIXEL_ID = "1343716414100500";
 
 
 export default function RootLayout({
