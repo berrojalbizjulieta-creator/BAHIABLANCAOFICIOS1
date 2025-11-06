@@ -37,6 +37,8 @@ import { db } from '@/lib/firebase';
 import { CATEGORIES } from '@/lib/data';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
 
 interface CombinedProfessionalData extends Professional {
   userIsActive?: boolean;
@@ -45,6 +47,7 @@ interface CombinedProfessionalData extends Professional {
 export default function ProfessionalsTable() {
   const [professionals, setProfessionals] = useState<CombinedProfessionalData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('active'); // 'active', 'inactive', 'all'
   const { toast } = useToast();
 
   useEffect(() => {
@@ -84,6 +87,7 @@ export default function ProfessionalsTable() {
 
   const handleToggleActive = async (id: string, isActive: boolean) => {
     // Optimistic UI update
+    const originalProfessionals = [...professionals];
     setProfessionals(prev =>
       prev.map(p => (p.id === id ? { ...p, userIsActive: isActive } : p))
     );
@@ -97,14 +101,13 @@ export default function ProfessionalsTable() {
     } catch (error) {
         console.error("Error toggling active state:", error);
         // Rollback UI on error
-        setProfessionals(prev =>
-            prev.map(p => (p.id === id ? { ...p, userIsActive: !isActive } : p))
-        );
+        setProfessionals(originalProfessionals);
         toast({ title: 'Error', description: 'No se pudo actualizar el estado.', variant: 'destructive'});
     }
   };
   
   const handleToggleFeatured = async (id: string, isFeatured: boolean) => {
+    const originalProfessionals = [...professionals];
     setProfessionals(prev =>
         prev.map(p => (p.id === id ? { ...p, isFeatured: isFeatured } : p))
     );
@@ -117,9 +120,7 @@ export default function ProfessionalsTable() {
         });
     } catch (error) {
         console.error("Error toggling featured state:", error);
-        setProfessionals(prev =>
-            prev.map(p => (p.id === id ? { ...p, isFeatured: !isFeatured } : p))
-        );
+        setProfessionals(originalProfessionals);
         toast({ title: 'Error', description: 'No se pudo actualizar el estado de destacado.', variant: 'destructive'});
     }
   }
@@ -152,22 +153,36 @@ export default function ProfessionalsTable() {
     return isAfter(lastPaymentDate, subMonths(new Date(), 1));
   }
 
+  const filteredProfessionals = professionals.filter(pro => {
+    if (filter === 'active') return pro.userIsActive;
+    if (filter === 'inactive') return !pro.userIsActive;
+    return true; // 'all'
+  });
+
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Profesionales Registrados ({professionals.length})</CardTitle>
+        <CardTitle>Profesionales Registrados</CardTitle>
         <CardDescription>
           Gestiona los profesionales de la plataforma. Activa o desactiva sus perfiles y promociónalos.
         </CardDescription>
       </CardHeader>
       <CardContent>
+        <Tabs value={filter} onValueChange={setFilter} className="mb-4">
+            <TabsList>
+                <TabsTrigger value="active">Activos</TabsTrigger>
+                <TabsTrigger value="inactive">Inactivos</TabsTrigger>
+                <TabsTrigger value="all">Todos</TabsTrigger>
+            </TabsList>
+        </Tabs>
         <TooltipProvider>
          {loading ? (
             <div className="flex justify-center items-center h-64">
                 <Loader2 className="animate-spin h-8 w-8 text-primary" />
             </div>
          ) : (
+        <div className="border rounded-md">
         <Table>
           <TableHeader>
             <TableRow>
@@ -183,70 +198,79 @@ export default function ProfessionalsTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {professionals.map(pro => {
-              const primaryCategory = CATEGORIES.find(c => c.id === pro.categoryIds[0]);
-              const paymentIsActive = isPaymentActive(pro.lastPaymentDate);
+            {filteredProfessionals.length > 0 ? (
+                filteredProfessionals.map(pro => {
+                const primaryCategory = CATEGORIES.find(c => c.id === pro.categoryIds[0]);
+                const paymentIsActive = isPaymentActive(pro.lastPaymentDate);
 
-              return (
-              <TableRow key={pro.id}>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{pro.name}</span>
-                    {pro.isVerified && <ShieldCheck className="h-5 w-5 text-blue-500" />}
-                  </div>
-                  <div className="text-sm text-muted-foreground">{pro.email}</div>
-                </TableCell>
-                <TableCell>{primaryCategory?.name || 'No especificado'}</TableCell>
-                <TableCell>
-                  <Badge variant={paymentIsActive ? 'default' : 'destructive'} className={paymentIsActive ? 'bg-green-600' : ''}>
-                    {paymentIsActive ? 'Al día' : 'Pendiente'}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <Tooltip>
-                    <TooltipTrigger>
-                       <Switch
-                          checked={pro.isFeatured}
-                          onCheckedChange={value => handleToggleFeatured(pro.id, value)}
-                          aria-label="Destacar profesional"
-                        />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>{pro.isFeatured ? 'Quitar de destacados' : 'Añadir a destacados'}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TableCell>
-                <TableCell>
-                  {format(pro.registrationDate, 'd MMM, yyyy', { locale: es })}
-                </TableCell>
-                <TableCell>
-                  <Switch
-                    checked={pro.userIsActive}
-                    onCheckedChange={value => handleToggleActive(pro.id, value)}
-                    aria-label="Activar/desactivar profesional"
-                  />
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                      <DropdownMenuItem onClick={() => handleMarkAsPaid(pro.id)}>Marcar como pagado</DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/profesional/${pro.id}`} target="_blank">Ver Perfil</Link>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            )})}
+                return (
+                <TableRow key={pro.id}>
+                    <TableCell>
+                    <div className="flex items-center gap-2">
+                        <span className="font-medium">{pro.name}</span>
+                        {pro.isVerified && <ShieldCheck className="h-5 w-5 text-blue-500" />}
+                    </div>
+                    <div className="text-sm text-muted-foreground">{pro.email}</div>
+                    </TableCell>
+                    <TableCell>{primaryCategory?.name || 'No especificado'}</TableCell>
+                    <TableCell>
+                    <Badge variant={paymentIsActive ? 'default' : 'destructive'} className={paymentIsActive ? 'bg-green-600' : ''}>
+                        {paymentIsActive ? 'Al día' : 'Pendiente'}
+                    </Badge>
+                    </TableCell>
+                    <TableCell>
+                    <Tooltip>
+                        <TooltipTrigger>
+                        <Switch
+                            checked={pro.isFeatured}
+                            onCheckedChange={value => handleToggleFeatured(pro.id, value)}
+                            aria-label="Destacar profesional"
+                            />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{pro.isFeatured ? 'Quitar de destacados' : 'Añadir a destacados'}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                    </TableCell>
+                    <TableCell>
+                    {format(pro.registrationDate, 'd MMM, yyyy', { locale: es })}
+                    </TableCell>
+                    <TableCell>
+                    <Switch
+                        checked={pro.userIsActive}
+                        onCheckedChange={value => handleToggleActive(pro.id, value)}
+                        aria-label="Activar/desactivar profesional"
+                    />
+                    </TableCell>
+                    <TableCell>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                        <Button aria-haspopup="true" size="icon" variant="ghost">
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Toggle menu</span>
+                        </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                        <DropdownMenuItem onClick={() => handleMarkAsPaid(pro.id)}>Marcar como pagado</DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href={`/profesional/${pro.id}`} target="_blank">Ver Perfil</Link>
+                        </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    </TableCell>
+                </TableRow>
+                )})
+            ) : (
+                <TableRow>
+                    <TableCell colSpan={7} className="h-24 text-center">
+                        No se encontraron profesionales para este filtro.
+                    </TableCell>
+                </TableRow>
+            )}
           </TableBody>
         </Table>
+        </div>
         )}
         </TooltipProvider>
       </CardContent>
