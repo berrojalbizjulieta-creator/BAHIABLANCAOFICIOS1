@@ -31,7 +31,7 @@ import type { Professional, User as AppUser } from '@/lib/types';
 import { format, isAfter, subMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
-import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, writeBatch } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { CATEGORIES } from '@/lib/data';
 import Link from 'next/link';
@@ -71,6 +71,7 @@ export default function ProfessionalsTable() {
                 name: userData.name || profData.name,
                 email: userData.email,
                 userIsActive: userData?.isActive ?? false,
+                isActive: profData.isActive,
                 isFeatured: profData.isFeatured ?? false,
                 registrationDate: userData.registrationDate?.toDate ? userData.registrationDate.toDate() : new Date(),
                 lastPaymentDate: profData.subscription?.lastPaymentDate ? (profData.subscription.lastPaymentDate as any).toDate() : undefined,
@@ -90,18 +91,27 @@ export default function ProfessionalsTable() {
 
   const handleToggleActive = async (id: string, isActive: boolean) => {
     const originalProfessionals = [...professionals];
+    // Optimistic UI update
     setProfessionals(prev =>
-      prev.map(p => (p.id === id ? { ...p, userIsActive: isActive } : p))
+      prev.map(p => (p.id === id ? { ...p, userIsActive: isActive, isActive: isActive } : p))
     );
     try {
+        const batch = writeBatch(db);
         const userDocRef = doc(db, 'users', id);
-        await updateDoc(userDocRef, { isActive: isActive });
+        const profDocRef = doc(db, 'professionalsDetails', id);
+
+        batch.update(userDocRef, { isActive: isActive });
+        batch.update(profDocRef, { isActive: isActive });
+        
+        await batch.commit();
+
         toast({
             title: 'Estado Actualizado',
             description: `El profesional ha sido ${isActive ? 'activado' : 'desactivado'}.`,
         });
     } catch (error) {
         console.error("Error toggling active state:", error);
+        // Rollback UI on error
         setProfessionals(originalProfessionals);
         toast({ title: 'Error', description: 'No se pudo actualizar el estado.', variant: 'destructive'});
     }
@@ -128,6 +138,7 @@ export default function ProfessionalsTable() {
 
   const handleMarkAsPaid = async (id: string) => {
     const newLastPaymentDate = new Date();
+    const originalProfessionals = [...professionals];
     setProfessionals(prev =>
       prev.map(p => p.id === id ? {...p, subscription: {...p.subscription, lastPaymentDate: newLastPaymentDate, isSubscriptionActive: true}} : p)
     )
@@ -143,6 +154,7 @@ export default function ProfessionalsTable() {
         });
      } catch (error) {
          console.error("Error marking as paid:", error);
+         setProfessionals(originalProfessionals);
          toast({ title: 'Error', description: 'No se pudo registrar el pago.', variant: 'destructive'});
      }
   }
@@ -153,11 +165,11 @@ export default function ProfessionalsTable() {
   }
 
   const filteredProfessionals = useMemo(() => {
-    return professionals.filter(pro => {
-      if (filter === 'active') return pro.userIsActive;
-      if (filter === 'inactive') return !pro.userIsActive;
-      return true; // 'all'
-    });
+    if (filter === 'all') {
+      return professionals;
+    }
+    const isActiveFilter = filter === 'active';
+    return professionals.filter(pro => pro.userIsActive === isActiveFilter);
   }, [professionals, filter]);
 
   return (

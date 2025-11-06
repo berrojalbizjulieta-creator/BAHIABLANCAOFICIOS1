@@ -110,7 +110,7 @@ export default function CategoryPage() {
 
   const professionalsInCategory = useMemo(() => {
     if (!category) return [];
-    return allProfessionals.filter(p => Array.isArray(p.categoryIds) && p.categoryIds.includes(category.id));
+    return allProfessionals.filter(p => p.isActive && Array.isArray(p.categoryIds) && p.categoryIds.includes(category.id));
   }, [allProfessionals, category]);
 
   const featuredProfessionals = useMemo(() => {
