@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   Table,
   TableBody,
@@ -29,16 +29,15 @@ import {
 import { Button } from '@/components/ui/button';
 import { MoreHorizontal, Loader2, ShieldCheck, Sparkles } from 'lucide-react';
 import type { Professional, User as AppUser } from '@/lib/types';
-import { format } from 'date-fns';
+import { format, isAfter, subMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
-import { isAfter, subMonths } from 'date-fns';
 import { collection, getDocs, doc, updateDoc, writeBatch } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { CATEGORIES } from '@/lib/data';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 
 interface CombinedProfessionalData extends Professional {
@@ -87,7 +86,6 @@ export default function ProfessionalsTable() {
 
 
   const handleToggleActive = async (id: string, isActive: boolean) => {
-    // Optimistic UI update
     const originalProfessionals = [...professionals];
     setProfessionals(prev =>
       prev.map(p => (p.id === id ? { ...p, userIsActive: isActive } : p))
@@ -101,7 +99,6 @@ export default function ProfessionalsTable() {
         });
     } catch (error) {
         console.error("Error toggling active state:", error);
-        // Rollback UI on error
         setProfessionals(originalProfessionals);
         toast({ title: 'Error', description: 'No se pudo actualizar el estado.', variant: 'destructive'});
     }
@@ -128,7 +125,6 @@ export default function ProfessionalsTable() {
 
   const handleMarkAsPaid = async (id: string) => {
     const newLastPaymentDate = new Date();
-    // Optimistic UI update
     setProfessionals(prev =>
       prev.map(p => p.id === id ? {...p, subscription: {...p.subscription, lastPaymentDate: newLastPaymentDate, isSubscriptionActive: true}} : p)
     )
@@ -145,21 +141,21 @@ export default function ProfessionalsTable() {
      } catch (error) {
          console.error("Error marking as paid:", error);
          toast({ title: 'Error', description: 'No se pudo registrar el pago.', variant: 'destructive'});
-         // Rollback is more complex, might need to re-fetch
      }
   }
 
   const isPaymentActive = (lastPaymentDate?: Date) => {
     if (!lastPaymentDate) return false;
-    // Check if payment is active within the last month
     return isAfter(lastPaymentDate, subMonths(new Date(), 1));
   }
 
-  const filteredProfessionals = professionals.filter(pro => {
-    if (filter === 'active') return pro.userIsActive;
-    if (filter === 'inactive') return !pro.userIsActive;
-    return true; // 'all'
-  });
+  const filteredProfessionals = useMemo(() => {
+    return professionals.filter(pro => {
+      if (filter === 'active') return pro.userIsActive;
+      if (filter === 'inactive') return !pro.userIsActive;
+      return true; // 'all'
+    });
+  }, [professionals, filter]);
 
 
   return (
