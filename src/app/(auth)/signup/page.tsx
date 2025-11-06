@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -80,6 +81,7 @@ export default function SignupPage() {
 
   const handleAccountTypeChange = (newType: string) => {
     setAccountType(newType);
+    // Reiniciar ambos formularios y sus casillas de términos y condiciones
     clientForm.reset({ fullName: '', email: '', password: '', terms: false });
     professionalForm.reset({ fullName: '', email: '', password: '', category: '', terms: false });
   }
@@ -216,7 +218,7 @@ export default function SignupPage() {
             </CardHeader>
             <CardContent>
               <Tabs
-                value={accountType}
+                defaultValue={accountType}
                 className="w-full"
                 onValueChange={handleAccountTypeChange}
               >

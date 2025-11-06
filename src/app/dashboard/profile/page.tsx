@@ -332,7 +332,8 @@ export default function ProfilePage() {
     }
     
     setIsSaving(true);
-    const wasFirstEdit = !professional.subscription?.isSubscriptionActive;
+    // Condition to show payment dialog only on first profile completion
+    const wasFirstEdit = !professional.description && professional.name !== 'Nombre del Profesional';
 
     try {
         let finalAvatarUrl = professional.photoUrl;
