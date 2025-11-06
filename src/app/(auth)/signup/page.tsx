@@ -60,7 +60,7 @@ type ClientFormValues = z.infer<typeof clientSchema>;
 type ProfessionalFormValues = z.infer<typeof professionalSchema>;
 
 export default function SignupPage() {
-  const [accountType, setAccountType] = useState('client');
+  const [accountType, setAccountType] = useState('professional');
   const [isLoading, setIsLoading] = useState(false);
   const [isTermsDialogOpen, setIsTermsDialogOpen] = useState(false);
   const { toast } = useToast();
@@ -216,7 +216,7 @@ export default function SignupPage() {
             </CardHeader>
             <CardContent>
               <Tabs
-                defaultValue="client"
+                defaultValue="professional"
                 className="w-full"
                 onValueChange={handleAccountTypeChange}
               >
