@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -77,7 +76,7 @@ export default function ProfessionalsTable() {
         }).filter(Boolean) as CombinedProfessionalData[];
         
         // Mostrar inicialmente solo los activos
-        setProfessionals(combinedData.filter(p => p.userIsActive));
+        setProfessionals(combinedData);
       } catch (error) {
           console.error("Error fetching professionals:", error);
           toast({ title: 'Error', description: 'No se pudieron cargar los profesionales.', variant: 'destructive'});
@@ -93,6 +92,7 @@ export default function ProfessionalsTable() {
         const userDocRef = doc(db, 'users', id);
         await updateDoc(userDocRef, { isActive: isActive });
 
+        // Si la desactivación fue exitosa, filtramos la lista para quitar al profesional.
         if (!isActive) {
           setProfessionals(prev => prev.filter(p => p.id !== id));
         }
@@ -151,11 +151,13 @@ export default function ProfessionalsTable() {
     if (!lastPaymentDate) return false;
     return isAfter(lastPaymentDate, subMonths(new Date(), 1));
   }
+  
+  const activeProfessionals = professionals.filter(p => p.userIsActive);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Profesionales Registrados ({professionals.length})</CardTitle>
+        <CardTitle>Profesionales Activos ({activeProfessionals.length})</CardTitle>
         <CardDescription>
           Gestiona los profesionales activos de la plataforma.
         </CardDescription>
@@ -183,8 +185,8 @@ export default function ProfessionalsTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {professionals.length > 0 ? (
-                professionals.map(pro => {
+            {activeProfessionals.length > 0 ? (
+                activeProfessionals.map(pro => {
                 const primaryCategory = CATEGORIES.find(c => c.id === pro.categoryIds[0]);
                 const paymentIsActive = pro.subscription?.isSubscriptionActive && isPaymentActive(pro.subscription?.lastPaymentDate);
 
