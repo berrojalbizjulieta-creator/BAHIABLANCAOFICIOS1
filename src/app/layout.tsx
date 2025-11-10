@@ -41,7 +41,10 @@ export default function RootLayout({
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
-              gtag('config', '${GA_MEASUREMENT_ID}');
+              // Se evita el page_view automático, AnalyticsManager se encargará
+              gtag('config', '${GA_MEASUREMENT_ID}', {
+                send_page_view: false
+              });
             `}
           </Script>
 
@@ -57,7 +60,8 @@ export default function RootLayout({
               s.parentNode.insertBefore(t,s)}(window, document,'script',
               'https://connect.facebook.net/en_US/fbevents.js');
               fbq('init', '${META_PIXEL_ID}');
-              fbq('track', 'PageView');
+              // Se elimina el fbq('track', 'PageView') inicial.
+              // AnalyticsManager se encargará de todos los PageView.
               `}
           </Script>
           <noscript>
