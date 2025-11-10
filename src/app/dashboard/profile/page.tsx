@@ -333,7 +333,7 @@ export default function ProfilePage() {
     
     setIsSaving(true);
     // Condition to show payment dialog only on first profile completion
-    const wasFirstEdit = !professional.description && professional.name !== 'Nombre del Profesional';
+    const wasFirstEdit = !professional.subscription?.isSubscriptionActive;
 
     try {
         let finalAvatarUrl = professional.photoUrl;
