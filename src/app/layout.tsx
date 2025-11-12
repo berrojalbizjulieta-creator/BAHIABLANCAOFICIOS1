@@ -18,6 +18,7 @@ const ptSans = PT_Sans({
 
 // IDs hardcodeados
 const GA_MEASUREMENT_ID = "G-C9Z3XLX3WS"; 
+const GA_ADS_ID = "AW-16621938550";
 const META_PIXEL_ID = "1343716414100500";
 
 
@@ -34,14 +35,15 @@ export default function RootLayout({
           {/* Google Analytics */}
           <Script
             strategy="afterInteractive"
-            src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_ADS_ID}`}
           />
           <Script id="google-analytics-init" strategy="afterInteractive">
             {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
-              // Se evita el page_view automático, AnalyticsManager se encargará
+              // Configura tanto Google Ads como Google Analytics
+              gtag('config', '${GA_ADS_ID}');
               gtag('config', '${GA_MEASUREMENT_ID}', {
                 send_page_view: false
               });

@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/popover"
 import { CATEGORIES } from '@/lib/data';
 import { cn } from '@/lib/utils';
+import { reportGtagConversion } from '@/lib/gtag-helpers';
 
 
 interface ProfessionalCardProps {
@@ -89,6 +90,11 @@ export default function ProfessionalCard({
     }
     const primaryCategory = CATEGORIES.find(c => c.id === professional.categoryIds[0]);
 
+    const handleWhatsAppClick = () => {
+      const url = getWhatsAppLink(professional.phone);
+      reportGtagConversion(url);
+    };
+
     return (
         <div className="relative pt-2"> 
         {isFeatured && (
@@ -148,10 +154,8 @@ export default function ProfessionalCard({
             <CardFooter className="p-0 pt-4 flex justify-between items-center">
                 <div className="flex items-center gap-4">
                     {professional.phone ? (
-                        <Button asChild>
-                            <a href={getWhatsAppLink(professional.phone)} target="_blank" rel="noopener noreferrer">
-                                <Phone className="mr-2" /> Whatsapp
-                            </a>
+                        <Button onClick={handleWhatsAppClick}>
+                            <Phone className="mr-2" /> Whatsapp
                         </Button>
                     ) : (
                         <Button disabled>Whatsapp</Button>

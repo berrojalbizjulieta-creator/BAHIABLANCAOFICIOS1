@@ -63,6 +63,7 @@ import { es } from 'date-fns/locale';
 import { doc, getDoc, collection, addDoc, serverTimestamp, DocumentData, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { getReviewsForProfessional } from '@/lib/firestore-queries';
+import { reportGtagConversion } from '@/lib/gtag-helpers';
 
 // --- Funciones auxiliares (mantener sin cambios) ---
 function StarRatingDisplay({
@@ -446,6 +447,11 @@ export default function PublicProfilePage() {
     return `https://wa.me/${normalizedPhone}?text=${message}`;
   }
 
+  const handleWhatsAppClick = () => {
+    const url = getWhatsAppLink(professional.phone, CATEGORIES.find(c => c.id === professional.categoryIds[0])?.name);
+    reportGtagConversion(url);
+  };
+
 
   return (
     <div className="bg-muted/30">
@@ -516,10 +522,8 @@ export default function PublicProfilePage() {
                     )}
                   </div>
                   <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                    <Button asChild className="w-full sm:w-auto">
-                        <a href={getWhatsAppLink(professional.phone, CATEGORIES.find(c => c.id === professional.categoryIds[0])?.name)} target="_blank" rel="noopener noreferrer">
-                          <Phone className="mr-2" /> Whatsapp
-                      </a>
+                    <Button onClick={handleWhatsAppClick} className="w-full sm:w-auto">
+                      <Phone className="mr-2" /> Whatsapp
                     </Button>
                     <Button variant="outline" className="w-full sm:w-auto" onClick={handleShare}>
                       <Share2 className="mr-2 h-4 w-4" />
