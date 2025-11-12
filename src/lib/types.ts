@@ -82,6 +82,7 @@ export interface Professional {
   totalReviews: number;
   dayAvailability: { [key: string]: boolean };
   testimonials?: Testimonial[];
+  whatsappClicks?: number;
 }
 
 // Representa la estructura de un documento en la colección 'users'

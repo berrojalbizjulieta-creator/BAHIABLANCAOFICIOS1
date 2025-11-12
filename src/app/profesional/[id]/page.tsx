@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -60,7 +58,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 // IMPORTACIONES DE FIRESTORE
-import { doc, getDoc, collection, addDoc, serverTimestamp, DocumentData, setDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, addDoc, serverTimestamp, DocumentData, setDoc, updateDoc, increment } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { getReviewsForProfessional } from '@/lib/firestore-queries';
 import { reportGtagConversion } from '@/lib/gtag-helpers';
@@ -448,9 +446,20 @@ export default function PublicProfilePage() {
   }
 
   const handleWhatsAppClick = () => {
+    // 1. Open WhatsApp link for the user
     const url = getWhatsAppLink(professional.phone, CATEGORIES.find(c => c.id === professional.categoryIds[0])?.name);
-    reportGtagConversion(url);
-  };
+    window.open(url, '_blank');
+
+    // 2. Increment the click counter in Firestore
+    if (professional.id) {
+        const professionalRef = doc(db, 'professionalsDetails', professional.id);
+        updateDoc(professionalRef, {
+            whatsappClicks: increment(1)
+        }).catch(error => {
+            console.error("Failed to increment WhatsApp click count:", error);
+        });
+    }
+};
 
 
   return (

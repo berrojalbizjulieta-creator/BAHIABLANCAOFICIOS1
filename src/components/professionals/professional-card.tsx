@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useState } from 'react';
@@ -25,7 +23,8 @@ import {
 } from "@/components/ui/popover"
 import { CATEGORIES } from '@/lib/data';
 import { cn } from '@/lib/utils';
-import { reportGtagConversion } from '@/lib/gtag-helpers';
+import { doc, increment, updateDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 
 interface ProfessionalCardProps {
@@ -91,8 +90,19 @@ export default function ProfessionalCard({
     const primaryCategory = CATEGORIES.find(c => c.id === professional.categoryIds[0]);
 
     const handleWhatsAppClick = () => {
+      // 1. Open WhatsApp link for the user
       const url = getWhatsAppLink(professional.phone);
-      reportGtagConversion(url);
+      window.open(url, '_blank');
+
+      // 2. Increment the click counter in Firestore in the background
+      if (professional.id) {
+          const professionalRef = doc(db, 'professionalsDetails', professional.id);
+          updateDoc(professionalRef, {
+              whatsappClicks: increment(1)
+          }).catch(error => {
+              console.error("Failed to increment WhatsApp click count:", error);
+          });
+      }
     };
 
     return (

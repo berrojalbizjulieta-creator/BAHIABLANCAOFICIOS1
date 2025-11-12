@@ -26,7 +26,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal, Loader2, ShieldCheck, Sparkles } from 'lucide-react';
+import { MoreHorizontal, Loader2, ShieldCheck, Sparkles, Phone } from 'lucide-react';
 import type { Professional, User as AppUser } from '@/lib/types';
 import { format, isAfter, subMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -73,6 +73,7 @@ export default function ProfessionalsTable() {
                 userIsActive: userData?.isActive ?? false,
                 isActive: profData.isActive,
                 isFeatured: profData.isFeatured ?? false,
+                whatsappClicks: profData.whatsappClicks || 0,
                 registrationDate: userData.registrationDate?.toDate ? userData.registrationDate.toDate() : new Date(),
                 lastPaymentDate: profData.subscription?.lastPaymentDate ? (profData.subscription.lastPaymentDate as any).toDate() : undefined,
             }
@@ -199,6 +200,7 @@ export default function ProfessionalsTable() {
           <TableHeader>
             <TableRow>
               <TableHead>Nombre</TableHead>
+              <TableHead>Clics Wpp</TableHead>
               <TableHead>Oficio Principal</TableHead>
               <TableHead>Estado de Pago</TableHead>
               <TableHead>Destacado</TableHead>
@@ -223,6 +225,12 @@ export default function ProfessionalsTable() {
                         {pro.isVerified && <ShieldCheck className="h-5 w-5 text-blue-500" />}
                     </div>
                     <div className="text-sm text-muted-foreground">{pro.email}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2 font-medium">
+                        <Phone className="h-4 w-4 text-muted-foreground"/>
+                        {pro.whatsappClicks || 0}
+                      </div>
                     </TableCell>
                     <TableCell>{primaryCategory?.name || 'No especificado'}</TableCell>
                     <TableCell>
@@ -275,7 +283,7 @@ export default function ProfessionalsTable() {
                 )})
             ) : (
                 <TableRow>
-                    <TableCell colSpan={7} className="h-24 text-center">
+                    <TableCell colSpan={8} className="h-24 text-center">
                         No se encontraron profesionales para este filtro.
                     </TableCell>
                 </TableRow>

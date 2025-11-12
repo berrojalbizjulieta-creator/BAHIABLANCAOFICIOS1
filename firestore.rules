@@ -23,8 +23,13 @@ service cloud.firestore {
     match /professionalsDetails/{profId} {
       // Cualquiera puede leer los perfiles de profesionales (perfil público).
       allow read: if true;
-      // Solo el propio profesional o un admin puede crear o actualizar su perfil.
-      allow create, update: if request.auth.uid == profId || esAdmin();
+      
+      // El propio profesional o un admin pueden crear o actualizar su perfil.
+      // ADEMÁS: Cualquier persona (incluso anónima) puede actualizar ÚNICAMENTE el campo `whatsappClicks`.
+      allow create: if request.auth.uid == profId || esAdmin();
+      allow update: if (request.auth.uid == profId || esAdmin()) || 
+                      (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['whatsappClicks']));
+
       // Nadie puede borrar perfiles directamente.
       allow delete: if false;
     }
