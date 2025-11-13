@@ -37,6 +37,7 @@ import { CATEGORIES } from '@/lib/data';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 interface CombinedProfessionalData extends Professional {
   userIsActive?: boolean;
@@ -46,6 +47,7 @@ export default function ProfessionalsTable() {
   const [professionals, setProfessionals] = useState<CombinedProfessionalData[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('active'); // 'active', 'inactive', 'all'
+  const [categoryFilter, setCategoryFilter] = useState('all'); // State for category filter
   const { toast } = useToast();
 
   useEffect(() => {
@@ -166,12 +168,24 @@ export default function ProfessionalsTable() {
   }
 
   const filteredProfessionals = useMemo(() => {
-    if (filter === 'all') {
-      return professionals;
+    let professionalsToShow = professionals;
+
+    // Filter by active/inactive status
+    if (filter !== 'all') {
+      const isActiveFilter = filter === 'active';
+      professionalsToShow = professionals.filter(pro => pro.userIsActive === isActiveFilter);
     }
-    const isActiveFilter = filter === 'active';
-    return professionals.filter(pro => pro.userIsActive === isActiveFilter);
-  }, [professionals, filter]);
+    
+    // Filter by category
+    if (categoryFilter !== 'all') {
+      const categoryIdNum = Number(categoryFilter);
+      professionalsToShow = professionalsToShow.filter(pro => 
+        pro.categoryIds.includes(categoryIdNum)
+      );
+    }
+
+    return professionalsToShow;
+  }, [professionals, filter, categoryFilter]);
 
   return (
     <Card>
@@ -182,13 +196,29 @@ export default function ProfessionalsTable() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs value={filter} onValueChange={setFilter} className="mb-4">
-            <TabsList>
-                <TabsTrigger value="active">Activos ({professionals.filter(p => p.userIsActive).length})</TabsTrigger>
-                <TabsTrigger value="inactive">Inactivos ({professionals.filter(p => !p.userIsActive).length})</TabsTrigger>
-                <TabsTrigger value="all">Todos ({professionals.length})</TabsTrigger>
-            </TabsList>
-        </Tabs>
+        <div className="flex flex-wrap items-center gap-4 mb-4">
+            <Tabs value={filter} onValueChange={setFilter}>
+                <TabsList>
+                    <TabsTrigger value="active">Activos ({professionals.filter(p => p.userIsActive).length})</TabsTrigger>
+                    <TabsTrigger value="inactive">Inactivos ({professionals.filter(p => !p.userIsActive).length})</TabsTrigger>
+                    <TabsTrigger value="all">Todos ({professionals.length})</TabsTrigger>
+                </TabsList>
+            </Tabs>
+
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger className="w-full sm:w-[220px]">
+                <SelectValue placeholder="Filtrar por oficio" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas las Categorías</SelectItem>
+                {CATEGORIES.map(cat => (
+                  <SelectItem key={cat.id} value={String(cat.id)}>
+                    {cat.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+        </div>
         <TooltipProvider>
          {loading ? (
             <div className="flex justify-center items-center h-64">
