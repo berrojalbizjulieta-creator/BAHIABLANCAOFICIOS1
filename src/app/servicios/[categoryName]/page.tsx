@@ -29,7 +29,7 @@ import Autoplay from "embla-carousel-autoplay"
 
 const PAGE_SIZE = 12;
 
-type SortType = 'rating' | 'verified' | 'availability';
+type SortType = 'rating' | 'verified' | 'availability' | 'clicks';
 
 const isAvailableNow = (schedule?: Schedule[]): boolean => {
   if (!schedule) return false;
@@ -76,7 +76,7 @@ export default function CategoryPage() {
   const [allProfessionals, setAllProfessionals] = useState<Professional[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState<SortType>('rating');
+  const [sortBy, setSortBy] = useState<SortType>('clicks');
   const { toast } = useToast();
 
   const category = useMemo(
@@ -144,8 +144,9 @@ export default function CategoryPage() {
           return (b.avgRating || 0) - (a.avgRating || 0);
         });
         break;
+      case 'clicks':
       default:
-        sorted.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
+        sorted.sort((a, b) => (a.whatsappClicks || 0) - (b.whatsappClicks || 0));
         break;
     }
     return sorted;
@@ -198,6 +199,7 @@ export default function CategoryPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
+              <DropdownMenuItem onSelect={() => handleSortChange('clicks')}>Menos Contactados</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => handleSortChange('rating')}>Mejor Rankeados</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => handleSortChange('verified')}>Solo Verificados</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => handleSortChange('availability')}>Disponibles Ahora</DropdownMenuItem>
