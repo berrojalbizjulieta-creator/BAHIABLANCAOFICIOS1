@@ -87,7 +87,11 @@ export default function ProfessionalCard({
         const message = encodeURIComponent('Hola, me comunico desde Bahia Blanca Oficios. Estoy interesado en tus servicios.');
         return `https://wa.me/${normalizedPhone}?text=${message}`;
     }
-    const primaryCategory = CATEGORIES.find(c => c.id === professional.categoryIds[0]);
+    
+    const categoryNames = professional.categoryIds
+        .map(id => CATEGORIES.find(c => c.id === id)?.name)
+        .filter(Boolean)
+        .join(' • ');
 
     const handleWhatsAppClick = () => {
       // 1. Open WhatsApp link for the user
@@ -135,7 +139,7 @@ export default function ProfessionalCard({
                 </CardTitle>
                 </Link>
             </CardHeader>
-            <p className="text-sm text-muted-foreground mt-1">{primaryCategory?.name}</p>
+            <p className="text-sm text-muted-foreground mt-1 px-2">{categoryNames}</p>
             <div className="mt-1">
                 <StarRating rating={professional.avgRating} count={professional.totalReviews} />
             </div>
