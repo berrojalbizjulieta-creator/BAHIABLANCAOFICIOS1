@@ -16,11 +16,6 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 import { CATEGORIES } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { doc, increment, updateDoc } from 'firebase/firestore';
@@ -165,33 +160,19 @@ export default function ProfessionalCard({
                     </div>
                 )}
             </CardContent>
-            <CardFooter className="p-0 pt-4 flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                    {professional.phone ? (
-                        <Button onClick={handleWhatsAppClick}>
-                            <Phone className="mr-2" /> Whatsapp
-                        </Button>
-                    ) : (
-                        <Button disabled>Whatsapp</Button>
-                    )}
-                    {professional.priceInfo && (
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" size="sm">
-                                <DollarSign className="mr-2 h-4 w-4" /> Ver Precios
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-60 text-sm">
-                            <p>{professional.priceInfo}</p>
-                        </PopoverContent>
-                    </Popover>
-                    )}
-                </div>
-                {professional.totalReviews > 0 && (
-                    <Button variant="link" size="sm" asChild>
-                        <Link href={`/profesional/${professional.id}`} target="_blank">Ver más</Link>
+            <CardFooter className="p-0 pt-4 flex justify-start items-center gap-4">
+                 {professional.phone ? (
+                    <Button onClick={handleWhatsAppClick}>
+                        <Phone className="mr-2" /> Whatsapp
                     </Button>
+                ) : (
+                    <Button disabled>Whatsapp</Button>
                 )}
+                <Button variant="outline" size="sm" asChild>
+                    <Link href={`/profesional/${professional.id}`}>
+                        Ver más
+                    </Link>
+                </Button>
             </CardFooter>
             </div>
         </Card>
