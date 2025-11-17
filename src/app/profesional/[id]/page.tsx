@@ -14,14 +14,11 @@ import {
   MessageSquare,
   ShieldCheck,
   Shield,
-  DollarSign,
-  Phone,
-  Sparkles as PremiumIcon,
-  Loader2, // Importar Loader2 para el spinner de carga
-  Tag,
   CreditCard,
   ChevronLeft,
   ChevronRight,
+  Loader2,
+  Tag
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -56,14 +53,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
-
-// IMPORTACIONES DE FIRESTORE
-import { doc, getDoc, collection, addDoc, serverTimestamp, DocumentData, setDoc, updateDoc, increment } from 'firebase/firestore';
+import { doc, getDoc, collection, addDoc, serverTimestamp, DocumentData, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { getReviewsForProfessional } from '@/lib/firestore-queries';
-import { reportGtagConversion } from '@/lib/gtag-helpers';
+import WhatsappButtonWithTerms from '@/components/auth/whatsapp-button-with-terms';
 
-// --- Funciones auxiliares (mantener sin cambios) ---
+
 function StarRatingDisplay({
   rating,
   totalReviews,
@@ -117,7 +112,6 @@ function ReviewForm({ onReviewSubmit, isSubmitting }: ReviewFormProps) {
 
     await onReviewSubmit(rating, reviewText);
 
-    // Reset form after submission
     setRating(0);
     setHover(0);
     setReviewText('');
@@ -201,36 +195,6 @@ const ReviewCard = ({ review }: { review: Review }) => {
     </div>
   )
 }
-
-const normalizeWhatsAppNumber = (phone: string): string => {
-    let cleaned = phone.replace(/\D/g, ''); // Remove all non-numeric characters
-    
-    // Case 1: Already correct format (e.g., 549291...)
-    if (cleaned.startsWith('549')) {
-        return cleaned;
-    }
-    
-    // Case 2: Starts with 9 (common for mobile) and is 10 digits (e.g., 9291...)
-    if (cleaned.startsWith('9') && cleaned.length === 11) { // 9 + 10 digits area code + number
-        return `54${cleaned}`;
-    }
-
-    // Case 3: Local number (e.g., 291...)
-    if (cleaned.length === 10 && cleaned.startsWith('291')) {
-        return `549${cleaned}`;
-    }
-
-    // Fallback for other cases, assuming it might be a complete number without the 54
-     if (cleaned.length > 9) {
-        return `54${cleaned}`;
-    }
-    
-    // Default fallback
-    return cleaned;
-}
-
-// --- Fin funciones auxiliares ---
-
 
 export default function PublicProfilePage() {
   const params = useParams();
@@ -335,7 +299,6 @@ export default function PublicProfilePage() {
             createdAt: serverTimestamp() 
         };
         
-        // El ID del documento será `userId_professionalId`
         const reviewDocId = `${user.uid}_${professional.id}`;
         const reviewDocRef = doc(db, 'reviews', reviewDocId);
         
@@ -347,7 +310,6 @@ export default function PublicProfilePage() {
             createdAt: new Date(),
         }
         
-        // Optimistically update the UI
         setReviews(prev => [localNewReview, ...prev]);
         setUserHasReviewed(true);
 
@@ -374,7 +336,7 @@ export default function PublicProfilePage() {
     const shareData = {
       title: `Perfil de ${professional.name} en BahiaBlancaOficios`,
       text: `¡Mirá el perfil de este profesional en BahiaBlancaOficios!`,
-      url: window.location.href, // La URL actual es la del perfil público
+      url: window.location.href,
     };
 
     if (navigator.share) {
@@ -382,10 +344,8 @@ export default function PublicProfilePage() {
         await navigator.share(shareData);
       } catch (error) {
         console.error('Error al usar Web Share API:', error);
-        // No se muestra error si el usuario cancela la acción
       }
     } else {
-      // Fallback para escritorio: copiar al portapapeles
       try {
         await navigator.clipboard.writeText(shareData.url);
         toast({
@@ -438,30 +398,6 @@ export default function PublicProfilePage() {
     return <div className="container py-12 text-center">Profesional no encontrado.</div>;
   }
   
-  const getWhatsAppLink = (phone?: string, categoryName?: string) => {
-    if (!phone) return '#';
-    const normalizedPhone = normalizeWhatsAppNumber(phone);
-    const message = encodeURIComponent(`Hola ${professional.name}, te contacto desde BahiaBlancaOficios por tus servicios de ${categoryName || 'profesional'}.`);
-    return `https://wa.me/${normalizedPhone}?text=${message}`;
-  }
-
-  const handleWhatsAppClick = () => {
-    // 1. Open WhatsApp link for the user
-    const url = getWhatsAppLink(professional.phone, CATEGORIES.find(c => c.id === professional.categoryIds[0])?.name);
-    window.open(url, '_blank');
-
-    // 2. Increment the click counter in Firestore
-    if (professional.id) {
-        const professionalRef = doc(db, 'professionalsDetails', professional.id);
-        updateDoc(professionalRef, {
-            whatsappClicks: increment(1)
-        }).catch(error => {
-            console.error("Failed to increment WhatsApp click count:", error);
-        });
-    }
-};
-
-
   return (
     <div className="bg-muted/30">
       <div className="container mx-auto px-4 py-12 md:px-6">
@@ -531,9 +467,12 @@ export default function PublicProfilePage() {
                     )}
                   </div>
                   <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                    <Button onClick={handleWhatsAppClick} className="w-full sm:w-auto">
-                      <Phone className="mr-2" /> Whatsapp
-                    </Button>
+                    <WhatsappButtonWithTerms
+                        phone={professional.phone}
+                        professionalName={professional.name}
+                        professionalId={professional.id}
+                        categoryName={CATEGORIES.find(c => c.id === professional.categoryIds[0])?.name}
+                    />
                     <Button variant="outline" className="w-full sm:w-auto" onClick={handleShare}>
                       <Share2 className="mr-2 h-4 w-4" />
                       Compartir

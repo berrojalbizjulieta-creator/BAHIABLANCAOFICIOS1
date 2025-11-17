@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Star, MessageSquare, DollarSign, Phone, ShieldCheck, Sparkles } from 'lucide-react';
+import { Star, MessageSquare, Phone, ShieldCheck, Sparkles } from 'lucide-react';
 import type { Professional } from '@/lib/types';
 import {
   Card,
@@ -11,15 +10,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { CATEGORIES } from '@/lib/data';
 import { cn } from '@/lib/utils';
-import { doc, increment, updateDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import WhatsappButtonWithTerms from '../auth/whatsapp-button-with-terms';
 
 
 interface ProfessionalCardProps {
@@ -45,64 +42,15 @@ function StarRating({ rating, count }: { rating: number, count: number }) {
   );
 }
 
-const normalizeWhatsAppNumber = (phone: string): string => {
-    let cleaned = phone.replace(/\D/g, ''); // Remove all non-numeric characters
-    
-    // Case 1: Already correct format (e.g., 549291...)
-    if (cleaned.startsWith('549')) {
-        return cleaned;
-    }
-    
-    // Case 2: Starts with 9 (common for mobile) and is 10 digits (e.g., 9291...)
-    if (cleaned.startsWith('9') && cleaned.length === 11) { // 9 + 10 digits area code + number
-        return `54${cleaned}`;
-    }
-
-    // Case 3: Local number (e.g., 291...)
-    if (cleaned.length === 10 && cleaned.startsWith('291')) {
-        return `549${cleaned}`;
-    }
-
-    // Fallback for other cases, assuming it might be a complete number without the 54
-     if (cleaned.length > 9) {
-        return `54${cleaned}`;
-    }
-    
-    // Default fallback
-    return cleaned;
-}
-
 export default function ProfessionalCard({
   professional,
   isFeatured = false,
 }: ProfessionalCardProps) {
-    const getWhatsAppLink = (phone?: string) => {
-        if (!phone) return '#';
-        const normalizedPhone = normalizeWhatsAppNumber(phone);
-        const message = encodeURIComponent('Hola, me comunico desde Bahia Blanca Oficios. Estoy interesado en tus servicios.');
-        return `https://wa.me/${normalizedPhone}?text=${message}`;
-    }
     
     const categoryNames = professional.categoryIds
         .map(id => CATEGORIES.find(c => c.id === id)?.name)
         .filter(Boolean)
         .join(' • ');
-
-    const handleWhatsAppClick = () => {
-      // 1. Open WhatsApp link for the user
-      const url = getWhatsAppLink(professional.phone);
-      window.open(url, '_blank');
-
-      // 2. Increment the click counter in Firestore in the background
-      if (professional.id) {
-          const professionalRef = doc(db, 'professionalsDetails', professional.id);
-          updateDoc(professionalRef, {
-              whatsappClicks: increment(1)
-          }).catch(error => {
-              console.error("Failed to increment WhatsApp click count:", error);
-          });
-      }
-    };
 
     return (
         <div className="relative pt-2"> 
@@ -161,13 +109,12 @@ export default function ProfessionalCard({
                 )}
             </CardContent>
             <CardFooter className="p-0 pt-4 flex justify-start items-center gap-4">
-                 {professional.phone ? (
-                    <Button onClick={handleWhatsAppClick}>
-                        <Phone className="mr-2" /> Whatsapp
-                    </Button>
-                ) : (
-                    <Button disabled>Whatsapp</Button>
-                )}
+                <WhatsappButtonWithTerms
+                    phone={professional.phone}
+                    professionalName={professional.name}
+                    professionalId={professional.id}
+                    categoryName={CATEGORIES.find(c => c.id === professional.categoryIds[0])?.name}
+                />
                 <Button variant="outline" size="sm" asChild>
                     <Link href={`/profesional/${professional.id}`}>
                         Ver más
