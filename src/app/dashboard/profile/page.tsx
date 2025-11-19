@@ -547,16 +547,14 @@ export default function ProfilePage() {
     const handleEditSpecialties = () => {
         if (professional?.categoryIds.length > 0) {
             const firstCategoryId = professional.categoryIds[0];
-            if (CATEGORY_SPECIALTIES[firstCategoryId]) {
-                setCurrentCategoryForSpecialties(firstCategoryId);
-                setIsSpecialtiesDialogOpen(true);
-            } else {
-                toast({
-                    title: 'Sin Especialidades',
-                    description: 'La categoría principal seleccionada no tiene especialidades para elegir.',
-                    variant: 'destructive',
-                });
-            }
+            setCurrentCategoryForSpecialties(firstCategoryId);
+            setIsSpecialtiesDialogOpen(true);
+        } else {
+             toast({
+                title: 'Primero elige un oficio',
+                description: 'Debes seleccionar al menos un oficio principal antes de añadir especialidades.',
+                variant: 'destructive',
+            });
         }
     };
     
@@ -920,7 +918,7 @@ export default function ProfilePage() {
                     <div>
                          <div className="flex items-center gap-4 mb-3">
                             <h4 className="font-semibold">Especialidades</h4>
-                            {isEditing && professional.categoryIds.length > 0 && (
+                            {isEditing && (
                                 <Button variant="outline" size="sm" onClick={handleEditSpecialties}>
                                     <Edit className="mr-2 h-3 w-3" /> Editar
                                 </Button>
@@ -1241,12 +1239,12 @@ export default function ProfilePage() {
         onPaymentSuccess={handlePaymentSuccess}
       />
       
-      {currentCategoryForSpecialties !== null && CATEGORY_SPECIALTIES[currentCategoryForSpecialties] && (
+      {currentCategoryForSpecialties !== null && (
         <SpecialtiesDialog
             isOpen={isSpecialtiesDialogOpen}
             onOpenChange={setIsSpecialtiesDialogOpen}
-            categoryName={CATEGORY_SPECIALTIES[currentCategoryForSpecialties].name}
-            availableSpecialties={CATEGORY_SPECIALTIES[currentCategoryForSpecialties].specialties}
+            categoryName={CATEGORIES.find(c => c.id === currentCategoryForSpecialties)?.name || ''}
+            availableSpecialties={CATEGORY_SPECIALTIES[currentCategoryForSpecialties]?.specialties || []}
             selectedSpecialties={professional.specialties}
             onSave={handleSpecialtiesSave}
         />
@@ -1254,3 +1252,4 @@ export default function ProfilePage() {
     </>
   );
 }
+```
