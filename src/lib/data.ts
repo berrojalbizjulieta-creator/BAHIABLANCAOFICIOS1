@@ -64,6 +64,7 @@ import { MASAJES_KEYWORDS } from './keywords/masajes';
 import { DISENO_REMODELACIONES_KEYWORDS } from './keywords/diseno-remodelaciones';
 import { TERAPIAS_HOLISTICAS_KEYWORDS } from './keywords/terapias-holisticas';
 import { TEXTILES_KEYWORDS } from './keywords/textiles';
+import { OTROS_SERVICIOS_KEYWORDS } from './keywords/otros-servicios';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -116,6 +117,7 @@ export const CATEGORIES: Category[] = [
     { id: 55, name: 'Mascotas', icon: Dog, description: 'Paseo de perros, cuidado de gatos.', imageUrl: getImage('cat-mascotas').imageUrl, imageHint: getImage('cat-mascotas').imageHint },
     { id: 68, name: 'Mecánicos Auto/Motos', icon: Car, description: 'Servicio y reparación de vehículos.', imageUrl: getImage('cat-mecanica').imageUrl, imageHint: getImage('cat-mecanica').imageHint },
     { id: 4, name: 'Mudanzas', icon: Truck, description: 'Llevar muebles y cajas de acá para allá.', imageUrl: getImage('cat-mudanzas').imageUrl, imageHint: getImage('cat-mudanzas').imageHint },
+    { id: 77, name: 'Otros Servicios', icon: User, description: 'Consultoría, seguros, coaching y otros servicios profesionales.', imageUrl: getImage('cat-tecnologia').imageUrl, imageHint: getImage('cat-tecnologia').imageHint },
     { id: 17, name: 'Pintores', icon: Paintbrush, description: 'Pintura de paredes, revoques y techos.', imageUrl: getImage('cat-pintores').imageUrl, imageHint: getImage('cat-pintores').imageHint },
     { id: 11, name: 'Plomería', icon: Wrench, description: 'Arreglar canillas, caños y desagües.', imageUrl: getImage('cat-plomeria-2').imageUrl, imageHint: getImage('cat-plomeria-2').imageHint },
     { id: 5, name: 'Reparaciones', icon: Wrench, description: 'Arreglos de todo tipo.', imageUrl: getImage('cat-reparaciones').imageUrl, imageHint: getImage('cat-reparaciones').imageHint },
@@ -238,7 +240,8 @@ export const CATEGORY_KEYWORDS: { [key: number]: { name: string; keywords: strin
   73: { name: 'Masajes', keywords: MASAJES_KEYWORDS },
   74: { name: 'Diseño y Remodelaciones', keywords: DISENO_REMODELACIONES_KEYWORDS },
   75: { name: 'Terapias Holísticas', keywords: TERAPIAS_HOLISTICAS_KEYWORDS },
-  76: { name: 'Textiles', keywords: TEXTILES_KEYWORDS }
+  76: { name: 'Textiles', keywords: TEXTILES_KEYWORDS },
+  77: { name: 'Otros Servicios', keywords: OTROS_SERVICIOS_KEYWORDS },
 };
 
 // Diccionario simple para mapear sinónimos comunes a la categoría oficial

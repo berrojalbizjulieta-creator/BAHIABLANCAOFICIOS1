@@ -82,5 +82,5 @@ export const TERAPIAS_HOLISTICAS_KEYWORDS = [
   "tarotista",
   "arcanos mayores",
   "arcanos menores",
-  "tirada de tarot"
+  "tirada de tarot",
 ];
