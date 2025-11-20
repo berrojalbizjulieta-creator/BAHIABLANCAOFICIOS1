@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -269,18 +270,20 @@ export default function ProfessionalsTable() {
                     </Badge>
                     </TableCell>
                     <TableCell>
-                    <Tooltip>
-                        <TooltipTrigger>
-                        <Switch
-                            checked={pro.isFeatured}
-                            onCheckedChange={value => handleToggleFeatured(pro.id, value)}
-                            aria-label="Destacar profesional"
-                            />
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex items-center justify-center">
+                            <Switch
+                                checked={pro.isFeatured}
+                                onCheckedChange={value => handleToggleFeatured(pro.id, value)}
+                                aria-label="Destacar profesional"
+                                />
+                          </div>
                         </TooltipTrigger>
                         <TooltipContent>
                             <p>{pro.isFeatured ? 'Quitar de destacados' : 'Añadir a destacados'}</p>
                         </TooltipContent>
-                    </Tooltip>
+                      </Tooltip>
                     </TableCell>
                     <TableCell>
                       {pro.registrationDate ? format(pro.registrationDate, 'd MMM, yyyy', { locale: es }) : 'N/A'}
