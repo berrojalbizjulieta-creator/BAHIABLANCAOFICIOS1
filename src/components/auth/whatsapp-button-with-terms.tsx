@@ -59,48 +59,55 @@ export default function WhatsappButtonWithTerms({
   const { user, loading } = useAdminAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleOpenWhatsApp = async () => {
-    // Primero, preparamos la URL de WhatsApp
+  const handleOpenWhatsApp = async (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    
+    // 1. Registrar el clic en la API interna
+    if (professionalId) {
+      fetch("/api/increment-whatsapp-click", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ professionalId }),
+        keepalive: true, // Importante para que la petición no se cancele
+      }).catch(error => {
+        console.warn("Error silencioso al registrar clic:", error);
+      });
+    }
+  
+    // 2. Reportar la conversión a Google
+    const tracked = reportGtagConversion();
+  
+    // 3. Preparar la URL de WhatsApp
     if (!phone) return;
     const defaultCategory = 'profesional';
     const message = encodeURIComponent(`Hola ${professionalName}, te contacto desde BahiaBlancaOficios por tus servicios de ${categoryName || defaultCategory}.`);
     const normalizedPhone = normalizeWhatsAppNumber(phone);
     const url = `https://wa.me/${normalizedPhone}?text=${message}`;
-    
-    // Llamada a la API para registrar el clic
-    if (professionalId) {
-      try {
-        // Esta es la llamada a la nueva API route, segura y robusta.
-        await fetch("/api/increment-whatsapp-click", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ professionalId }),
-        });
-      } catch (error) {
-        // El error se maneja silenciosamente para no afectar al usuario
-        console.log("Silent error incrementing WhatsApp click:", error);
-      }
-    }
-
-    // Reportamos la conversión a Google Ads y luego abrimos la URL.
-    reportGtagConversion(url);
-  };
-
-  const handleButtonClick = () => {
-    // If user is logged in, open WhatsApp directly.
-    if (user) {
-      handleOpenWhatsApp();
+  
+    // 4. Abrir la URL
+    if (!tracked) {
+      // Si GA no funciona o está bloqueado, abrir la URL inmediatamente.
+      window.open(url, "_blank");
       return;
     }
-    // If user is not logged in, open the terms dialog.
+  
+    // Si GA funcionó, esperar un momento para asegurar que el evento se envíe.
+    setTimeout(() => {
+      window.open(url, "_blank");
+    }, 500);
+  };
+
+  const handleButtonClick = (e: React.MouseEvent) => {
+    if (user) {
+      handleOpenWhatsApp(e);
+      return;
+    }
     setIsDialogOpen(true);
   };
 
-  const handleAcceptAndContinue = () => {
+  const handleAcceptAndContinue = (e: React.MouseEvent) => {
     setIsDialogOpen(false);
-    handleOpenWhatsApp();
+    handleOpenWhatsApp(e);
   };
 
   if (loading) {
