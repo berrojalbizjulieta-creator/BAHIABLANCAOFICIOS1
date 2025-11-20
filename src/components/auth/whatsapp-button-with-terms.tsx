@@ -70,24 +70,25 @@ export default function WhatsappButtonWithTerms({
     window.open(url, '_blank');
 
     if (professionalId) {
-      const professionalRef = doc(db, "professionalsDetails", professionalId);
-
-      updateDoc(professionalRef, {
-        whatsappClicks: increment(1),
-      })
-        .then(() => {
-          console.log("Contador incrementado por Firebase normal");
-        })
-        .catch(async (error) => {
-          console.warn("Firebase bloqueó el update. Intentando método alternativo...", error);
-
-          // 🔥 MÉTODO ALTERNATIVO: Reintenta vía tu backend NextJS
-          await fetch("/api/increment", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ professionalId }),
-          });
+      try {
+        fetch("/api/increment-whatsapp-click", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ professionalId }),
+          
+          // ---- Compatibilidad máxima ----
+          mode: "no-cors",     // Evita bloqueos de Google Ads / Safari / iOS
+          cache: "no-store",    // Evita que se lo coma la caché
+          credentials: "omit",  // Evita cookies bloqueadas
+          keepalive: true       // Asegura envío incluso si navegan o cierran
         });
+
+      } catch (error) {
+        // No mostramos nada al usuario
+        console.log("Click count request failed silently:", error);
+      }
     }
   };
 
