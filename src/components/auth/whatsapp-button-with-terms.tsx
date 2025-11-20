@@ -13,8 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Phone } from 'lucide-react';
-import { doc, increment, updateDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { reportGtagConversion } from '@/lib/gtag-helpers';
 
 interface WhatsappButtonWithTermsProps {
   phone?: string;
@@ -60,36 +59,33 @@ export default function WhatsappButtonWithTerms({
   const { user, loading } = useAdminAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleOpenWhatsApp = () => {
+  const handleOpenWhatsApp = async () => {
+    // Primero, preparamos la URL de WhatsApp
     if (!phone) return;
     const defaultCategory = 'profesional';
     const message = encodeURIComponent(`Hola ${professionalName}, te contacto desde BahiaBlancaOficios por tus servicios de ${categoryName || defaultCategory}.`);
     const normalizedPhone = normalizeWhatsAppNumber(phone);
     const url = `https://wa.me/${normalizedPhone}?text=${message}`;
     
-    window.open(url, '_blank');
-
+    // Llamada a la API para registrar el clic
     if (professionalId) {
       try {
-        fetch("/api/increment-whatsapp-click", {
+        // Esta es la llamada a la nueva API route, segura y robusta.
+        await fetch("/api/increment-whatsapp-click", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({ professionalId }),
-          
-          // ---- Compatibilidad máxima ----
-          mode: "no-cors",     // Evita bloqueos de Google Ads / Safari / iOS
-          cache: "no-store",    // Evita que se lo coma la caché
-          credentials: "omit",  // Evita cookies bloqueadas
-          keepalive: true       // Asegura envío incluso si navegan o cierran
         });
-
       } catch (error) {
-        // No mostramos nada al usuario
-        console.log("Click count request failed silently:", error);
+        // El error se maneja silenciosamente para no afectar al usuario
+        console.log("Silent error incrementing WhatsApp click:", error);
       }
     }
+
+    // Reportamos la conversión a Google Ads y luego abrimos la URL.
+    reportGtagConversion(url);
   };
 
   const handleButtonClick = () => {
