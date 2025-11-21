@@ -163,6 +163,39 @@ export default function ProfessionalsTable() {
      }
   }
 
+  const handleEditClicks = async (prof: CombinedProfessionalData) => {
+    const currentClicks = prof.whatsappClicks || 0;
+    const newClicksStr = prompt(`Actualizar clics para ${prof.name}:`, currentClicks.toString());
+
+    if (newClicksStr !== null) {
+      const value = parseInt(newClicksStr, 10);
+      if (!isNaN(value) && value >= 0) {
+        // Optimistic UI update
+        setProfessionals(prev =>
+          prev.map(p => (p.id === prof.id ? { ...p, whatsappClicks: value } : p))
+        );
+        try {
+          const profDocRef = doc(db, 'professionalsDetails', prof.id);
+          await updateDoc(profDocRef, { whatsappClicks: value });
+          toast({
+            title: 'Contador Actualizado',
+            description: `Los clics de ${prof.name} se actualizaron a ${value}.`,
+          });
+        } catch (error) {
+          console.error("Error updating clicks:", error);
+          // Rollback
+          setProfessionals(prev =>
+            prev.map(p => (p.id === prof.id ? { ...p, whatsappClicks: currentClicks } : p))
+          );
+          toast({ title: 'Error', description: 'No se pudo actualizar el contador.', variant: 'destructive'});
+        }
+      } else {
+        toast({ title: 'Valor Inválido', description: 'Por favor, ingresa un número válido.', variant: 'destructive'});
+      }
+    }
+  };
+
+
   const isPaymentActive = (lastPaymentDate?: Date) => {
     if (!lastPaymentDate) return false;
     return isAfter(lastPaymentDate, subMonths(new Date(), 1));
@@ -306,6 +339,7 @@ export default function ProfessionalsTable() {
                         <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                         <DropdownMenuItem onClick={() => handleMarkAsPaid(pro.id)}>Marcar como pagado</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleEditClicks(pro)}>Editar Clics</DropdownMenuItem>
                         <DropdownMenuItem asChild>
                             <Link href={`/profesional/${pro.id}`} target="_blank">Ver Perfil</Link>
                         </DropdownMenuItem>
@@ -330,3 +364,4 @@ export default function ProfessionalsTable() {
     </Card>
   );
 }
+
