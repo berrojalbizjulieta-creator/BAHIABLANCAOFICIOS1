@@ -23,14 +23,12 @@ interface PaymentDialogProps {
 type Plan = {
     id: 'standard' | 'premium';
     name: string;
-    price: number;
     features: string[];
 }
 
 const plan: Plan = {
     id: 'standard', // Usamos 'standard' como id base
     name: 'Plan Profesional',
-    price: 15800,
     features: [
         'Perfil público y visible para clientes',
         'Hasta 10 fotos en tu galería de trabajos',
@@ -42,15 +40,22 @@ const plan: Plan = {
 export default function PaymentDialog({ isOpen, onOpenChange, professionalName, onPaymentSuccess }: PaymentDialogProps) {
   
   const handleSelectPlan = () => {
+    // 1. Activar la cuenta (funcionalidad existente)
     if(onPaymentSuccess) {
-      // Pasamos 'standard' ya que es el único plan ahora
       onPaymentSuccess('standard');
     }
+
+    // 2. Preparar y abrir el enlace de WhatsApp
+    const whatsappNumber = '5492915276388';
+    const message = encodeURIComponent(`Hola, acabo de registrar mi perfil como ${professionalName} y quiero activar mi plan gratuito.`);
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
+    window.open(whatsappUrl, '_blank');
+
+    // 3. Cerrar el diálogo
     onOpenChange(false);
   }
 
   const renderContent = () => {
-    // Siempre mostrar la opción de prueba gratuita como comportamiento predeterminado y seguro.
     return (
         <Card className='border-primary shadow-lg'>
             <CardHeader>
@@ -60,9 +65,8 @@ export default function PaymentDialog({ isOpen, onOpenChange, professionalName, 
                 <CardDescription>
                     <div className='flex items-baseline gap-2'>
                         <span className='text-3xl font-bold text-foreground'>$0</span>
-                        <span className='text-xl font-normal text-muted-foreground line-through'>${plan.price.toLocaleString('es-AR')}</span>
                     </div>
-                     <span className='text-muted-foreground'>/ primeros 3 meses</span>
+                     <span className='text-muted-foreground'>/ el primer mes</span>
                 </CardDescription>
             </CardHeader>
             <CardContent className="flex-1">
@@ -80,7 +84,7 @@ export default function PaymentDialog({ isOpen, onOpenChange, professionalName, 
                     onClick={handleSelectPlan} 
                     className='w-full'
                 >
-                    Activar Plan GRATIS por 3 meses
+                    Contactate por WhatsApp y activá tu plan gratis por un mes
                 </Button>
                 <p className="text-xs text-muted-foreground text-center">
                     Tranquilo, vas a poder editar tu perfil las veces que quieras.
@@ -103,7 +107,7 @@ export default function PaymentDialog({ isOpen, onOpenChange, professionalName, 
             ¡Último paso, {professionalName}!
           </DialogTitle>
           <DialogDescription>
-            Activá tu perfil con nuestro Plan Profesional y empezá a recibir clientes. ¡Los primeros 3 meses son gratis!
+            Activá tu perfil con nuestro Plan Profesional y empezá a recibir clientes. ¡El primer mes es gratis!
           </DialogDescription>
         </DialogHeader>
 
