@@ -30,6 +30,7 @@ import {
   Moon,
   User,
   Scissors,
+  Waves,
 } from 'lucide-react';
 import type { Category, Professional, Banner, JobRequest, CategorySpecialties, Schedule } from '@/lib/types';
 import { placeholderImages } from './placeholder-images';
@@ -67,6 +68,7 @@ import { TEXTILES_KEYWORDS } from './keywords/textiles';
 import { OTROS_SERVICIOS_KEYWORDS } from './keywords/otros-servicios';
 import { GOMERIAS_KEYWORDS } from './keywords/gomerias';
 import { CHAPA_PINTURA_KEYWORDS } from './keywords/chapa-pintura';
+import { PILETAS_KEYWORDS } from './keywords/piletas';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -125,6 +127,7 @@ export const CATEGORIES: Category[] = [
     { id: 17, name: 'Pintores', icon: Paintbrush, description: 'Pintura de paredes, revoques y techos.', imageUrl: getImage('cat-pintores').imageUrl, imageHint: getImage('cat-pintores').imageHint },
     { id: 11, name: 'Plomería', icon: Wrench, description: 'Arreglar canillas, caños y desagües.', imageUrl: getImage('cat-plomeria-2').imageUrl, imageHint: getImage('cat-plomeria-2').imageHint },
     { id: 5, name: 'Reparaciones', icon: Wrench, description: 'Arreglos de todo tipo.', imageUrl: getImage('cat-reparaciones').imageUrl, imageHint: getImage('cat-reparaciones').imageHint },
+    { id: 80, name: 'Servicios de piletas', icon: Waves, description: 'Mantenimiento, limpieza y reparación de piletas.', imageUrl: getImage('cat-piletas').imageUrl, imageHint: getImage('cat-piletas').imageHint },
     { id: 38, name: 'Tecnología', icon: Computer, description: 'Arreglo de compus, celulares y redes.', imageUrl: getImage('cat-tecnologia').imageUrl, imageHint: getImage('cat-tecnologia').imageHint },
     { id: 75, name: 'Terapias Holísticas', icon: Sparkles, description: 'Reiki, sanación energética, tarot y más.', imageUrl: getImage('cat-terapias-holisticas').imageUrl, imageHint: getImage('cat-terapias-holisticas').imageHint },
     { id: 76, name: 'Textiles', icon: Scissors, description: 'Arreglos de ropa, confección a medida y costura.', imageUrl: getImage('cat-textiles').imageUrl, imageHint: getImage('cat-textiles').imageHint },
@@ -216,6 +219,9 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   79: {
     name: 'Chapa y Pintura', specialties: ['Chapa y pintura automotor', 'Reparación de carrocería', 'Arreglo de golpes', 'Eliminación de rayones', 'Pintura automotriz', 'Pintura parcial y completa', 'Reparación de paragolpes', 'Terminaciones de calidad', 'Taller especializado'],
   },
+  80: {
+    name: 'Servicios de piletas', specialties: ['Limpieza de piletas', 'Control de cloro y pH', 'Revisión de filtros', 'Cambio de arena de filtros', 'Reparación de bombas', 'Reemplazo de skimmers', 'Desinfección de agua', 'Mantenimiento de equipos de piscina', 'Arreglo de filtración', 'Instalación de piletas nuevas', 'Revestimiento y pintura de piletas', 'Revisión de luces y sistemas eléctricos', 'Reparación de cañerías de piscina', 'Limpieza de borde y entorno', 'Control de temperatura del agua', 'Ajuste de niveles de agua', 'Vaciado y llenado de piletas', 'Mantenimiento preventivo', 'Restauración de piletas antiguas', 'Tratamientos de choque para agua'],
+  },
 };
 
 
@@ -254,6 +260,7 @@ export const CATEGORY_KEYWORDS: { [key: number]: { name: string; keywords: strin
   77: { name: 'Otros Servicios', keywords: OTROS_SERVICIOS_KEYWORDS },
   78: { name: 'Gomerías', keywords: GOMERIAS_KEYWORDS },
   79: { name: 'Chapa y Pintura', keywords: CHAPA_PINTURA_KEYWORDS },
+  80: { name: 'Servicios de piletas', keywords: PILETAS_KEYWORDS },
 };
 
 // Diccionario simple para mapear sinónimos comunes a la categoría oficial
@@ -315,6 +322,9 @@ export const CATEGORY_SYNONYMS = {
     'gomero': 'Gomerías',
     'cubierta': 'Gomerías',
     'chapista': 'Chapa y Pintura',
+    'pileta': 'Servicios de piletas',
+    'piscina': 'Servicios de piletas',
+    'piletero': 'Servicios de piletas',
 }
 
 export const PROFESSIONALS: Professional[] = [
