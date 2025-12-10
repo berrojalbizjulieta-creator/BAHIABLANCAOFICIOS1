@@ -65,6 +65,8 @@ import { DISENO_REMODELACIONES_KEYWORDS } from './keywords/diseno-remodelaciones
 import { TERAPIAS_HOLISTICAS_KEYWORDS } from './keywords/terapias-holisticas';
 import { TEXTILES_KEYWORDS } from './keywords/textiles';
 import { OTROS_SERVICIOS_KEYWORDS } from './keywords/otros-servicios';
+import { GOMERIAS_KEYWORDS } from './keywords/gomerias';
+import { CHAPA_PINTURA_KEYWORDS } from './keywords/chapa-pintura';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -101,6 +103,7 @@ export const CATEGORIES: Category[] = [
     { id: 69, name: 'Belleza', icon: Palette, description: 'Peluquería, uñas, maquillaje y más.', imageUrl: getImage('cat-belleza').imageUrl, imageHint: getImage('cat-belleza').imageHint },
     { id: 15, name: 'Carpintería', icon: Hammer, description: 'Muebles a medida, puertas, madera.', imageUrl: getImage('cat-carpinteria').imageUrl, imageHint: getImage('cat-carpinteria').imageHint },
     { id: 64, name: 'Cerrajería', icon: KeyRound, description: 'Apertura de puertas, cerraduras, llaves.', imageUrl: getImage('cat-cerrajeria').imageUrl, imageHint: getImage('cat-cerrajeria').imageHint },
+    { id: 79, name: 'Chapa y Pintura', icon: Paintbrush, description: 'Reparación de carrocerías, golpes y pintura automotriz.', imageUrl: getImage('cat-chapa-pintura').imageUrl, imageHint: getImage('cat-chapa-pintura').imageHint },
     { id: 7, name: 'Clases', icon: BookOpen, description: 'Música, idiomas, apoyo escolar.', imageUrl: getImage('cat-clases').imageUrl, imageHint: getImage('cat-clases').imageHint },
     { id: 66, name: 'Control de Plagas', icon: Bug, description: 'Fumigación y control de plagas.', imageUrl: getImage('cat-plagas').imageUrl, imageHint: getImage('cat-plagas').imageHint },
     { id: 72, name: 'Cuidado de Personas', icon: HeartHandshake, description: 'Cuidado de niños, adultos mayores y enfermos.', imageUrl: getImage('cat-cuidado-personas').imageUrl, imageHint: getImage('cat-cuidado-personas').imageHint },
@@ -110,6 +113,7 @@ export const CATEGORIES: Category[] = [
     { id: 6, name: 'Eventos', icon: PartyPopper, description: 'DJs, shows, catering para cumpleaños.', imageUrl: getImage('cat-eventos').imageUrl, imageHint: getImage('cat-eventos').imageHint },
     { id: 9, name: 'Fotografía', icon: Camera, description: 'Fotos para eventos, productos o redes.', imageUrl: getImage('cat-fotografia').imageUrl, imageHint: getImage('cat-fotografia').imageHint },
     { id: 12, name: 'Gasista Matriculado', icon: Wind, description: 'Instalación y arreglo de gas, calderas, cocinas.', imageUrl: getImage('cat-gasista').imageUrl, imageHint: getImage('cat-gasista').imageHint },
+    { id: 78, name: 'Gomerías', icon: Car, description: 'Venta, cambio y reparación de cubiertas de vehículos.', imageUrl: getImage('cat-gomerias').imageUrl, imageHint: getImage('cat-gomerias').imageHint },
     { id: 16, name: 'Herrería', icon: ShieldCheck, description: 'Rejas, portones, trabajos en hierro.', imageUrl: getImage('cat-herreria').imageUrl, imageHint: getImage('cat-herreria').imageHint },
     { id: 2, name: 'Jardinería', icon: Flower, description: 'Cortar pasto, plantar, cuidar el jardín.', imageUrl: getImage('cat-jardineria').imageUrl, imageHint: getImage('cat-jardineria').imageHint },
     { id: 3, name: 'Limpieza', icon: Sparkles, description: 'Limpieza profunda, pulido de pisos.', imageUrl: getImage('cat-limpieza').imageUrl, imageHint: getImage('cat-limpieza').imageHint },
@@ -206,6 +210,12 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   74: { name: 'Diseño y Remodelaciones', specialties: ['Diseño de interiores', 'Renovación de cocinas', 'Renovación de baños', 'Asesoramiento en decoración', 'Rediseño de espacios', 'Colocación de pisos', 'Proyectos de iluminación', 'Home staging', 'Visualización 3D (Renders)', 'Planificación de obras'] },
   75: { name: 'Terapias Holísticas', specialties: ['Reiki', 'Sanación energética', 'Lectura de Tarot', 'Armonización de chakras', 'Limpieza energética', 'Terapia con péndulo', 'Registros Akáshicos', 'Cristaloterapia', 'Aromaterapia', 'Flores de Bach'] },
   76: { name: 'Textiles', specialties: ['Arreglos y modificaciones', 'Dobladillos', 'Cambio de cierres y botones', 'Confección a medida', 'Arreglo de trajes y vestidos', 'Ajustes de prendas', 'Arreglo de ropa de cuero y jean', 'Bordados y personalización', 'Arreglo de cortinas y ropa de cama', 'Reparación de uniformes'] },
+  78: {
+    name: 'Gomerías', specialties: ['Venta de cubiertas', 'Cambio de cubiertas', 'Reparación de cubiertas', 'Parche e inflado', 'Balanceo de ruedas', 'Alineación', 'Gomería automotor', 'Atención rápida', 'Servicio profesional'],
+  },
+  79: {
+    name: 'Chapa y Pintura', specialties: ['Chapa y pintura automotor', 'Reparación de carrocería', 'Arreglo de golpes', 'Eliminación de rayones', 'Pintura automotriz', 'Pintura parcial y completa', 'Reparación de paragolpes', 'Terminaciones de calidad', 'Taller especializado'],
+  },
 };
 
 
@@ -242,6 +252,8 @@ export const CATEGORY_KEYWORDS: { [key: number]: { name: string; keywords: strin
   75: { name: 'Terapias Holísticas', keywords: TERAPIAS_HOLISTICAS_KEYWORDS },
   76: { name: 'Textiles', keywords: TEXTILES_KEYWORDS },
   77: { name: 'Otros Servicios', keywords: OTROS_SERVICIOS_KEYWORDS },
+  78: { name: 'Gomerías', keywords: GOMERIAS_KEYWORDS },
+  79: { name: 'Chapa y Pintura', keywords: CHAPA_PINTURA_KEYWORDS },
 };
 
 // Diccionario simple para mapear sinónimos comunes a la categoría oficial
@@ -299,6 +311,10 @@ export const CATEGORY_SYNONYMS = {
     'costurera': 'Textiles',
     'modista': 'Textiles',
     'ropa': 'Textiles',
+    'gomeria': 'Gomerías',
+    'gomero': 'Gomerías',
+    'cubierta': 'Gomerías',
+    'chapista': 'Chapa y Pintura',
 }
 
 export const PROFESSIONALS: Professional[] = [

@@ -51,7 +51,7 @@
     {
       "id": "prof-3",
       "description": "Portrait of a painter in work clothes.",
-      "imageUrl": "https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODUxMDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODUxMDl8MA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "person portrait"
     },
     {
@@ -371,6 +371,18 @@
       "description": "A sewing machine with colorful threads.",
       "imageUrl": "https://images.unsplash.com/photo-1588143453367-15ff07409292?q=80&w=1170",
       "imageHint": "sewing machine"
+    },
+    {
+      "id": "cat-gomerias",
+      "description": "A stack of tires in a garage.",
+      "imageUrl": "https://images.unsplash.com/photo-1588449668407-a473e6a4f434?q=80&w=1170",
+      "imageHint": "tires stack"
+    },
+    {
+      "id": "cat-chapa-pintura",
+      "description": "A car being painted in a spray booth.",
+      "imageUrl": "https://images.unsplash.com/photo-1633511920088-3343a4e9ef40?q=80&w=1170",
+      "imageHint": "car painting"
     }
   ]
 }
