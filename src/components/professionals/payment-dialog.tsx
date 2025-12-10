@@ -27,7 +27,7 @@ type Plan = {
 }
 
 const plan: Plan = {
-    id: 'standard', // Usamos 'standard' como id base
+    id: 'standard',
     name: 'Plan Profesional',
     features: [
         'Perfil público y visible para clientes',
@@ -79,7 +79,7 @@ export default function PaymentDialog({ isOpen, onOpenChange, professionalName, 
                     ))}
                 </ul>
             </CardContent>
-            <CardFooter className="flex flex-col items-center gap-2">
+            <CardFooter className="flex flex-col items-center gap-2 pt-6">
                 <Button 
                     onClick={handleSelectPlan} 
                     className='w-full'
@@ -99,8 +99,8 @@ export default function PaymentDialog({ isOpen, onOpenChange, professionalName, 
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent 
         className="sm:max-w-md"
-        onInteractOutside={(e) => e.preventDefault()} // Evita que se cierre al hacer clic afuera
-        showCloseButton={false} // Prop para ocultar el botón 'X'
+        onInteractOutside={(e) => e.preventDefault()}
+        showCloseButton={false}
       >
         <DialogHeader>
           <DialogTitle className='text-2xl'>
