@@ -84,10 +84,10 @@ export default function PaymentDialog({ isOpen, onOpenChange, professionalName, 
                     onClick={handleSelectPlan} 
                     className='w-full'
                 >
-                    Contactate por WhatsApp y activá tu plan gratis por un mes
+                    Activar Plan Gratuito por WhatsApp
                 </Button>
                 <p className="text-xs text-muted-foreground text-center">
-                    Tranquilo, vas a poder editar tu perfil las veces que quieras.
+                    Serás redirigido a WhatsApp para finalizar la activación.
                 </p>
             </CardFooter>
         </Card>
