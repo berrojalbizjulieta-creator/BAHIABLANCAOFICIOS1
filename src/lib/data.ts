@@ -31,6 +31,7 @@ import {
   User,
   Scissors,
   Waves,
+  Bike, // Importar el nuevo ícono
 } from 'lucide-react';
 import type { Category, Professional, Banner, JobRequest, CategorySpecialties, Schedule } from '@/lib/types';
 import { placeholderImages } from './placeholder-images';
@@ -56,6 +57,7 @@ import { AIRE_ACONDICIONADO_KEYWORDS } from './keywords/aire-acondicionado';
 import { VIDRIERIA_KEYWORDS } from './keywords/vidrieria';
 import { CONTROL_DE_PLAGAS_KEYWORDS } from './keywords/control-de-plagas';
 import { MECANICA_KEYWORDS } from './keywords/mecanica';
+import { MECANICO_MOTO_KEYWORDS } from './keywords/mecanico-moto'; // Importar nuevas keywords
 import { REPARACIONES_KEYWORDS } from './keywords/reparaciones';
 import { BELLEZA_KEYWORDS } from './keywords/belleza';
 import { ASTROLOGIA_KEYWORDS } from './keywords/astrologia';
@@ -121,7 +123,8 @@ export const CATEGORIES: Category[] = [
     { id: 3, name: 'Limpieza', icon: Sparkles, description: 'Limpieza profunda, pulido de pisos.', imageUrl: getImage('cat-limpieza').imageUrl, imageHint: getImage('cat-limpieza').imageHint },
     { id: 73, name: 'Masajes', icon: User, description: 'Masajes descontracturantes, relajantes y más.', imageUrl: getImage('cat-masajes').imageUrl, imageHint: getImage('cat-masajes').imageHint },
     { id: 55, name: 'Mascotas', icon: Dog, description: 'Paseo de perros, cuidado de gatos.', imageUrl: getImage('cat-mascotas').imageUrl, imageHint: getImage('cat-mascotas').imageHint },
-    { id: 68, name: 'Mecánicos Auto/Motos', icon: Car, description: 'Servicio y reparación de vehículos.', imageUrl: getImage('cat-mecanica').imageUrl, imageHint: getImage('cat-mecanica').imageHint },
+    { id: 68, name: 'Mecánico Auto', icon: Car, description: 'Servicio y reparación de vehículos.', imageUrl: getImage('cat-mecanica').imageUrl, imageHint: getImage('cat-mecanica').imageHint },
+    { id: 81, name: 'Mecánico Moto', icon: Bike, description: 'Servicio y reparación de motocicletas.', imageUrl: getImage('cat-mecanico-moto').imageUrl, imageHint: getImage('cat-mecanico-moto').imageHint },
     { id: 4, name: 'Mudanzas', icon: Truck, description: 'Llevar muebles y cajas de acá para allá.', imageUrl: getImage('cat-mudanzas').imageUrl, imageHint: getImage('cat-mudanzas').imageHint },
     { id: 77, name: 'Otros Servicios', icon: User, description: 'Consultoría, seguros, coaching y otros servicios profesionales.', imageUrl: getImage('cat-tecnologia').imageUrl, imageHint: getImage('cat-tecnologia').imageHint },
     { id: 17, name: 'Pintores', icon: Paintbrush, description: 'Pintura de paredes, revoques y techos.', imageUrl: getImage('cat-pintores').imageUrl, imageHint: getImage('cat-pintores').imageHint },
@@ -132,7 +135,7 @@ export const CATEGORIES: Category[] = [
     { id: 75, name: 'Terapias Holísticas', icon: Sparkles, description: 'Reiki, sanación energética, tarot y más.', imageUrl: getImage('cat-terapias-holisticas').imageUrl, imageHint: getImage('cat-terapias-holisticas').imageHint },
     { id: 76, name: 'Textiles', icon: Scissors, description: 'Arreglos de ropa, confección a medida y costura.', imageUrl: getImage('cat-textiles').imageUrl, imageHint: getImage('cat-textiles').imageHint },
     { id: 65, name: 'Vidriería', icon: GlassWater, description: 'Reemplazo de vidrios, espejos y ventanas.', imageUrl: getImage('cat-vidrieria-2').imageUrl, imageHint: getImage('cat-vidrieria-2').imageHint },
-];
+].sort((a, b) => a.name.localeCompare(b.name));
 
 
 // Este objeto contiene las listas cortas de especialidades para que el profesional elija en su perfil.
@@ -197,11 +200,11 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   67: { name: 'Aire Acondicionado', specialties: ['Instalación de equipos split', 'Reparación y service', 'Carga de gas refrigerante', 'Mantenimiento y limpieza de filtros', 'Desinstalación de equipos', 'Reparación de plaquetas', 'Instalación de aire central', 'Balanceo térmico', 'Revisión de fugas', 'Urgencias de climatización'],
   },
-  65: { name: 'Vidriería', specialties: ['Cambio de vidrios rotos', 'Vidrios a medida', 'Colocación de espejos', 'Mamparas de baño', 'Frentes de locales y blindex', 'Vidrios de seguridad (laminados)', 'Tapas de vidrio para mesas', 'Puertas y ventanas de vidrio', 'Vidrios para aberturas de aluminio', 'Urgencias y reposición rápida'],
+  65: { name: 'Vidriería', specialties: ['Cambio de vidrios rotos', 'Vidrios a medida', 'Colocación de espejos', 'Mamparas de baño', 'Frentes de locales y blindex', 'Tapas de vidrio para mesas', 'Puertas y ventanas de vidrio', 'Vidrios para aberturas de aluminio', 'Urgencias y reposición rápida'],
   },
   66: { name: 'Control de Plagas', specialties: ['Fumigación y desinfección', 'Desratización', 'Control de cucarachas', 'Ahuyentamiento de palomas y aves', 'Control de hormigas', 'Eliminación de arañas', 'Tratamiento contra termitas', 'Control de mosquitos', 'Fumigación de jardines', 'Certificados para comercios'],
   },
-  68: { name: 'Mecánicos Auto/Motos', specialties: ['Mecánica general y ligera', 'Cambio de aceite y filtros', 'Servicio de frenos', 'Tren delantero y suspensión', 'Electricidad del automotor', 'Diagnóstico por computadora', 'Afinación de motor', 'Embragues', 'Correas de distribución', 'Mecánica de motos'],
+  68: { name: 'Mecánico Auto', specialties: ['Mecánica general y ligera', 'Cambio de aceite y filtros', 'Servicio de frenos', 'Tren delantero y suspensión', 'Electricidad del automotor', 'Diagnóstico por computadora', 'Afinación de motor', 'Embragues', 'Correas de distribución', 'Inyección electrónica'],
   },
   69: { name: 'Belleza', specialties: ['Peluquería (corte, color, peinado)', 'Manicura y pedicura', 'Maquillaje profesional', 'Depilación (cera y definitiva)', 'Estética facial (limpieza, tratamientos)', 'Masajes (relajantes, descontracturantes)', 'Perfilado y laminado de cejas', 'Extensiones y lifting de pestañas', 'Barbería y cuidado masculino', 'Uñas esculpidas (acrílicas/gel)'],
   },
@@ -221,6 +224,9 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   },
   80: {
     name: 'Servicios de piletas', specialties: ['Limpieza de piletas', 'Control de cloro y pH', 'Revisión de filtros', 'Cambio de arena de filtros', 'Reparación de bombas', 'Reemplazo de skimmers', 'Desinfección de agua', 'Mantenimiento de equipos de piscina', 'Arreglo de filtración', 'Instalación de piletas nuevas', 'Revestimiento y pintura de piletas', 'Revisión de luces y sistemas eléctricos', 'Reparación de cañerías de piscina', 'Limpieza de borde y entorno', 'Control de temperatura del agua', 'Ajuste de niveles de agua', 'Vaciado y llenado de piletas', 'Mantenimiento preventivo', 'Restauración de piletas antiguas', 'Tratamientos de choque para agua'],
+  },
+  81: {
+    name: 'Mecánico Moto', specialties: ['Cambio de aceite', 'Cambio de filtros', 'Ajuste de válvulas', 'Limpieza de carburador', 'Carburación', 'Puesta a punto', 'Reparación de motor', 'Cambio de embrague', 'Distribución', 'Cambio de cadena, piñón y corona'],
   },
 };
 
@@ -248,7 +254,7 @@ export const CATEGORY_KEYWORDS: { [key: number]: { name: string; keywords: strin
   67: { name: 'Aire Acondicionado', keywords: AIRE_ACONDICIONADO_KEYWORDS },
   65: { name: 'Vidriería', keywords: VIDRIERIA_KEYWORDS },
   66: { name: 'Control de Plagas', keywords: CONTROL_DE_PLAGAS_KEYWORDS },
-  68: { name: 'Mecánicos Auto/Motos', keywords: MECANICA_KEYWORDS },
+  68: { name: 'Mecánico Auto', keywords: MECANICA_KEYWORDS },
   69: { name: 'Belleza', keywords: BELLEZA_KEYWORDS },
   70: { name: 'Astrología', keywords: ASTROLOGIA_KEYWORDS },
   71: { name: 'Agua Envasada', keywords: AGUA_ENVASADA_KEYWORDS },
@@ -261,6 +267,7 @@ export const CATEGORY_KEYWORDS: { [key: number]: { name: string; keywords: strin
   78: { name: 'Gomerías', keywords: GOMERIAS_KEYWORDS },
   79: { name: 'Chapa y Pintura', keywords: CHAPA_PINTURA_KEYWORDS },
   80: { name: 'Servicios de piletas', keywords: PILETAS_KEYWORDS },
+  81: { name: 'Mecánico Moto', keywords: MECANICO_MOTO_KEYWORDS },
 };
 
 // Diccionario simple para mapear sinónimos comunes a la categoría oficial
@@ -290,7 +297,9 @@ export const CATEGORY_SYNONYMS = {
     'aire': 'Aire Acondicionado',
     'vidriero': 'Vidriería',
     'fumigador': 'Control de Plagas',
-    'mecanico': 'Mecánicos Auto/Motos',
+    'mecanico auto': 'Mecánico Auto',
+    'mecanico moto': 'Mecánico Moto',
+    'motos': 'Mecánico Moto',
     'persiana': 'Reparaciones',
     'persianista': 'Reparaciones',
     'peluqueria': 'Belleza',
