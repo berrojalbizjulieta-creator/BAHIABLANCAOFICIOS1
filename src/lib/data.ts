@@ -34,6 +34,8 @@ import {
   Bike,
   Video,
   WashingMachine,
+  Gamepad2,
+  Smartphone,
 } from 'lucide-react';
 import type { Category, Professional, Banner, JobRequest, CategorySpecialties, Schedule } from '@/lib/types';
 import { placeholderImages } from './placeholder-images';
@@ -76,6 +78,8 @@ import { CHAPA_PINTURA_KEYWORDS } from './keywords/chapa-pintura';
 import { PILETAS_KEYWORDS } from './keywords/piletas';
 import { ARREGLO_LAVARROPAS_KEYWORDS } from './keywords/arreglo-lavarropas';
 import { CAMARAS_SEGURIDAD_KEYWORDS } from './keywords/camaras-seguridad';
+import { PC_CONSOLAS_KEYWORDS } from './keywords/pc-consolas';
+import { CELULARES_KEYWORDS } from './keywords/celulares';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -113,6 +117,7 @@ export const CATEGORIES: Category[] = [
     { id: 69, name: 'Belleza', icon: Palette, description: 'Peluquería, uñas, maquillaje y más.', imageUrl: getImage('cat-belleza').imageUrl, imageHint: getImage('cat-belleza').imageHint },
     { id: 83, name: 'Cámaras de Seguridad', icon: Video, description: 'Instalación y configuración de sistemas de vigilancia.', imageUrl: getImage('cat-camaras-seguridad').imageUrl, imageHint: getImage('cat-camaras-seguridad').imageHint },
     { id: 15, name: 'Carpintería', icon: Hammer, description: 'Muebles a medida, puertas, madera.', imageUrl: getImage('cat-carpinteria').imageUrl, imageHint: getImage('cat-carpinteria').imageHint },
+    { id: 86, name: 'Celulares', icon: Smartphone, description: 'Reparación y servicio técnico de celulares y tablets.', imageUrl: getImage('cat-celulares').imageUrl, imageHint: getImage('cat-celulares').imageHint },
     { id: 64, name: 'Cerrajería', icon: KeyRound, description: 'Apertura de puertas, cerraduras, llaves.', imageUrl: getImage('cat-cerrajeria').imageUrl, imageHint: getImage('cat-cerrajeria').imageHint },
     { id: 79, name: 'Chapa y Pintura', icon: Paintbrush, description: 'Reparación de carrocerías, golpes y pintura automotriz.', imageUrl: getImage('cat-chapa-pintura').imageUrl, imageHint: getImage('cat-chapa-pintura').imageHint },
     { id: 7, name: 'Clases', icon: BookOpen, description: 'Música, idiomas, apoyo escolar.', imageUrl: getImage('cat-clases').imageUrl, imageHint: getImage('cat-clases').imageHint },
@@ -135,6 +140,7 @@ export const CATEGORIES: Category[] = [
     { id: 82, name: 'Minifletes y Comisiones', icon: Truck, description: 'Traslados pequeños, envíos y comisiones.', imageUrl: getImage('cat-minifletes').imageUrl, imageHint: getImage('cat-minifletes').imageHint },
     { id: 4, name: 'Mudanzas', icon: Truck, description: 'Llevar muebles y cajas de acá para allá.', imageUrl: getImage('cat-mudanzas').imageUrl, imageHint: getImage('cat-mudanzas').imageHint },
     { id: 77, name: 'Otros Servicios', icon: User, description: 'Consultoría, seguros, coaching y otros servicios profesionales.', imageUrl: getImage('cat-tecnologia').imageUrl, imageHint: getImage('cat-tecnologia').imageHint },
+    { id: 85, name: 'PC y Consolas', icon: Gamepad2, description: 'Soporte técnico para computadoras y consolas.', imageUrl: getImage('cat-pc-consolas').imageUrl, imageHint: getImage('cat-pc-consolas').imageHint },
     { id: 17, name: 'Pintores', icon: Paintbrush, description: 'Pintura de paredes, revoques y techos.', imageUrl: getImage('cat-pintores').imageUrl, imageHint: getImage('cat-pintores').imageHint },
     { id: 11, name: 'Plomería', icon: Wrench, description: 'Arreglar canillas, caños y desagües.', imageUrl: getImage('cat-plomeria-2').imageUrl, imageHint: getImage('cat-plomeria-2').imageHint },
     { id: 5, name: 'Reparaciones', icon: Wrench, description: 'Arreglos de todo tipo.', imageUrl: getImage('cat-reparaciones').imageUrl, imageHint: getImage('cat-reparaciones').imageHint },
@@ -236,14 +242,18 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   81: {
     name: 'Mecánico Moto', specialties: ['Cambio de aceite', 'Cambio de filtros', 'Ajuste de válvulas', 'Limpieza de carburador', 'Carburación', 'Puesta a punto', 'Reparación de motor', 'Cambio de embrague', 'Distribución', 'Cambio de cadena, piñón y corona'],
   },
-  82: {
-    name: 'Minifletes y Comisiones', specialties: ['Mudanzas chicas', 'Traslado de muebles', 'Traslado de electrodomésticos', 'Traslado de heladeras', 'Traslado de lavarropas', 'Traslado de camas y colchones', 'Traslado de sillones', 'Traslado de mesas y sillas', 'Traslado de cajas', 'Envíos puerta a puerta', 'Reparto particular'],
-  },
+  82: { name: 'Minifletes y Comisiones', specialties: ['Mudanzas chicas', 'Traslado de muebles', 'Traslado de electrodomésticos', 'Envíos puerta a puerta', 'Reparto particular'] },
   83: {
     name: 'Cámaras de Seguridad', specialties: ["Instalación de cámaras", "Configuración de DVR/NVR", "Sistemas CCTV", "Cámaras IP y WiFi", "Mantenimiento de sistemas"],
   },
   84: {
     name: 'Arreglo de Lavarropas', specialties: ["Reparación general", "Service técnico", "No enciende", "No carga agua", "No desagota", "No centrifuga", "Pierde agua", "Hace ruido", "Cambio de bomba", "Cambio de plaqueta"],
+  },
+  85: {
+    name: 'PC y Consolas', specialties: ['Arreglo de PC', 'Reparación de notebook', 'Formateo', 'Eliminación de virus', 'Reparación de consolas', 'Reparación de PlayStation', 'Reparación de Xbox', 'Armado de PC', 'Reparación de joystick'],
+  },
+  86: {
+    name: 'Celulares', specialties: ['Cambio de pantalla', 'Cambio de batería', 'Reparación de pin de carga', 'Problemas de software', 'Equipo mojado', 'Reparación de cámaras', 'Cambio de tapa', 'Problemas de señal'],
   },
 };
 
@@ -288,6 +298,8 @@ export const CATEGORY_KEYWORDS: { [key: number]: { name: string; keywords: strin
   82: { name: 'Minifletes y Comisiones', keywords: MINIFLETES_KEYWORDS },
   83: { name: 'Cámaras de Seguridad', keywords: CAMARAS_SEGURIDAD_KEYWORDS },
   84: { name: 'Arreglo de Lavarropas', keywords: ARREGLO_LAVARROPAS_KEYWORDS },
+  85: { name: 'PC y Consolas', keywords: PC_CONSOLAS_KEYWORDS },
+  86: { name: 'Celulares', keywords: CELULARES_KEYWORDS },
 };
 
 // Diccionario simple para mapear sinónimos comunes a la categoría oficial
@@ -314,7 +326,13 @@ export const CATEGORY_SYNONYMS = {
     'perro': 'Mascotas',
     'gato': 'Mascotas',
     'computacion': 'Tecnología',
-    'celulares': 'Tecnología',
+    'celulares': 'Celulares',
+    'celular': 'Celulares',
+    'arreglo de compu': 'PC y Consolas',
+    'pc': 'PC y Consolas',
+    'notebook': 'PC y Consolas',
+    'consola': 'PC y Consolas',
+    'playstation': 'PC y Consolas',
     'cerrajero': 'Cerrajería',
     'aire': 'Aire Acondicionado',
     'vidriero': 'Vidriería',
@@ -550,4 +568,3 @@ export const essentialCategories = CATEGORIES.map(c => {
     
 
     
-
