@@ -63,7 +63,7 @@
     {
       "id": "client-1",
       "description": "Happy client.",
-      "imageUrl": "https://images.unsplash.com/photo-1522529599102-193c0d76b5b6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxwZXJzb24lMjBzbWlsaW5nfGVufDB8fHx8MTc1ODU4MzY2Nnww&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1522529599102-193c0d76b5b6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxwZXJzb24lMjBzbWlsaW5nfGVufDB8fHx8MTc1ODU4MzY2Nnww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "person smiling"
     },
     {
@@ -75,7 +75,7 @@
     {
       "id": "client-3",
       "description": "Pleased client portrait.",
-      "imageUrl": "https://images.unsplash.com/photo-1639747280804-dd2d6b3d88ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYW4lMjBzbWlsaW5nfGVufDB8fHx8MTc1ODU4NDAyMHww&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1639747280804-dd2d6b3d88ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYW4lMjBzbWlsaW5nfGVufDB8fHx8MTc1ODU4NDAyMHww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "man smiling"
     },
     {
@@ -93,19 +93,19 @@
     {
       "id": "work-2",
       "description": "A freshly painted living room wall.",
-      "imageUrl": "https://images.unsplash.com/photo-1517111109658-0780925e6178?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwYWludGVkJTIwd2FsbHxlbnwwfHx8fDE3NTg2MDE2MjF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1517111109658-0780925e6178?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwYWludGVkJTIwd2FsbHxlbnwwfHx8fDE3NTg2MDE2MjF8MA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "painted wall"
     },
     {
       "id": "work-3",
       "description": "A plumber installing a new sink.",
-      "imageUrl": "https://images.unsplash.com/photo-1751486403890-799880b12adb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwbHVtYmVyJTIwaW5zdGFsbGF0aW9ufGVufDB8fHx8MTc1ODYwMTYyMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1751486403890-799880b12adb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwbHVtYmVyJTIwaW5zdGFsbGF0aW9ufGVufDB8fHx8MTc1ODYwMTYyMXww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "plumber installation"
     },
     {
       "id": "work-4",
       "description": "Custom wooden shelves built into a wall.",
-      "imageUrl": "https://images.unsplash.com/photo-1624993116516-21c8416a0052?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjdXN0b20lMjBzaGVsdmVzfGVufDB8fHx8MTc1ODYwMTYyMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1624993116516-21c8416a0052?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjdXN0b20lMjBzaGVsdmVzfGVufDB8fHx8MTc1ODYwMTYyMXww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "custom shelves"
     },
     {
@@ -425,6 +425,12 @@
       "description": "A smartphone with a cracked screen being repaired.",
       "imageUrl": "https://images.unsplash.com/photo-1603791440384-56cd371ee9a7?q=80&w=1074",
       "imageHint": "phone repair"
+    },
+    {
+      "id": "cat-arreglo-heladeras",
+      "description": "An open refrigerator with food inside.",
+      "imageUrl": "https://images.unsplash.com/photo-1579933189010-344692291d37?q=80&w=1170",
+      "imageHint": "refrigerator repair"
     }
   ]
 }

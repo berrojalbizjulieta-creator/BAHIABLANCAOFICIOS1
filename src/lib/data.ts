@@ -36,6 +36,7 @@ import {
   WashingMachine,
   Gamepad2,
   Smartphone,
+  Refrigerator,
 } from 'lucide-react';
 import type { Category, Professional, Banner, JobRequest, CategorySpecialties, Schedule } from '@/lib/types';
 import { placeholderImages } from './placeholder-images';
@@ -80,6 +81,7 @@ import { ARREGLO_LAVARROPAS_KEYWORDS } from './keywords/arreglo-lavarropas';
 import { CAMARAS_SEGURIDAD_KEYWORDS } from './keywords/camaras-seguridad';
 import { PC_CONSOLAS_KEYWORDS } from './keywords/pc-consolas';
 import { CELULARES_KEYWORDS } from './keywords/celulares';
+import { ARREGLO_HELADERAS_KEYWORDS } from './keywords/arreglo-heladeras';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -112,6 +114,7 @@ export const CATEGORIES: Category[] = [
     { id: 71, name: 'Agua Envasada', icon: GlassWater, description: 'Reparto de bidones de agua y soda a domicilio.', imageUrl: getImage('cat-agua-envasada').imageUrl, imageHint: getImage('cat-agua-envasada').imageHint },
     { id: 67, name: 'Aire Acondicionado', icon: Fan, description: 'Instalación y reparación de aires acondicionados.', imageUrl: getImage('cat-climatizacion-2').imageUrl, imageHint: getImage('cat-climatizacion-2').imageHint },
     { id: 13, name: 'Albañilería', icon: Hammer, description: 'Obras, arreglos, refacciones.', imageUrl: getImage('cat-albanileria').imageUrl, imageHint: getImage('cat-albanileria').imageHint },
+    { id: 87, name: 'Arreglo de Heladeras', icon: Refrigerator, description: 'Servicio técnico y reparación de heladeras y freezers.', imageUrl: getImage('cat-arreglo-heladeras').imageUrl, imageHint: getImage('cat-arreglo-heladeras').imageHint },
     { id: 84, name: 'Arreglo de Lavarropas', icon: WashingMachine, description: 'Reparación, service y mantenimiento de lavarropas.', imageUrl: getImage('cat-arreglo-lavarropas').imageUrl, imageHint: getImage('cat-arreglo-lavarropas').imageHint },
     { id: 70, name: 'Astrología', icon: Moon, description: 'Lectura de carta natal, tarot y más.', imageUrl: getImage('cat-astrologia').imageUrl, imageHint: getImage('cat-astrologia').imageHint },
     { id: 69, name: 'Belleza', icon: Palette, description: 'Peluquería, uñas, maquillaje y más.', imageUrl: getImage('cat-belleza').imageUrl, imageHint: getImage('cat-belleza').imageHint },
@@ -255,6 +258,9 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   86: {
     name: 'Celulares', specialties: ['Cambio de pantalla', 'Cambio de batería', 'Reparación de pin de carga', 'Problemas de software', 'Equipo mojado', 'Reparación de cámaras', 'Cambio de tapa', 'Problemas de señal'],
   },
+  87: {
+    name: 'Arreglo de Heladeras', specialties: ['No enfría', 'Enfría poco', 'No congela', 'Pierde agua', 'No arranca', 'Cambio de burlete', 'Carga de gas', 'Reparación de motor', 'Problemas eléctricos', 'Servicio técnico a domicilio'],
+  },
 };
 
 
@@ -300,6 +306,7 @@ export const CATEGORY_KEYWORDS: { [key: number]: { name: string; keywords: strin
   84: { name: 'Arreglo de Lavarropas', keywords: ARREGLO_LAVARROPAS_KEYWORDS },
   85: { name: 'PC y Consolas', keywords: PC_CONSOLAS_KEYWORDS },
   86: { name: 'Celulares', keywords: CELULARES_KEYWORDS },
+  87: { name: 'Arreglo de Heladeras', keywords: ARREGLO_HELADERAS_KEYWORDS },
 };
 
 // Diccionario simple para mapear sinónimos comunes a la categoría oficial
@@ -377,6 +384,9 @@ export const CATEGORY_SYNONYMS = {
     'lavarropas': 'Arreglo de Lavarropas',
     'seguridad': 'Cámaras de Seguridad',
     'cctv': 'Cámaras de Seguridad',
+    'heladera': 'Arreglo de Heladeras',
+    'heladera no enfria': 'Arreglo de Heladeras',
+    'freezer': 'Arreglo de Heladeras',
 }
 
 export const PROFESSIONALS: Professional[] = [
