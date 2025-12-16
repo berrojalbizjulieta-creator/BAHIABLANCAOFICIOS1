@@ -32,6 +32,8 @@ import {
   Scissors,
   Waves,
   Bike,
+  Video,
+  WashingMachine,
 } from 'lucide-react';
 import type { Category, Professional, Banner, JobRequest, CategorySpecialties, Schedule } from '@/lib/types';
 import { placeholderImages } from './placeholder-images';
@@ -72,6 +74,8 @@ import { OTROS_SERVICIOS_KEYWORDS } from './keywords/otros-servicios';
 import { GOMERIAS_KEYWORDS } from './keywords/gomerias';
 import { CHAPA_PINTURA_KEYWORDS } from './keywords/chapa-pintura';
 import { PILETAS_KEYWORDS } from './keywords/piletas';
+import { ARREGLO_LAVARROPAS_KEYWORDS } from './keywords/arreglo-lavarropas';
+import { CAMARAS_SEGURIDAD_KEYWORDS } from './keywords/camaras-seguridad';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -104,8 +108,10 @@ export const CATEGORIES: Category[] = [
     { id: 71, name: 'Agua Envasada', icon: GlassWater, description: 'Reparto de bidones de agua y soda a domicilio.', imageUrl: getImage('cat-agua-envasada').imageUrl, imageHint: getImage('cat-agua-envasada').imageHint },
     { id: 67, name: 'Aire Acondicionado', icon: Fan, description: 'Instalación y reparación de aires acondicionados.', imageUrl: getImage('cat-climatizacion-2').imageUrl, imageHint: getImage('cat-climatizacion-2').imageHint },
     { id: 13, name: 'Albañilería', icon: Hammer, description: 'Obras, arreglos, refacciones.', imageUrl: getImage('cat-albanileria').imageUrl, imageHint: getImage('cat-albanileria').imageHint },
+    { id: 84, name: 'Arreglo de Lavarropas', icon: WashingMachine, description: 'Reparación, service y mantenimiento de lavarropas.', imageUrl: getImage('cat-arreglo-lavarropas').imageUrl, imageHint: getImage('cat-arreglo-lavarropas').imageHint },
     { id: 70, name: 'Astrología', icon: Moon, description: 'Lectura de carta natal, tarot y más.', imageUrl: getImage('cat-astrologia').imageUrl, imageHint: getImage('cat-astrologia').imageHint },
     { id: 69, name: 'Belleza', icon: Palette, description: 'Peluquería, uñas, maquillaje y más.', imageUrl: getImage('cat-belleza').imageUrl, imageHint: getImage('cat-belleza').imageHint },
+    { id: 83, name: 'Cámaras de Seguridad', icon: Video, description: 'Instalación y configuración de sistemas de vigilancia.', imageUrl: getImage('cat-camaras-seguridad').imageUrl, imageHint: getImage('cat-camaras-seguridad').imageHint },
     { id: 15, name: 'Carpintería', icon: Hammer, description: 'Muebles a medida, puertas, madera.', imageUrl: getImage('cat-carpinteria').imageUrl, imageHint: getImage('cat-carpinteria').imageHint },
     { id: 64, name: 'Cerrajería', icon: KeyRound, description: 'Apertura de puertas, cerraduras, llaves.', imageUrl: getImage('cat-cerrajeria').imageUrl, imageHint: getImage('cat-cerrajeria').imageHint },
     { id: 79, name: 'Chapa y Pintura', icon: Paintbrush, description: 'Reparación de carrocerías, golpes y pintura automotriz.', imageUrl: getImage('cat-chapa-pintura').imageUrl, imageHint: getImage('cat-chapa-pintura').imageHint },
@@ -233,6 +239,12 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
   82: {
     name: 'Minifletes y Comisiones', specialties: ['Mudanzas chicas', 'Traslado de muebles', 'Traslado de electrodomésticos', 'Traslado de heladeras', 'Traslado de lavarropas', 'Traslado de camas y colchones', 'Traslado de sillones', 'Traslado de mesas y sillas', 'Traslado de cajas', 'Envíos puerta a puerta', 'Reparto particular'],
   },
+  83: {
+    name: 'Cámaras de Seguridad', specialties: ["Instalación de cámaras", "Configuración de DVR/NVR", "Sistemas CCTV", "Cámaras IP y WiFi", "Mantenimiento de sistemas"],
+  },
+  84: {
+    name: 'Arreglo de Lavarropas', specialties: ["Reparación general", "Service técnico", "No enciende", "No carga agua", "No desagota", "No centrifuga", "Pierde agua", "Hace ruido", "Cambio de bomba", "Cambio de plaqueta"],
+  },
 };
 
 
@@ -274,6 +286,8 @@ export const CATEGORY_KEYWORDS: { [key: number]: { name: string; keywords: strin
   80: { name: 'Servicios de piletas', keywords: PILETAS_KEYWORDS },
   81: { name: 'Mecánico Moto', keywords: MECANICO_MOTO_KEYWORDS },
   82: { name: 'Minifletes y Comisiones', keywords: MINIFLETES_KEYWORDS },
+  83: { name: 'Cámaras de Seguridad', keywords: CAMARAS_SEGURIDAD_KEYWORDS },
+  84: { name: 'Arreglo de Lavarropas', keywords: ARREGLO_LAVARROPAS_KEYWORDS },
 };
 
 // Diccionario simple para mapear sinónimos comunes a la categoría oficial
@@ -342,6 +356,9 @@ export const CATEGORY_SYNONYMS = {
     'pileta': 'Servicios de piletas',
     'piscina': 'Servicios de piletas',
     'piletero': 'Servicios de piletas',
+    'lavarropas': 'Arreglo de Lavarropas',
+    'seguridad': 'Cámaras de Seguridad',
+    'cctv': 'Cámaras de Seguridad',
 }
 
 export const PROFESSIONALS: Professional[] = [
@@ -533,3 +550,4 @@ export const essentialCategories = CATEGORIES.map(c => {
     
 
     
+
