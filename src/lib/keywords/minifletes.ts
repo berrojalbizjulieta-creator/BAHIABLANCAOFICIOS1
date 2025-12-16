@@ -1,0 +1,25 @@
+// src/lib/keywords/minifletes.ts
+export const MINIFLETES_KEYWORDS = [
+  "miniflete",
+  "flete chico",
+  "comisiones",
+  "comisionista",
+  "mudanzas chicas",
+  "traslado de muebles",
+  "traslado de electrodomésticos",
+  "traslado de heladeras",
+  "traslado de lavarropas",
+  "traslado de camas y colchones",
+  "traslado de sillones",
+  "traslado de mesas y sillas",
+  "traslado de cajas",
+  "envíos puerta a puerta",
+  "reparto particular",
+  "traslado de compras",
+  "llevar una cosa",
+  "buscar algo",
+  "flete por hora",
+  "flete económico",
+  "servicio de mensajería",
+  "reparto de paquetes"
+];
