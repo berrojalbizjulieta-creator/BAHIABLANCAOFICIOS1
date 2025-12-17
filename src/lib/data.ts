@@ -37,6 +37,7 @@ import {
   Gamepad2,
   Smartphone,
   Refrigerator,
+  Flame
 } from 'lucide-react';
 import type { Category, Professional, Banner, JobRequest, CategorySpecialties, Schedule } from '@/lib/types';
 import { placeholderImages } from './placeholder-images';
@@ -82,6 +83,7 @@ import { CAMARAS_SEGURIDAD_KEYWORDS } from './keywords/camaras-seguridad';
 import { PC_CONSOLAS_KEYWORDS } from './keywords/pc-consolas';
 import { CELULARES_KEYWORDS } from './keywords/celulares';
 import { ARREGLO_HELADERAS_KEYWORDS } from './keywords/arreglo-heladeras';
+import { CALEFACCION_KEYWORDS } from './keywords/calefaccion';
 
 const getImage = (id: string) =>
   placeholderImages.find((img) => img.id === id) || {
@@ -118,6 +120,7 @@ export const CATEGORIES: Category[] = [
     { id: 84, name: 'Arreglo de Lavarropas', icon: WashingMachine, description: 'Reparación, service y mantenimiento de lavarropas.', imageUrl: getImage('cat-arreglo-lavarropas').imageUrl, imageHint: getImage('cat-arreglo-lavarropas').imageHint },
     { id: 70, name: 'Astrología', icon: Moon, description: 'Lectura de carta natal, tarot y más.', imageUrl: getImage('cat-astrologia').imageUrl, imageHint: getImage('cat-astrologia').imageHint },
     { id: 69, name: 'Belleza', icon: Palette, description: 'Peluquería, uñas, maquillaje y más.', imageUrl: getImage('cat-belleza').imageUrl, imageHint: getImage('cat-belleza').imageHint },
+    { id: 88, name: 'Calefacción', icon: Flame, description: 'Instalación y reparación de sistemas de calefacción.', imageUrl: getImage('cat-calefaccion').imageUrl, imageHint: getImage('cat-calefaccion').imageHint },
     { id: 83, name: 'Cámaras de Seguridad', icon: Video, description: 'Instalación y configuración de sistemas de vigilancia.', imageUrl: getImage('cat-camaras-seguridad').imageUrl, imageHint: getImage('cat-camaras-seguridad').imageHint },
     { id: 15, name: 'Carpintería', icon: Hammer, description: 'Muebles a medida, puertas, madera.', imageUrl: getImage('cat-carpinteria').imageUrl, imageHint: getImage('cat-carpinteria').imageHint },
     { id: 86, name: 'Celulares', icon: Smartphone, description: 'Reparación y servicio técnico de celulares y tablets.', imageUrl: getImage('cat-celulares').imageUrl, imageHint: getImage('cat-celulares').imageHint },
@@ -259,7 +262,10 @@ export const CATEGORY_SPECIALTIES: CategorySpecialties = {
     name: 'Celulares', specialties: ['Cambio de pantalla', 'Cambio de batería', 'Reparación de pin de carga', 'Problemas de software', 'Equipo mojado', 'Reparación de cámaras', 'Cambio de tapa', 'Problemas de señal'],
   },
   87: {
-    name: 'Arreglo de Heladeras', specialties: ['No enfría', 'Enfría poco', 'No congela', 'Pierde agua', 'No arranca', 'Cambio de burlete', 'Carga de gas', 'Reparación de motor', 'Problemas eléctricos', 'Servicio técnico a domicilio'],
+    name: 'Arreglo de Heladeras', specialties: ['No enfría', 'Enfría poco', 'No congela', 'Pierde agua', 'No arranca', 'Cambio de burlete', 'Carga de gas', 'Reparación de motor', 'Servicio técnico a domicilio'],
+  },
+  88: {
+    name: 'Calefacción', specialties: ['Instalación de radiadores', 'Reparación de radiadores', 'Purga de radiadores', 'Instalación de caldera', 'Mantenimiento de caldera', 'Reparación de caldera', 'Losa radiante', 'Instalación de estufas', 'Reparación de estufas', 'Instalación de termostato'],
   },
 };
 
@@ -307,6 +313,7 @@ export const CATEGORY_KEYWORDS: { [key: number]: { name: string; keywords: strin
   85: { name: 'PC y Consolas', keywords: PC_CONSOLAS_KEYWORDS },
   86: { name: 'Celulares', keywords: CELULARES_KEYWORDS },
   87: { name: 'Arreglo de Heladeras', keywords: ARREGLO_HELADERAS_KEYWORDS },
+  88: { name: 'Calefacción', keywords: CALEFACCION_KEYWORDS },
 };
 
 // Diccionario simple para mapear sinónimos comunes a la categoría oficial
@@ -387,6 +394,10 @@ export const CATEGORY_SYNONYMS = {
     'heladera': 'Arreglo de Heladeras',
     'heladera no enfria': 'Arreglo de Heladeras',
     'freezer': 'Arreglo de Heladeras',
+    'calefaccion': 'Calefacción',
+    'radiador': 'Calefacción',
+    'caldera': 'Calefacción',
+    'estufa': 'Calefacción',
 }
 
 export const PROFESSIONALS: Professional[] = [
