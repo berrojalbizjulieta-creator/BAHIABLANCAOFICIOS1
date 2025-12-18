@@ -54,6 +54,7 @@ const clientSchema = z.object(baseSchema);
 
 const professionalSchema = z.object({
   ...baseSchema,
+  phone: z.string().min(10, 'Ingresa un número de teléfono válido.'),
   category: z.string().min(1, 'Debes seleccionar un oficio.'),
 });
 
@@ -74,16 +75,15 @@ export default function SignupPage() {
 
   const professionalForm = useForm<ProfessionalFormValues>({
     resolver: zodResolver(professionalSchema),
-    defaultValues: { fullName: '', email: '', password: '', category: '', terms: false },
+    defaultValues: { fullName: '', email: '', password: '', category: '', terms: false, phone: '' },
   });
 
   const activeForm = accountType === 'client' ? clientForm : professionalForm;
 
   const handleAccountTypeChange = (newType: string) => {
     setAccountType(newType);
-    // Reiniciar ambos formularios y sus casillas de términos y condiciones
     clientForm.reset({ fullName: '', email: '', password: '', terms: false });
-    professionalForm.reset({ fullName: '', email: '', password: '', category: '', terms: false });
+    professionalForm.reset({ fullName: '', email: '', password: '', category: '', terms: false, phone: '' });
   }
 
 
@@ -91,15 +91,13 @@ export default function SignupPage() {
     setIsLoading(true);
     
     try {
-      // 1. Create user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       const user = userCredential.user;
 
-      // 2. Update Firebase Auth profile
       await updateProfile(user, { displayName: data.fullName });
 
-      // 3. Prepare user data for Firestore
       const isProfessional = accountType === 'professional';
+      
       const userData: {
         name: string;
         email: string;
@@ -107,24 +105,28 @@ export default function SignupPage() {
         registrationDate: any;
         isActive: boolean;
         photoUrl: string;
+        phone?: string;
       } = {
         name: data.fullName,
         email: data.email,
         role: isProfessional ? 'professional' : 'client',
         registrationDate: serverTimestamp(),
         isActive: true,
-        photoUrl: '', // Default empty photo
+        photoUrl: '', 
       };
 
-      // 4. Save user data to 'users' collection in Firestore
+      if (isProfessional) {
+        userData.phone = (data as ProfessionalFormValues).phone;
+      }
+
       await setDoc(doc(db, 'users', user.uid), userData);
 
-      // 5. If professional, save additional details
       if (isProfessional) {
         const professionalData = data as ProfessionalFormValues;
         const professionalDetails = {
           name: professionalData.fullName,
           email: professionalData.email,
+          phone: professionalData.phone,
           description: '',
           specialties: [],
           avgRating: 0,
@@ -148,7 +150,6 @@ export default function SignupPage() {
         description: `Tu cuenta de ${accountType === 'client' ? 'cliente' : 'profesional'} ha sido creada exitosamente.`,
       });
 
-      // 6. Redirect user after signup
       if (isProfessional) {
         router.push('/dashboard/profile');
       } else {
@@ -293,6 +294,19 @@ export default function SignupPage() {
                             <FormLabel>Email</FormLabel>
                             <FormControl>
                               <Input type="email" placeholder="tu@email.com" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                       <FormField
+                        control={professionalForm.control}
+                        name="phone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Teléfono (WhatsApp)</FormLabel>
+                            <FormControl>
+                              <Input type="tel" placeholder="Ej: 2911234567" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
